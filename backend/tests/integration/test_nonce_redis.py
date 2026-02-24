@@ -1,4 +1,5 @@
 import pytest
+from app.auth.utils import get_nonce_key
 
 
 @pytest.mark.asyncio
@@ -9,6 +10,6 @@ async def test_nonce_stored_in_redis(client, redis_client):
     assert response.status_code == 200
     nonce = response.json()["nonce"]
 
-    key = f"nonce:{address}"
+    key = get_nonce_key(address)
     stored_nonce = await redis_client.get(key)
     assert stored_nonce == nonce

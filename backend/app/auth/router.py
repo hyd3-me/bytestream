@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from redis.asyncio import Redis
-from .utils import generate_nonce
+from .utils import generate_nonce, get_nonce_key
 from ..core.redis import get_redis
 from ..core.config import get_settings
 
@@ -11,6 +11,6 @@ settings = get_settings()
 @router.get("/nonce/{address}")
 async def get_nonce(address: str, redis: Redis = Depends(get_redis)):
     nonce = generate_nonce()
-    key = f"nonce:{address}"
+    key = get_nonce_key(address)
     await redis.setex(key, settings.nonce_ttl_seconds, nonce)
     return {"nonce": nonce}

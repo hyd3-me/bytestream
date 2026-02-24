@@ -4,6 +4,7 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"
+    redis_key_prefix: str = "bytestream:"
     nonce_ttl_seconds: int = 300
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
