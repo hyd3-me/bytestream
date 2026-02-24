@@ -1,16 +1,4 @@
 import pytest
-import redis.asyncio as redis
-
-
-TEST_REDIS_URL = "redis://localhost:6379/1"
-
-
-@pytest.fixture
-async def redis_client():
-    client = redis.from_url(TEST_REDIS_URL, decode_responses=True)
-    yield client
-    await client.flushdb()
-    await client.close()
 
 
 @pytest.mark.asyncio
