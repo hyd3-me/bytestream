@@ -1,4 +1,5 @@
 import secrets
+from redis.asyncio import Redis
 from ..core.config import get_settings
 
 settings = get_settings()
@@ -15,3 +16,9 @@ def get_nonce_key(address: str) -> str:
     Key format: {prefix}nonce:{address}
     """
     return f"{settings.redis_key_prefix}nonce:{address}"
+
+
+async def delete_nonce(redis: Redis, address: str) -> None:
+    """Delete the nonce associated with the given address from Redis."""
+    key = get_nonce_key(address)
+    await redis.delete(key)
