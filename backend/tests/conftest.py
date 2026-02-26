@@ -16,6 +16,7 @@ sys.path.insert(0, str(backend_dir))
 # For tests, we expect the DB to be set appropriately (e.g., /1)
 TEST_REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/1")
 os.environ["REDIS_URL"] = TEST_REDIS_URL
+os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key-for-pytest-only")
 
 import pytest, pytest_asyncio
 from httpx import AsyncClient, ASGITransport
