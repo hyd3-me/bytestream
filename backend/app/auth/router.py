@@ -11,6 +11,5 @@ settings = get_settings()
 @router.get("/nonce/{address}")
 async def get_nonce(address: str, redis: Redis = Depends(get_redis)):
     nonce = utils.generate_nonce()
-    key = utils.get_nonce_key(address)
-    await redis.setex(key, settings.nonce_ttl_seconds, nonce)
+    await utils.store_nonce(redis, address, nonce)
     return {"nonce": nonce}
