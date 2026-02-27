@@ -18,8 +18,7 @@ async def get_nonce(address: str, redis: Redis = Depends(get_redis)):
 
 @router.post("/verify", response_model=schemas.TokenResponse)
 async def verify(request: schemas.VerifyRequest, redis: Redis = Depends(get_redis)):
-    key = utils.get_nonce_key(request.address)
-    nonce = await redis.get(key)
+    nonce = await utils.get_nonce(redis, request.address)
     if nonce is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -33,6 +32,6 @@ async def verify(request: schemas.VerifyRequest, redis: Redis = Depends(get_redi
         )
 
     # If successful, delete nonce and create token
-    await redis.delete(key)
+    await utils.delete_nonce(redis, request.address)
     access_token = security.create_access_token(data={"sub": request.address})
     return schemas.TokenResponse(access_token=access_token)

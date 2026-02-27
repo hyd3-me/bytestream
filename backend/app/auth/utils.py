@@ -1,6 +1,7 @@
 import secrets
 from redis.asyncio import Redis
 from ..core.config import get_settings
+from typing import Optional
 
 settings = get_settings()
 
@@ -14,6 +15,12 @@ async def store_nonce(redis: Redis, address: str, nonce: str) -> None:
     """Store nonce in Redis with TTL."""
     key = get_nonce_key(address)
     await redis.setex(key, settings.nonce_ttl_seconds, nonce)
+
+
+async def get_nonce(redis: Redis, address: str) -> Optional[str]:
+    """Retrieve nonce for the given address from Redis."""
+    key = get_nonce_key(address)
+    return await redis.get(key)
 
 
 def get_nonce_key(address: str) -> str:
