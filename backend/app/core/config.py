@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     nonce_ttl_seconds: int = 300
 
     # JWT settings
-    jwt_secret_key: str = Field(..., env="JWT_SECRET_KEY")
+    jwt_secret_key: str = Field(...)
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 30
 
