@@ -1,7 +1,9 @@
 import os
 import sys
 from pathlib import Path
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
+from web3 import Web3
+
 
 # Load environment variables from .env file located in the project root
 project_root = Path(__file__).parent.parent.parent  # source directory
@@ -49,3 +51,14 @@ async def override_redis_dependency(redis_client):
     app.dependency_overrides[get_redis] = lambda: redis_client
     yield
     app.dependency_overrides.clear()
+
+
+@pytest.fixture(scope="session")
+def test_account():
+    env_vars = dotenv_values(env_path)
+    private_key = env_vars.get("TEST_ACCOUNT_PRIVATE_KEY")
+    if not private_key:
+        pytest.fail("TEST_ACCOUNT_PRIVATE_KEY not set in .env")
+    w3 = Web3()
+    account = w3.eth.account.from_key(private_key)
+    return account
