@@ -35,7 +35,7 @@
    git clone https://github.com/hyd3-me/bytestream.git
 ```
 
-1. Create and activate virtual environment:
+2. Create and activate virtual environment:
 
 ```bash
 python3.12 -m venv env
@@ -43,13 +43,13 @@ source env/bin/activate
 cd bytestream/source
 ```
 
-1. Install dependencies:
+3. Install dependencies:
 
 ```bash
 pip install -r backend/requirements.txt
 ```
 
-1. Configure environment variables:
+4. Configure environment variables:
 
 - Set REDIS_URL (e.g., redis://:password@localhost:6379/1)
 
@@ -57,7 +57,7 @@ pip install -r backend/requirements.txt
 
 - (Optional) Set TEST_ACCOUNT_PRIVATE_KEY for testing
 
-1. Run the server:
+5. Run the server:
 
 ```bash
 uvicorn main:app --reload
