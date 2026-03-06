@@ -31,37 +31,37 @@
 
 1. Clone the repository:
 
-```bash
-   git clone https://github.com/hyd3-me/bytestream.git
-```
+    ```bash
+    git clone https://github.com/hyd3-me/bytestream.git
+    ```
 
 2. Create and activate virtual environment:
 
-```bash
-python3.12 -m venv env
-source env/bin/activate
-cd bytestream/source
-```
+    ```bash
+    python3.12 -m venv env
+    source env/bin/activate
+    cd bytestream/source
+    ```
 
 3. Install dependencies:
 
-```bash
-pip install -r backend/requirements.txt
-```
+    ```bash
+    pip install -r backend/requirements.txt
+    ```
 
 4. Configure environment variables:
 
-- Set REDIS_URL (e.g., redis://:password@localhost:6379/1)
+    - Set REDIS_URL (e.g., redis://:password@localhost:6379/1)
 
-- Generate a strong JWT_SECRET_KEY (e.g., openssl rand -hex 32)
+    - Generate a strong JWT_SECRET_KEY (e.g., openssl rand -hex 32)
 
-- (Optional) Set TEST_ACCOUNT_PRIVATE_KEY for testing
+    - (Optional) Set TEST_ACCOUNT_PRIVATE_KEY for testing
 
 5. Run the server:
 
-```bash
-uvicorn main:app --reload
-```
+    ```bash
+    uvicorn main:app --reload
+    ```
 
 ### Testing
 
