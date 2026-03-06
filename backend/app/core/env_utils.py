@@ -1,6 +1,9 @@
 from pathlib import Path
 import secrets
 from dotenv import dotenv_values, set_key
+from .logging import get_logger
+
+logger = get_logger(__name__)
 
 
 def ensure_jwt_secret_in_env(env_path: Path) -> None:
@@ -16,6 +19,6 @@ def ensure_jwt_secret_in_env(env_path: Path) -> None:
         new_key = secrets.token_urlsafe(32)
         # Write it to the .env file (preserving existing content)
         set_key(str(env_path), "JWT_SECRET_KEY", new_key)
-        print(f"JWT_SECRET_KEY added to {env_path}")
+        logger.info(f"JWT_SECRET_KEY added to {env_path}")
     else:
-        print("JWT_SECRET_KEY already exists and is non-empty.")
+        logger.info("JWT_SECRET_KEY already exists and is non-empty.")
