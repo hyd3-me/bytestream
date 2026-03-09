@@ -18,13 +18,14 @@ class SocketIOManager:
     def _register_handlers(self):
         @self.sio.event
         async def connect(sid, environ):
-            return await self._handle_connect(sid, environ)
+            return await self.handle_connect(sid, environ)
 
         @self.sio.event
         async def disconnect(sid):
             await self._handle_disconnect(sid)
 
-    async def _handle_connect(self, sid, environ):
+    async def handle_connect(self, sid, environ):
+        """Public method for testing and internal use."""
         auth_header = environ.get("HTTP_AUTHORIZATION")
         if not auth_header:
             logger.warning(f"Connection attempt without auth header from sid {sid}")
@@ -58,7 +59,3 @@ class SocketIOManager:
 
 
 ws_manager = SocketIOManager()
-
-
-async def connect(sid, environ):
-    return await ws_manager._handle_connect(sid, environ)
