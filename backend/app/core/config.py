@@ -15,11 +15,11 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 30
 
-    environment: str = Field("development", env="ENVIRONMENT")
-    log_level: str = Field("INFO", env="LOG_LEVEL")
-    log_file: Optional[str] = Field(None, env="LOG_FILE")
-    log_max_bytes: int = Field(2_097_152, env="LOG_MAX_BYTES")
-    log_backup_count: int = Field(3, env="LOG_BACKUP_COUNT")
+    environment: str = "development"
+    log_level: str = "INFO"
+    log_file: Optional[str] = None
+    log_max_bytes: int = 2_097_152
+    log_backup_count: int = 3
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
