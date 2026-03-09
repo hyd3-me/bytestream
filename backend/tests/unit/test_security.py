@@ -33,9 +33,10 @@ def test_decode_expired_token():
 
 
 def test_decode_token_with_invalid_signature():
-    # Create a token with a different secret (simulate tampering)
-    valid_token = create_access_token({"sub": "test_user"})
-    # Tamper with the token (change last character)
-    invalid_token = valid_token[:-1] + ("a" if valid_token[-1] != "a" else "b")
-    with pytest.raises(JWTError):  # JWTError is base for signature errors
-        decode_token(invalid_token)
+    # Create token with a different secret
+    wrong_secret = "different_secret_for_testing"
+    token = jwt.encode(
+        {"sub": "test_user"}, wrong_secret, algorithm=settings.jwt_algorithm
+    )
+    with pytest.raises(JWTError):
+        decode_token(token)
