@@ -22,7 +22,7 @@ os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key-for-pytest-only")
 
 import pytest, pytest_asyncio
 from httpx import AsyncClient, ASGITransport
-from main import app
+from main import fastapi_app
 import redis.asyncio as redis
 from app.core.redis import get_redis
 
@@ -31,7 +31,7 @@ from app.core.redis import get_redis
 async def client():
     """HTTP client for testing endpoints."""
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
+        transport=ASGITransport(app=fastapi_app), base_url="http://test"
     ) as client:
         yield client
 
@@ -48,9 +48,9 @@ async def redis_client():
 @pytest_asyncio.fixture(autouse=True)
 async def override_redis_dependency(redis_client):
     """Override the app's get_redis dependency to use the test client."""
-    app.dependency_overrides[get_redis] = lambda: redis_client
+    fastapi_app.dependency_overrides[get_redis] = lambda: redis_client
     yield
-    app.dependency_overrides.clear()
+    fastapi_app.dependency_overrides.clear()
 
 
 @pytest.fixture(scope="session")

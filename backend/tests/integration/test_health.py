@@ -1,12 +1,12 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
-from main import app
+from main import fastapi_app
 
 
 @pytest.mark.asyncio
 async def test_health_endpoint():
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
+        transport=ASGITransport(app=fastapi_app), base_url="http://test"
     ) as client:
         response = await client.get("/health")
 
