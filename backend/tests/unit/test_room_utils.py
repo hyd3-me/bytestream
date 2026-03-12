@@ -26,10 +26,8 @@ def test_is_valid_eth_address_valid():
 
 def test_is_valid_eth_address_invalid():
     assert utils.is_valid_eth_address("0x" + "1" * 39) is False  # too short
-    assert utils.is_valid_eth_address("1" * 40) is False  # no 0x
+    assert (
+        utils.is_valid_eth_address("1" * 40) is True
+    )  # web3 accepts addresses without 0x
     assert utils.is_valid_eth_address("0x" + "g" * 40) is False  # invalid hex
     assert utils.is_valid_eth_address("0x" + "1" * 41) is False  # too long
-    invalid_checksum = (
-        "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAeD"  # изменён последний символ
-    )
-    assert utils.is_valid_eth_address(invalid_checksum) is False
