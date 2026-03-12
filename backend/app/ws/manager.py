@@ -24,6 +24,10 @@ class SocketIOManager:
         async def disconnect(sid):
             await self._handle_disconnect(sid)
 
+        @self.sio.event
+        async def init_session(sid):
+            await self.handle_init_session(sid)
+
     async def handle_connect(self, sid, environ):
         """Public method for testing and internal use."""
         auth_header = environ.get("HTTP_AUTHORIZATION")
@@ -53,6 +57,19 @@ class SocketIOManager:
         session = await self.sio.get_session(sid)
         address = session.get("address") if session else None
         logger.info(f"Client {address} disconnected (sid {sid})")
+
+    async def handle_init_session(self, sid: str):
+        """Handle client initialization: join personal room and send confirmation."""
+        session = await self.sio.get_session(sid)
+        address = session.get("address")
+        if not address:
+            logger.error(f"No address in session for sid {sid}, cannot init session")
+            return
+
+        personal_room = f"user:{address}"
+        await self.sio.enter_room(sid, personal_room)
+        logger.info(f"Client {address} joined personal room {personal_room}")
+        await self.sio.emit("session_initialized", room=sid)
 
     def get_asgi_app(self, fastapi_app):
         return socketio.ASGIApp(self.sio, other_asgi_app=fastapi_app)
