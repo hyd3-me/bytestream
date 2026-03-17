@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 30
 
+    test_database_url: Optional[str] = Field(None, env="TEST_DATABASE_URL")
+
     environment: str = "development"
     log_level: str = "INFO"
     log_file: Optional[str] = None
