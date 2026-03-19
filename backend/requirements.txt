@@ -42,8 +42,10 @@ MarkupSafe==3.0.3
 multidict==6.7.1
 packaging==26.0
 parsimonious==0.10.0
+pgsql-test==0.2.0
 pluggy==1.6.0
 propcache==0.4.1
+psycopg2-binary==2.9.11
 pyasn1==0.6.2
 pycparser==3.0
 pycryptodome==3.23.0
