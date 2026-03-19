@@ -1,4 +1,5 @@
 import pytest
+from pathlib import Path
 from urllib.parse import urlparse
 from pgsql_test import get_connections
 from app.core.config import get_settings
@@ -6,8 +7,8 @@ from app.core.config import get_settings
 settings = get_settings()
 
 
-@pytest.fixture
-def db():
+@pytest.fixture(scope="session")
+def db_connection():
     dsn = settings.test_database_url
     parsed = urlparse(dsn)
     pg_config = {
@@ -16,25 +17,20 @@ def db():
         "user": parsed.username,
         "password": parsed.password,
     }
-
     conn = get_connections(pg_config)
-    db_client = conn.db
-
-    db_client.execute(
-        """
-        CREATE TABLE rooms (
-            id TEXT PRIMARY KEY,
-            user1 TEXT NOT NULL,
-            user2 TEXT NOT NULL
-        )
-    """
-    )
-
-    db_client.before_each()
-    yield db_client
-    db_client.after_each()
-
+    yield conn
     conn.teardown()
+
+
+@pytest.fixture
+def db(db_connection):
+    schema_path = Path(__file__).parent.parent / "fixtures" / "schema.sql"
+    with open(schema_path) as f:
+        schema_sql = f.read()
+    db_connection.db.execute(schema_sql)
+    db_connection.db.before_each()
+    yield db_connection.db
+    db_connection.db.after_each()
 
 
 def test_create_dm_room(db):
