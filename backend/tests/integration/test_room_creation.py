@@ -3,6 +3,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 from pgsql_test import get_connections
 from app.core.config import get_settings
+from app.room import crud
 
 settings = get_settings()
 
@@ -34,16 +35,14 @@ def db(db_connection):
 
 
 def test_create_dm_room(db):
-    room_id = "dm:0xaaa:0xbbb"
     user_a = "0xaaa"
     user_b = "0xbbb"
+    sorted_users = sorted([user_a, user_b])
+    room_id = f"dm:{sorted_users[0]}:{sorted_users[1]}"
 
-    db.execute(
-        "INSERT INTO rooms (id, user1, user2) VALUES (%s, %s, %s)",
-        (room_id, user_a, user_b),
-    )
+    crud.create_room(db, room_id, user_a, user_b)
 
-    result = db.one("SELECT * FROM rooms WHERE id = %s", (room_id,))
-    assert result is not None
-    assert result["user1"] == user_a
-    assert result["user2"] == user_b
+    room = crud.get_room(db, room_id)
+    assert room is not None
+    assert room["user1"] == user_a
+    assert room["user2"] == user_b
