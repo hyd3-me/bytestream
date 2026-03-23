@@ -35,13 +35,13 @@ def db(db_connection):
 
 
 @pytest.mark.asyncio
-async def test_create_dm_room():
+async def test_create_dm_room(async_db):
     user_a = "0xaaa"
     user_b = "0xbbb"
     room_id = utils.get_dm_room_id(user_a, user_b)
 
-    crud.create_room(None, room_id, user_a, user_b)
-    room = crud.get_room(None, room_id)
+    crud.create_room(async_db, room_id, user_a, user_b)
+    room = crud.get_room(async_db, room_id)
 
     assert room is not None
     assert room["user1"] == user_a

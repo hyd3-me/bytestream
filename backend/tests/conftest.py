@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 from dotenv import load_dotenv, dotenv_values
 from web3 import Web3
+import asyncpg
 
 
 # Load environment variables from .env file located in the project root
@@ -25,6 +26,9 @@ from httpx import AsyncClient, ASGITransport
 from main import fastapi_app
 import redis.asyncio as redis
 from app.core.redis import get_redis
+from app.core.config import get_settings
+
+settings = get_settings()
 
 
 @pytest_asyncio.fixture
@@ -62,3 +66,18 @@ def test_account():
     w3 = Web3()
     account = w3.eth.account.from_key(private_key)
     return account
+
+
+@pytest.fixture
+async def async_db():
+    dsn = settings.test_database_url
+    conn = await asyncpg.connect(dsn)
+
+    schema_path = Path(__file__).parent / "fixtures" / "schema.sql"
+    with open(schema_path) as f:
+        schema_sql = f.read()
+    await conn.execute(schema_sql)
+
+    async with conn.transaction():
+        yield conn
+    await conn.close()
