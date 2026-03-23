@@ -5,6 +5,8 @@ from dotenv import load_dotenv, dotenv_values
 from web3 import Web3
 import asyncpg
 
+import pytest_asyncio
+
 
 # Load environment variables from .env file located in the project root
 project_root = Path(__file__).parent.parent.parent  # source directory
@@ -68,7 +70,7 @@ def test_account():
     return account
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def async_db():
     dsn = settings.test_database_url
     conn = await asyncpg.connect(dsn)

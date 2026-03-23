@@ -2,16 +2,17 @@ from typing import Optional
 from . import utils
 
 
-def create_room(db, room_id: str, user1: str, user2: str) -> None:
-    db.execute(
-        "INSERT INTO rooms (id, user1, user2) VALUES (%s, %s, %s)",
-        (room_id, user1, user2),
+async def create_room(conn, room_id: str, user1: str, user2: str) -> None:
+    await conn.execute(
+        "INSERT INTO rooms (id, user1, user2) VALUES ($1, $2, $3)",
+        room_id,
+        user1,
+        user2,
     )
 
 
-def get_room(db, room_id: str) -> Optional[dict]:
-    result = db.one_or_none("SELECT * FROM rooms WHERE id = %s", (room_id,))
-    return result
+async def get_room(conn, room_id: str) -> Optional[dict]:
+    return await conn.fetchrow("SELECT * FROM rooms WHERE id = $1", room_id)
 
 
 def room_exists(db, user1: str, user2: str) -> bool:
