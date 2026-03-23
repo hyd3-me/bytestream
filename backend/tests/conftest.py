@@ -70,16 +70,19 @@ def test_account():
     return account
 
 
-@pytest_asyncio.fixture
-async def async_db():
-    dsn = settings.test_database_url
-    conn = await asyncpg.connect(dsn)
-
+@pytest_asyncio.fixture(scope="session")
+async def setup_db():
+    conn = await asyncpg.connect(settings.test_database_url)
     schema_path = Path(__file__).parent / "fixtures" / "schema.sql"
     with open(schema_path) as f:
         schema_sql = f.read()
     await conn.execute(schema_sql)
+    await conn.close()
 
+
+@pytest_asyncio.fixture
+async def async_db(setup_db):
+    conn = await asyncpg.connect(settings.test_database_url)
     async with conn.transaction():
         yield conn
     await conn.close()
