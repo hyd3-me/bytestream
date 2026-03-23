@@ -4,7 +4,6 @@ from pathlib import Path
 from dotenv import load_dotenv, dotenv_values
 from web3 import Web3
 import asyncpg
-
 import pytest_asyncio
 
 
@@ -29,6 +28,7 @@ from main import fastapi_app
 import redis.asyncio as redis
 from app.core.redis import get_redis
 from app.core.config import get_settings
+from app.room import crud
 
 settings = get_settings()
 
@@ -83,6 +83,7 @@ async def setup_db():
 @pytest_asyncio.fixture
 async def async_db(setup_db):
     conn = await asyncpg.connect(settings.test_database_url)
-    async with conn.transaction():
-        yield conn
+    await conn.execute("BEGIN")
+    yield conn
+    await conn.execute("ROLLBACK")
     await conn.close()
