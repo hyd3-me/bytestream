@@ -3,7 +3,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 from pgsql_test import get_connections
 from app.core.config import get_settings
-from app.room import crud
+from app.room import crud, utils
 
 settings = get_settings()
 
@@ -34,15 +34,15 @@ def db(db_connection):
     db_connection.db.after_each()
 
 
-def test_create_dm_room(db):
+@pytest.mark.asyncio
+async def test_create_dm_room():
     user_a = "0xaaa"
     user_b = "0xbbb"
-    sorted_users = sorted([user_a, user_b])
-    room_id = f"dm:{sorted_users[0]}:{sorted_users[1]}"
+    room_id = utils.get_dm_room_id(user_a, user_b)
 
-    crud.create_room(db, room_id, user_a, user_b)
+    crud.create_room(None, room_id, user_a, user_b)
+    room = crud.get_room(None, room_id)
 
-    room = crud.get_room(db, room_id)
     assert room is not None
     assert room["user1"] == user_a
     assert room["user2"] == user_b
