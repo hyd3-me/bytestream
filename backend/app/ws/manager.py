@@ -1,6 +1,7 @@
 import socketio
 from app.core.logging import get_logger
 from app.auth import security
+from app.room import utils
 
 logger = get_logger(__name__)
 
@@ -78,6 +79,9 @@ class SocketIOManager:
         session = await self.sio.get_session(sid)
         address = session.get("address")
         if not address:
+            return
+        target = data.get("target_address")
+        if not target or not utils.is_valid_eth_address(target):
             return
 
 
