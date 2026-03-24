@@ -74,5 +74,8 @@ class SocketIOManager:
     def get_asgi_app(self, fastapi_app):
         return socketio.ASGIApp(self.sio, other_asgi_app=fastapi_app)
 
+    async def handle_create_room_request(self, sid, data):
+        pass
+
 
 ws_manager = SocketIOManager()
