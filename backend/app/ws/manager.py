@@ -75,7 +75,10 @@ class SocketIOManager:
         return socketio.ASGIApp(self.sio, other_asgi_app=fastapi_app)
 
     async def handle_create_room_request(self, sid, data):
-        pass
+        session = await self.sio.get_session(sid)
+        address = session.get("address")
+        if not address:
+            return
 
 
 ws_manager = SocketIOManager()
