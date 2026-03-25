@@ -10,7 +10,7 @@ settings = get_settings()
 
 @pytest.fixture(scope="session")
 def db_connection():
-    dsn = settings.test_database_url
+    dsn = settings.database_url
     parsed = urlparse(dsn)
     pg_config = {
         "host": parsed.hostname,

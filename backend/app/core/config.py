@@ -10,12 +10,11 @@ class Settings(BaseSettings):
     redis_key_prefix: str = "bytestream:"
     nonce_ttl_seconds: int = 300
 
-    # JWT settings
     jwt_secret_key: str = Field(...)
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 30
 
-    test_database_url: Optional[str] = Field(None)
+    database_url: Optional[str] = Field(None)
 
     environment: str = "development"
     log_level: str = "INFO"

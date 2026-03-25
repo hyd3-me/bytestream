@@ -2,6 +2,9 @@ import socketio
 from app.core.logging import get_logger
 from app.auth import security
 from app.room import utils
+import asyncpg
+from app.room import crud, utils
+from app.core.config import get_settings
 
 logger = get_logger(__name__)
 
@@ -83,6 +86,17 @@ class SocketIOManager:
         target = data.get("target_address")
         if not target or not utils.is_valid_eth_address(target):
             return
+
+        settings = get_settings()
+        conn = await asyncpg.connect(settings.database_url)
+        try:
+            if await crud.room_exists(conn, address, target):
+                room_id = utils.get_dm_room_id(address, target)
+                await self.sio.enter_room(sid, room_id)
+                await self.sio.emit("room_ready", {"room_id": room_id}, room=sid)
+                return
+        finally:
+            await conn.close()
 
 
 ws_manager = SocketIOManager()

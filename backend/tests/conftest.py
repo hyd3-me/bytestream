@@ -28,7 +28,6 @@ from main import fastapi_app
 import redis.asyncio as redis
 from app.core.redis import get_redis
 from app.core.config import get_settings
-from app.room import crud
 
 settings = get_settings()
 
@@ -72,7 +71,7 @@ def test_account():
 
 @pytest_asyncio.fixture(scope="session")
 async def setup_db():
-    conn = await asyncpg.connect(settings.test_database_url)
+    conn = await asyncpg.connect(settings.database_url)
     schema_path = Path(__file__).parent / "fixtures" / "schema.sql"
     with open(schema_path) as f:
         schema_sql = f.read()
@@ -82,7 +81,7 @@ async def setup_db():
 
 @pytest_asyncio.fixture
 async def async_db(setup_db):
-    conn = await asyncpg.connect(settings.test_database_url)
+    conn = await asyncpg.connect(settings.database_url)
     await conn.execute("BEGIN")
     yield conn
     await conn.execute("ROLLBACK")

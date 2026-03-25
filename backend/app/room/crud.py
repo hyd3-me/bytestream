@@ -15,9 +15,9 @@ async def get_room(conn, room_id: str) -> Optional[dict]:
     return await conn.fetchrow("SELECT * FROM rooms WHERE id = $1", room_id)
 
 
-def room_exists(db, user1: str, user2: str) -> bool:
+async def room_exists(db, user1: str, user2: str) -> bool:
     room_id = utils.get_dm_room_id(user1, user2)
-    return get_room(db, room_id) is not None
+    return await get_room(db, room_id) is not None
 
 
 async def truncate_rooms(conn):

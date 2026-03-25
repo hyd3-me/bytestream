@@ -7,7 +7,7 @@ settings = get_settings()
 
 @pytest.mark.asyncio
 async def test_database_connection():
-    dsn = settings.test_database_url
+    dsn = settings.database_url
     if not dsn:
         pytest.fail("TEST_DATABASE_URL not set in environment or .env")
 
