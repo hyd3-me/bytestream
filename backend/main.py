@@ -4,17 +4,22 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from app.auth.router import router as auth_router
 from app.core.redis import get_redis_pool
 from app.core.config import get_settings
 from app.core.logging import setup_logging, get_logger
+from app.core.database import DatabaseManager
 from app.ws import manager as ws_manager
+from app.core.dependencies import get_db_conn
+import asyncpg
 
 
 settings = get_settings()
 setup_logging(settings)
 logger = get_logger(__name__)
+
+db_manager = DatabaseManager()
 
 
 @asynccontextmanager
@@ -27,9 +32,19 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Redis connection failed: {e}")
         raise RuntimeError("Cannot connect to Redis") from e
+
+    try:
+        await db_manager.initialize()
+    except Exception as e:
+        logger.error(f"Database connection failed: {e}")
+        raise RuntimeError("Cannot connect to database") from e
+
+    app.state.db_manager = db_manager
+
     yield
     logger.info("Shutting down...")
     await redis.close()
+    await db_manager.close()
 
 
 fastapi_app = FastAPI(title="Bytestream Messenger API", lifespan=lifespan)
@@ -39,6 +54,12 @@ fastapi_app.include_router(auth_router)
 @fastapi_app.get("/health")
 async def health_check():
     logger.debug("Health check called")
+    return {"status": "ok"}
+
+
+@fastapi_app.get("/db-health")
+async def db_health(conn: asyncpg.Connection = Depends(get_db_conn)):
+    await conn.fetchval("SELECT 1")
     return {"status": "ok"}
 
 

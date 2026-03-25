@@ -24,7 +24,8 @@ os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key-for-pytest-only")
 
 import pytest, pytest_asyncio
 from httpx import AsyncClient, ASGITransport
-from main import fastapi_app
+from asgi_lifespan import LifespanManager
+from main import fastapi_app, app
 import redis.asyncio as redis
 from app.core.redis import get_redis
 from app.core.config import get_settings
@@ -34,11 +35,11 @@ settings = get_settings()
 
 @pytest_asyncio.fixture
 async def client():
-    """HTTP client for testing endpoints."""
-    async with AsyncClient(
-        transport=ASGITransport(app=fastapi_app), base_url="http://test"
-    ) as client:
-        yield client
+    async with LifespanManager(app) as manager:
+        async with AsyncClient(
+            transport=ASGITransport(app=manager.app), base_url="http://test"
+        ) as client:
+            yield client
 
 
 @pytest_asyncio.fixture
