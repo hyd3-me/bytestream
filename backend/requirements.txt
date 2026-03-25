@@ -5,6 +5,7 @@ alembic==1.18.4
 annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.12.1
+asgi-lifespan==2.1.0
 asyncpg==0.31.0
 attrs==25.4.0
 bidict==0.23.1
@@ -69,6 +70,7 @@ rlp==4.1.0
 rsa==4.9.1
 simple-websocket==1.1.0
 six==1.17.0
+sniffio==1.3.1
 SQLAlchemy==2.0.46
 starlette==0.52.1
 toolz==1.1.0
