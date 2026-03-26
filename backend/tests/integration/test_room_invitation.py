@@ -1,4 +1,5 @@
 import pytest
+import json
 from app.ws import manager
 from app.room import utils
 
@@ -111,3 +112,40 @@ async def test_handle_create_room_request_joins_existing_room(mocker):
     mock_room_exists.assert_awaited_once()
     mock_enter_room.assert_awaited_once_with(sid, room_id)
     mock_emit.assert_awaited_once_with("room_ready", {"room_id": room_id}, room=sid)
+
+
+@pytest.mark.asyncio
+async def test_handle_create_room_request_sends_invitation_when_room_does_not_exist(
+    mocker,
+):
+    sid = "test_sid"
+    address_a = "0xaaa"
+    address_b = "0xbbb"
+    data = {"target_address": address_b}
+
+    mock_get_session = mocker.patch.object(
+        manager.ws_manager.sio, "get_session", return_value={"address": address_a}
+    )
+    mock_room_exists = mocker.patch("app.room.crud.room_exists", return_value=False)
+    mock_setex = mocker.patch("redis.asyncio.Redis.setex", return_value=None)
+    mock_emit = mocker.patch.object(manager.ws_manager.sio, "emit")
+    mock_is_valid = mocker.patch(
+        "app.room.utils.is_valid_eth_address", return_value=True
+    )
+
+    await manager.ws_manager.handle_create_room_request(sid, data)
+
+    mock_room_exists.assert_awaited_once()
+    assert mock_setex.call_count == 1
+    key = mock_setex.call_args[0][0]
+    ttl = mock_setex.call_args[0][1]
+    value = json.loads(mock_setex.call_args[0][2])
+    assert key.startswith("room_request:")
+    assert ttl == 1800
+    assert value == {"from": address_a, "to": address_b}
+    personal_room = f"user:{address_b}"
+    mock_emit.assert_awaited_once_with(
+        "room_invitation",
+        {"from": address_a, "request_id": key.split(":")[1]},
+        room=personal_room,
+    )
