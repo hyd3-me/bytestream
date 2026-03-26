@@ -1,10 +1,10 @@
 import socketio
+import secrets
+from app.core.database import db_manager
+from app.core.redis import get_redis_pool
 from app.core.logging import get_logger
 from app.auth import security
-from app.room import utils
-import asyncpg
-from app.room import crud, utils
-from app.core.config import get_settings
+from app.room import crud, utils, redis_utils
 
 logger = get_logger(__name__)
 
@@ -87,16 +87,23 @@ class SocketIOManager:
         if not target or not utils.is_valid_eth_address(target):
             return
 
-        settings = get_settings()
-        conn = await asyncpg.connect(settings.database_url)
-        try:
+        async with db_manager.pool.acquire() as conn:
             if await crud.room_exists(conn, address, target):
                 room_id = utils.get_dm_room_id(address, target)
                 await self.sio.enter_room(sid, room_id)
                 await self.sio.emit("room_ready", {"room_id": room_id}, room=sid)
                 return
-        finally:
-            await conn.close()
+
+        request_id = secrets.token_urlsafe(16)
+        redis = get_redis_pool()
+        await redis_utils.save_room_request(redis, request_id, address, target)
+
+        personal_room = f"user:{target}"
+        await self.sio.emit(
+            "room_invitation",
+            {"from": address, "request_id": request_id},
+            room=personal_room,
+        )
 
 
 ws_manager = SocketIOManager()
