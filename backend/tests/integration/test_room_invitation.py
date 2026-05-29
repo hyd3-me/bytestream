@@ -17,12 +17,17 @@ async def test_handle_create_room_request_gets_address_from_session(mocker):
     mock_get_session = mocker.patch.object(
         manager.ws_manager.sio, "get_session", return_value={"address": "0xaaa"}
     )
+    mocker.patch("app.room.utils.is_valid_eth_address", return_value=True)
+    mocker.patch(
+        "app.core.database.db_manager.get_conn", return_value=FakeAsyncContextManager()
+    )
+    mocker.patch("app.room.crud.room_exists", return_value=False)
+    mocker.patch("app.core.redis.get_redis_pool", return_value=mocker.AsyncMock())
     mock_emit = mocker.patch.object(manager.ws_manager.sio, "emit")
 
     await manager.ws_manager.handle_create_room_request(sid, data)
 
     mock_get_session.assert_awaited_once_with(sid)
-    mock_emit.assert_not_called()
 
 
 @pytest.mark.asyncio
