@@ -32,6 +32,10 @@ class SocketIOManager:
         async def init_session(sid):
             await self.handle_init_session(sid)
 
+        @self.sio.event
+        async def create_room_request(sid, data):
+            await self.handle_create_room_request(sid, data)
+
     async def handle_connect(self, sid, environ):
         """Public method for testing and internal use."""
         auth_header = environ.get("HTTP_AUTHORIZATION")
