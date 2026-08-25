@@ -98,6 +98,9 @@ async def test_handle_create_room_request_joins_existing_room(mocker):
         manager.ws_manager.sio, "get_session", return_value={"address": address_a}
     )
     mock_room_exists = mocker.patch("app.room.crud.room_exists", return_value=True)
+    mock_get_conn = mocker.patch(
+        "app.core.database.db_manager.get_conn", return_value=FakeAsyncContextManager()
+    )
     mock_enter_room = mocker.patch.object(manager.ws_manager.sio, "enter_room")
     mock_emit = mocker.patch.object(manager.ws_manager.sio, "emit")
     mock_is_valid = mocker.patch(
@@ -140,7 +143,7 @@ async def test_handle_create_room_request_sends_invitation_when_room_does_not_ex
         "app.core.database.db_manager.get_conn", return_value=FakeAsyncContextManager()
     )
     mock_get_redis_pool = mocker.patch(
-        "app.core.redis.get_redis_pool", return_value=mocker.AsyncMock()
+        "app.ws.manager.get_redis_pool", return_value=mocker.AsyncMock()
     )
 
     await manager.ws_manager.handle_create_room_request(sid, data)
