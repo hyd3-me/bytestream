@@ -1,6 +1,7 @@
 from fastapi import Request
+from app.core.database import db_manager
 
 
 async def get_db_conn(request: Request):
-    async with request.app.state.db_manager.get_conn() as conn:
+    async with db_manager.get_conn() as conn:
         yield conn

@@ -9,17 +9,14 @@ from app.auth.router import router as auth_router
 from app.core.redis import get_redis_pool
 from app.core.config import get_settings
 from app.core.logging import setup_logging, get_logger
-from app.core.database import DatabaseManager
+from app.core.database import db_manager
 from app.ws import manager as ws_manager
 from app.core.dependencies import get_db_conn
 import asyncpg
 
-
 settings = get_settings()
 setup_logging(settings)
 logger = get_logger(__name__)
-
-db_manager = DatabaseManager()
 
 
 @asynccontextmanager
@@ -43,8 +40,8 @@ async def lifespan(app: FastAPI):
 
     yield
     logger.info("Shutting down...")
-    await redis.close()
-    await db_manager.close()
+    await redis.aclose()
+    await app.state.db_manager.close()
 
 
 fastapi_app = FastAPI(title="Bytestream Messenger API", lifespan=lifespan)

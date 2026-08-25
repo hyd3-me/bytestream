@@ -24,9 +24,15 @@ class DatabaseManager:
     async def close(self):
         if self._pool:
             await self._pool.close()
+            self._pool = None
             logger.info("Database pool closed")
 
     @asynccontextmanager
     async def get_conn(self):
+        if self._pool is None:
+            raise RuntimeError("Database pool not initialized")
         async with self._pool.acquire() as conn:
             yield conn
+
+
+db_manager = DatabaseManager()

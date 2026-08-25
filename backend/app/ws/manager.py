@@ -87,7 +87,7 @@ class SocketIOManager:
         if not target or not utils.is_valid_eth_address(target):
             return
 
-        async with db_manager.pool.acquire() as conn:
+        async with db_manager.get_conn() as conn:
             if await crud.room_exists(conn, address, target):
                 room_id = utils.get_dm_room_id(address, target)
                 await self.sio.enter_room(sid, room_id)
