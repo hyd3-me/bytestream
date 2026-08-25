@@ -22,7 +22,7 @@ async def test_handle_create_room_request_gets_address_from_session(mocker):
         "app.core.database.db_manager.get_conn", return_value=FakeAsyncContextManager()
     )
     mocker.patch("app.room.crud.room_exists", return_value=False)
-    mocker.patch("app.core.redis.get_redis_pool", return_value=mocker.AsyncMock())
+    mocker.patch("app.ws.manager.get_redis_pool", return_value=mocker.AsyncMock())
     mock_emit = mocker.patch.object(manager.ws_manager.sio, "emit")
 
     await manager.ws_manager.handle_create_room_request(sid, data)
