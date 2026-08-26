@@ -109,5 +109,8 @@ class SocketIOManager:
             room=personal_room,
         )
 
+    async def handle_respond_to_room_request(self, sid, data):
+        pass
+
 
 ws_manager = SocketIOManager()
