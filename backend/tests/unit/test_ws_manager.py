@@ -24,3 +24,9 @@ async def test_create_room_request_handler_calls_handle(mocker):
 def test_handle_respond_to_room_request_exists():
     assert hasattr(manager.ws_manager, "handle_respond_to_room_request")
     assert callable(manager.ws_manager.handle_respond_to_room_request)
+
+
+def test_respond_to_room_request_handler_is_registered():
+    handlers = manager.ws_manager.sio.handlers["/"]
+    assert "respond_to_room_request" in handlers
+    assert callable(handlers["respond_to_room_request"])
