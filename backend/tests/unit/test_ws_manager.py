@@ -30,3 +30,17 @@ def test_respond_to_room_request_handler_is_registered():
     handlers = manager.ws_manager.sio.handlers["/"]
     assert "respond_to_room_request" in handlers
     assert callable(handlers["respond_to_room_request"])
+
+
+@pytest.mark.asyncio
+async def test_respond_to_room_request_handler_calls_handle(mocker):
+    handler = manager.ws_manager.sio.handlers["/"]["respond_to_room_request"]
+    mock_handle = mocker.patch.object(
+        manager.ws_manager, "handle_respond_to_room_request"
+    )
+
+    sid = "test_sid"
+    data = {"request_id": "abc", "action": "accept"}
+    await handler(sid, data)
+
+    mock_handle.assert_awaited_once_with(sid, data)
