@@ -5,7 +5,7 @@ from dotenv import load_dotenv, dotenv_values
 from web3 import Web3
 import asyncpg
 import pytest_asyncio
-
+from eth_account.messages import encode_defunct
 
 # Load environment variables from .env file located in the project root
 project_root = Path(__file__).parent.parent.parent  # source directory
@@ -40,6 +40,24 @@ async def client():
             transport=ASGITransport(app=manager.app), base_url="http://test"
         ) as client:
             yield client
+
+
+@pytest_asyncio.fixture
+async def auth_token(client, test_account):
+    address = test_account.address
+
+    response = await client.get(f"/auth/nonce/{address}")
+    assert response.status_code == 200
+    nonce = response.json()["nonce"]
+
+    message = encode_defunct(text=nonce)
+    signature = test_account.sign_message(message).signature.hex()
+
+    payload = {"address": address, "signature": signature}
+    response = await client.post("/auth/verify", json=payload)
+    assert response.status_code == 200
+
+    return response.json()["access_token"]
 
 
 @pytest_asyncio.fixture
