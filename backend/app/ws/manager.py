@@ -114,7 +114,28 @@ class SocketIOManager:
         )
 
     async def handle_respond_to_room_request(self, sid, data):
-        pass
+        session = await self.sio.get_session(sid)
+        address = session.get("address")
+        if not address:
+            return
+
+        request_id = data.get("request_id")
+        action = data.get("action")
+        if not request_id or not action:
+            return
+
+        redis = get_redis_pool()
+        request_info = await redis_utils.get_room_request(redis, request_id)
+        if not request_info:
+            return
+
+        from_address = request_info["from"]
+
+        if action == "decline":
+            await redis_utils.delete_room_request(redis, request_id)
+            personal_room = f"user:{from_address}"
+            await self.sio.emit("room_declined", room=personal_room)
+            return
 
 
 ws_manager = SocketIOManager()
