@@ -40,6 +40,10 @@ class SocketIOManager:
         async def respond_to_room_request(sid, data):
             await self.handle_respond_to_room_request(sid, data)
 
+        @self.sio.event
+        async def join_room(sid, data):
+            await self.handle_join_room(sid, data)
+
     async def handle_connect(self, sid, environ):
         """Public method for testing and internal use."""
         auth_header = environ.get("HTTP_AUTHORIZATION")
