@@ -251,3 +251,29 @@ async def test_handle_join_room_room_not_found_does_nothing(mocker):
     mock_get_room.assert_awaited_once()
     mock_enter_room.assert_not_called()
     mock_emit.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_handle_join_room_user_not_participant_does_nothing(mocker):
+    sid = "test_sid"
+    address = "0xccc"
+    room_id = "dm:0xaaa:0xbbb"
+    data = {"room_id": room_id}
+    room_record = {"id": room_id, "user1": "0xaaa", "user2": "0xbbb"}
+
+    mocker.patch.object(
+        manager.ws_manager.sio, "get_session", return_value={"address": address}
+    )
+    mocker.patch(
+        "app.core.database.db_manager.get_conn",
+        return_value=FakeAsyncContextManager(),
+    )
+    mock_get_room = mocker.patch("app.room.crud.get_room", return_value=room_record)
+    mock_enter_room = mocker.patch.object(manager.ws_manager.sio, "enter_room")
+    mock_emit = mocker.patch.object(manager.ws_manager.sio, "emit")
+
+    await manager.ws_manager.handle_join_room(sid, data)
+
+    mock_get_room.assert_awaited_once()
+    mock_enter_room.assert_not_called()
+    mock_emit.assert_not_called()
