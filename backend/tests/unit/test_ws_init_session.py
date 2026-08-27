@@ -1,5 +1,6 @@
 import pytest
 from app.ws import manager
+from app.room import redis_utils
 
 
 @pytest.mark.asyncio
@@ -15,7 +16,9 @@ async def test_init_session_with_address_joins_personal_room_and_confirms(mocker
     await manager.ws_manager.handle_init_session(sid)
 
     mock_get_session.assert_awaited_once_with(sid)
-    mock_enter_room.assert_awaited_once_with(sid, f"user:{address}")
+    mock_enter_room.assert_awaited_once_with(
+        sid, redis_utils.get_personal_room_key(address)
+    )
     mock_emit.assert_awaited_once_with("session_initialized", room=sid)
 
 

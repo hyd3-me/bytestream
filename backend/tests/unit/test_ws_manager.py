@@ -1,6 +1,7 @@
 import pytest
 
 from app.ws import manager
+from app.room import redis_utils
 
 
 def test_create_room_request_handler_is_registered():
@@ -71,4 +72,4 @@ async def test_handle_respond_to_room_request_decline_notifies_and_deletes(mocke
     mock_emit.assert_awaited_once()
     call_args = mock_emit.call_args
     assert call_args.args[0] == "room_declined"
-    assert call_args.kwargs["room"] == "user:0xaaa"
+    assert call_args.kwargs["room"] == redis_utils.get_personal_room_key("0xaaa")

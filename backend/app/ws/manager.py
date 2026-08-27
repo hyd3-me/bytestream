@@ -77,8 +77,7 @@ class SocketIOManager:
         if not address:
             logger.error(f"No address in session for sid {sid}, cannot init session")
             return
-
-        personal_room = f"user:{address}"
+        personal_room = redis_utils.get_personal_room_key(address)
         await self.sio.enter_room(sid, personal_room)
         logger.info(f"Client {address} joined personal room {personal_room}")
         await self.sio.emit("session_initialized", room=sid)
@@ -106,7 +105,7 @@ class SocketIOManager:
         redis = get_redis_pool()
         await redis_utils.save_room_request(redis, request_id, address, target)
 
-        personal_room = f"user:{target}"
+        personal_room = redis_utils.get_personal_room_key(target)
         await self.sio.emit(
             "room_invitation",
             {"from": address, "request_id": request_id},
@@ -133,7 +132,7 @@ class SocketIOManager:
 
         if action == "decline":
             await redis_utils.delete_room_request(redis, request_id)
-            personal_room = f"user:{from_address}"
+            personal_room = redis_utils.get_personal_room_key(from_address)
             await self.sio.emit("room_declined", room=personal_room)
             return
 
