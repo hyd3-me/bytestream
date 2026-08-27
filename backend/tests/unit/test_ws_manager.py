@@ -149,26 +149,14 @@ async def test_accept_creates_room_with_correct_id_and_addresses(accept_setup, m
 
 
 @pytest.mark.asyncio
-async def test_accept_enters_room_for_current_user(accept_setup):
-    mock_enter = accept_setup["mock_enter_room"]
-    room_id = utils.get_dm_room_id(accept_setup["address_a"], accept_setup["address_b"])
-
-    mock_enter.assert_awaited_once_with(accept_setup["sid"], room_id)
-
-
-@pytest.mark.asyncio
-async def test_accept_emits_room_ready_to_requester(accept_setup):
+async def test_accept_emits_room_ready_to_both_users(accept_setup):
     mock_emit = accept_setup["mock_emit"]
-    personal_room = redis_utils.get_personal_room_key(accept_setup["address_a"])
+    room_id = utils.get_dm_room_id(accept_setup["address_a"], accept_setup["address_b"])
+    personal_room_a = redis_utils.get_personal_room_key(accept_setup["address_a"])
 
-    mock_emit.assert_awaited_once_with(
-        "room_ready",
-        {
-            "room_id": utils.get_dm_room_id(
-                accept_setup["address_a"], accept_setup["address_b"]
-            )
-        },
-        room=personal_room,
+    mock_emit.assert_any_await("room_ready", {"room_id": room_id}, room=personal_room_a)
+    mock_emit.assert_any_await(
+        "room_ready", {"room_id": room_id}, room=accept_setup["sid"]
     )
 
 
