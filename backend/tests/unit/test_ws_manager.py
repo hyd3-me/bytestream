@@ -2,7 +2,7 @@ import pytest
 import pytest_asyncio
 
 from app.ws import manager
-from app.room import redis_utils
+from app.room import utils, redis_utils
 
 
 @pytest_asyncio.fixture
@@ -103,3 +103,76 @@ async def test_decline_emits_room_declined_to_requester(decline_setup):
     call_args = mock_emit.call_args
     assert call_args.args[0] == "room_declined"
     assert call_args.kwargs["room"] == redis_utils.get_personal_room_key("0xaaa")
+
+
+@pytest_asyncio.fixture
+async def accept_setup(mocker):
+    sid = "test_sid"
+    data = {"request_id": "req123", "action": "accept"}
+    address_a = "0xaaa"
+    address_b = "0xbbb"
+    request_info = {"from": address_a, "to": address_b}
+
+    mocker.patch.object(
+        manager.ws_manager.sio, "get_session", return_value={"address": address_b}
+    )
+    mock_get_room_request = mocker.patch(
+        "app.room.redis_utils.get_room_request", return_value=request_info
+    )
+    mock_delete_room_request = mocker.patch("app.room.redis_utils.delete_room_request")
+    mock_emit = mocker.patch.object(manager.ws_manager.sio, "emit")
+    mock_enter_room = mocker.patch.object(manager.ws_manager.sio, "enter_room")
+    mock_create_room = mocker.patch("app.room.crud.create_room")
+
+    await manager.ws_manager.handle_respond_to_room_request(sid, data)
+
+    return {
+        "mock_get_room_request": mock_get_room_request,
+        "mock_delete_room_request": mock_delete_room_request,
+        "mock_emit": mock_emit,
+        "mock_enter_room": mock_enter_room,
+        "mock_create_room": mock_create_room,
+        "address_a": address_a,
+        "address_b": address_b,
+        "sid": sid,
+    }
+
+
+@pytest.mark.asyncio
+async def test_accept_creates_room_with_correct_id_and_addresses(accept_setup, mocker):
+    mock_create = accept_setup["mock_create_room"]
+    address_a = accept_setup["address_a"]
+    address_b = accept_setup["address_b"]
+    room_id = utils.get_dm_room_id(address_a, address_b)
+
+    mock_create.assert_awaited_once_with(mocker.ANY, room_id, address_a, address_b)
+
+
+@pytest.mark.asyncio
+async def test_accept_enters_room_for_current_user(accept_setup):
+    mock_enter = accept_setup["mock_enter_room"]
+    room_id = utils.get_dm_room_id(accept_setup["address_a"], accept_setup["address_b"])
+
+    mock_enter.assert_awaited_once_with(accept_setup["sid"], room_id)
+
+
+@pytest.mark.asyncio
+async def test_accept_emits_room_ready_to_requester(accept_setup):
+    mock_emit = accept_setup["mock_emit"]
+    personal_room = redis_utils.get_personal_room_key(accept_setup["address_a"])
+
+    mock_emit.assert_awaited_once_with(
+        "room_ready",
+        {
+            "room_id": utils.get_dm_room_id(
+                accept_setup["address_a"], accept_setup["address_b"]
+            )
+        },
+        room=personal_room,
+    )
+
+
+@pytest.mark.asyncio
+async def test_accept_deletes_room_request(accept_setup, mocker):
+    mock_delete = accept_setup["mock_delete_room_request"]
+    mock_delete.assert_awaited_once_with(mocker.ANY, "req123")
