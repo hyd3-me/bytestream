@@ -174,3 +174,9 @@ async def test_accept_deletes_room_request(accept_setup, mocker):
 def test_handle_join_room_exists():
     assert hasattr(manager.ws_manager, "handle_join_room")
     assert callable(manager.ws_manager.handle_join_room)
+
+
+def test_join_room_handler_is_registered():
+    handlers = manager.ws_manager.sio.handlers["/"]
+    assert "join_room" in handlers
+    assert callable(handlers["join_room"])
