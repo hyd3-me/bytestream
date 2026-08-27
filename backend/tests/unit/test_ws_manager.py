@@ -180,3 +180,15 @@ def test_join_room_handler_is_registered():
     handlers = manager.ws_manager.sio.handlers["/"]
     assert "join_room" in handlers
     assert callable(handlers["join_room"])
+
+
+@pytest.mark.asyncio
+async def test_join_room_handler_calls_handle(mocker):
+    handler = manager.ws_manager.sio.handlers["/"]["join_room"]
+    mock_handle = mocker.patch.object(manager.ws_manager, "handle_join_room")
+
+    sid = "test_sid"
+    data = {"room_id": "dm:0xaaa:0xbbb"}
+    await handler(sid, data)
+
+    mock_handle.assert_awaited_once_with(sid, data)
