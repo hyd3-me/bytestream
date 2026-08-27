@@ -136,5 +136,26 @@ class SocketIOManager:
             await self.sio.emit("room_declined", room=personal_room)
             return
 
+        if action == "accept":
+            to_address = request_info["to"]
+            room_id = utils.get_dm_room_id(from_address, to_address)
+
+            async with db_manager.get_conn() as conn:
+                await crud.create_room(conn, room_id, from_address, to_address)
+
+            await redis_utils.delete_room_request(redis, request_id)
+
+            await self.sio.emit(
+                "room_ready",
+                {"room_id": room_id},
+                room=redis_utils.get_personal_room_key(from_address),
+            )
+            await self.sio.emit(
+                "room_ready",
+                {"room_id": room_id},
+                room=sid,
+            )
+            return
+
 
 ws_manager = SocketIOManager()

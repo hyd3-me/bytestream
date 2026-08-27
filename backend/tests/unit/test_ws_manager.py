@@ -123,6 +123,9 @@ async def accept_setup(mocker):
     mock_emit = mocker.patch.object(manager.ws_manager.sio, "emit")
     mock_enter_room = mocker.patch.object(manager.ws_manager.sio, "enter_room")
     mock_create_room = mocker.patch("app.room.crud.create_room")
+    mock_get_conn = mocker.patch(
+        "app.core.database.db_manager.get_conn", return_value=mocker.AsyncMock()
+    )
 
     await manager.ws_manager.handle_respond_to_room_request(sid, data)
 
