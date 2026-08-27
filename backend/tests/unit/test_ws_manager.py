@@ -169,3 +169,8 @@ async def test_accept_emits_room_ready_to_both_users(accept_setup):
 async def test_accept_deletes_room_request(accept_setup, mocker):
     mock_delete = accept_setup["mock_delete_room_request"]
     mock_delete.assert_awaited_once_with(mocker.ANY, "req123")
+
+
+def test_handle_join_room_exists():
+    assert hasattr(manager.ws_manager, "handle_join_room")
+    assert callable(manager.ws_manager.handle_join_room)
