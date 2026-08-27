@@ -157,5 +157,8 @@ class SocketIOManager:
             )
             return
 
+    async def handle_join_room(self, sid, data):
+        pass
+
 
 ws_manager = SocketIOManager()
