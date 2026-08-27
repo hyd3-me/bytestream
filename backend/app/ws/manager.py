@@ -162,7 +162,25 @@ class SocketIOManager:
             return
 
     async def handle_join_room(self, sid, data):
-        pass
+        session = await self.sio.get_session(sid)
+        address = session.get("address")
+        if not address:
+            return
+
+        room_id = data.get("room_id")
+        if not room_id:
+            return
+
+        async with db_manager.get_conn() as conn:
+            room = await crud.get_room(conn, room_id)
+            if not room:
+                return
+
+            if address not in (room["user1"], room["user2"]):
+                return
+
+        await self.sio.enter_room(sid, room_id)
+        await self.sio.emit("joined_room", {"room_id": room_id}, room=sid)
 
 
 ws_manager = SocketIOManager()
