@@ -159,7 +159,9 @@ async def test_accept_emits_room_ready_to_both_users(accept_setup):
 
     mock_emit.assert_any_await("room_ready", {"room_id": room_id}, room=personal_room_a)
     mock_emit.assert_any_await(
-        "room_ready", {"room_id": room_id}, room=accept_setup["sid"]
+        "room_ready",
+        {"room_id": room_id},
+        room=redis_utils.get_personal_room_key(accept_setup["address_b"]),
     )
 
 

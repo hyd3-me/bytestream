@@ -153,7 +153,7 @@ class SocketIOManager:
             await self.sio.emit(
                 "room_ready",
                 {"room_id": room_id},
-                room=sid,
+                room=redis_utils.get_personal_room_key(address),
             )
             return
 
