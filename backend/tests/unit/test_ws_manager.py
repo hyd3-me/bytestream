@@ -1,7 +1,35 @@
 import pytest
+import pytest_asyncio
 
 from app.ws import manager
 from app.room import redis_utils
+
+
+@pytest_asyncio.fixture
+async def decline_setup(mocker):
+    sid = "test_sid"
+    data = {"request_id": "req123", "action": "decline"}
+    address = "0xbbb"
+    request_info = {"from": "0xaaa", "to": address}
+
+    mocker.patch.object(
+        manager.ws_manager.sio, "get_session", return_value={"address": address}
+    )
+    mock_get_room_request = mocker.patch(
+        "app.room.redis_utils.get_room_request", return_value=request_info
+    )
+    mock_delete_room_request = mocker.patch("app.room.redis_utils.delete_room_request")
+    mock_emit = mocker.patch.object(manager.ws_manager.sio, "emit")
+    mock_create_room = mocker.patch("app.room.crud.create_room")
+
+    await manager.ws_manager.handle_respond_to_room_request(sid, data)
+
+    return {
+        "mock_get_room_request": mock_get_room_request,
+        "mock_delete_room_request": mock_delete_room_request,
+        "mock_emit": mock_emit,
+        "mock_create_room": mock_create_room,
+    }
 
 
 def test_create_room_request_handler_is_registered():
@@ -48,27 +76,29 @@ async def test_respond_to_room_request_handler_calls_handle(mocker):
 
 
 @pytest.mark.asyncio
-async def test_handle_respond_to_room_request_decline_notifies_and_deletes(mocker):
-    sid = "test_sid"
-    data = {"request_id": "req123", "action": "decline"}
-    address = "0xbbb"
-    request_info = {"from": "0xaaa", "to": address}
+async def test_decline_gets_room_request_from_redis(decline_setup):
+    mock_get = decline_setup["mock_get_room_request"]
+    mock_get.assert_awaited_once()
+    call_args = mock_get.call_args
+    assert call_args.args[1] == "req123"
 
-    mocker.patch.object(
-        manager.ws_manager.sio, "get_session", return_value={"address": address}
-    )
-    mock_get_room_request = mocker.patch(
-        "app.room.redis_utils.get_room_request", return_value=request_info
-    )
-    mock_delete_room_request = mocker.patch("app.room.redis_utils.delete_room_request")
-    mock_emit = mocker.patch.object(manager.ws_manager.sio, "emit")
-    mock_create_room = mocker.patch("app.room.crud.create_room")
 
-    await manager.ws_manager.handle_respond_to_room_request(sid, data)
+@pytest.mark.asyncio
+async def test_decline_does_not_create_room(decline_setup):
+    decline_setup["mock_create_room"].assert_not_called()
 
-    mock_get_room_request.assert_awaited_once_with(mocker.ANY, "req123")
-    mock_create_room.assert_not_called()
-    mock_delete_room_request.assert_awaited_once_with(mocker.ANY, "req123")
+
+@pytest.mark.asyncio
+async def test_decline_deletes_room_request(decline_setup):
+    mock_delete = decline_setup["mock_delete_room_request"]
+    mock_delete.assert_awaited_once()
+    call_args = mock_delete.call_args
+    assert call_args.args[1] == "req123"
+
+
+@pytest.mark.asyncio
+async def test_decline_emits_room_declined_to_requester(decline_setup):
+    mock_emit = decline_setup["mock_emit"]
     mock_emit.assert_awaited_once()
     call_args = mock_emit.call_args
     assert call_args.args[0] == "room_declined"
