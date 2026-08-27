@@ -5,6 +5,14 @@ from app.ws import manager
 from app.room import utils, redis_utils
 
 
+class FakeAsyncContextManager:
+    async def __aenter__(self):
+        return None
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+
 @pytest_asyncio.fixture
 async def decline_setup(mocker):
     sid = "test_sid"
@@ -192,3 +200,29 @@ async def test_join_room_handler_calls_handle(mocker):
     await handler(sid, data)
 
     mock_handle.assert_awaited_once_with(sid, data)
+
+
+@pytest.mark.asyncio
+async def test_handle_join_room_success_enters_and_confirms(mocker):
+    sid = "test_sid"
+    address = "0xaaa"
+    room_id = "dm:0xaaa:0xbbb"
+    data = {"room_id": room_id}
+    room_record = {"id": room_id, "user1": "0xaaa", "user2": "0xbbb"}
+
+    mocker.patch.object(
+        manager.ws_manager.sio, "get_session", return_value={"address": address}
+    )
+    mocker.patch(
+        "app.core.database.db_manager.get_conn",
+        return_value=FakeAsyncContextManager(),
+    )
+    mock_get_room = mocker.patch("app.room.crud.get_room", return_value=room_record)
+    mock_enter_room = mocker.patch.object(manager.ws_manager.sio, "enter_room")
+    mock_emit = mocker.patch.object(manager.ws_manager.sio, "emit")
+
+    await manager.ws_manager.handle_join_room(sid, data)
+
+    mock_get_room.assert_awaited_once()
+    mock_enter_room.assert_awaited_once_with(sid, room_id)
+    mock_emit.assert_awaited_once_with("joined_room", {"room_id": room_id}, room=sid)
