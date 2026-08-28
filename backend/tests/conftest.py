@@ -29,6 +29,7 @@ from main import fastapi_app, app
 import redis.asyncio as redis
 from app.core.redis import get_redis
 from app.core.config import get_settings
+from app.auth import security
 
 settings = get_settings()
 
@@ -86,6 +87,23 @@ def test_account():
     w3 = Web3()
     account = w3.eth.account.from_key(private_key)
     return account
+
+
+@pytest.fixture
+def room_users(test_account):
+    w3 = Web3()
+    account_b = w3.eth.account.create()
+
+    address_a = test_account.address
+    address_b = account_b.address
+
+    token_a = security.create_access_token({"sub": address_a})
+    token_b = security.create_access_token({"sub": address_b})
+
+    return {
+        "a": {"address": address_a, "token": token_a},
+        "b": {"address": address_b, "token": token_b},
+    }
 
 
 @pytest_asyncio.fixture(scope="session")
