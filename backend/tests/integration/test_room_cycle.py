@@ -9,16 +9,27 @@ import socketio
 import uvicorn
 
 from main import app
+from app.core.redis import get_redis_pool
+from app.core.database import db_manager
+
+
+def reset_redis_pool():
+    get_redis_pool.cache_clear()
+
+
+async def reset_db_pool():
+    if db_manager._pool is not None:
+        await db_manager.close()
+
+
+async def reset_infrastructure():
+    reset_redis_pool()
+    await reset_db_pool()
 
 
 @pytest_asyncio.fixture
 async def live_server():
-    from app.core.redis import get_redis_pool
-    from app.core.database import db_manager
-
-    get_redis_pool.cache_clear()
-    if db_manager._pool is not None:
-        await db_manager.close()
+    await reset_infrastructure()
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(("127.0.0.1", 0))
