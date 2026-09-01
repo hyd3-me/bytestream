@@ -4,8 +4,11 @@ from pathlib import Path
 from dotenv import load_dotenv, dotenv_values
 from web3 import Web3
 import asyncpg
-import pytest_asyncio
 from eth_account.messages import encode_defunct
+import socket
+import uvicorn
+import socketio
+import asyncio
 
 # Load environment variables from .env file located in the project root
 project_root = Path(__file__).parent.parent.parent  # source directory
@@ -32,6 +35,62 @@ from app.core.config import get_settings
 from app.auth import security
 
 settings = get_settings()
+
+
+def reset_redis_pool():
+    from app.core.redis import get_redis_pool
+
+    get_redis_pool.cache_clear()
+
+
+async def reset_db_pool():
+    from app.core.database import db_manager
+
+    if db_manager._pool is not None:
+        await db_manager.close()
+
+
+async def reset_infrastructure():
+    reset_redis_pool()
+    await reset_db_pool()
+
+
+@pytest_asyncio.fixture
+async def live_server():
+    await reset_infrastructure()
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.bind(("127.0.0.1", 0))
+    port = sock.getsockname()[1]
+    sock.close()
+
+    config = uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning")
+    server = uvicorn.Server(config)
+    task = asyncio.create_task(server.serve())
+    while not server.started:
+        await asyncio.sleep(0.01)
+
+    yield f"http://127.0.0.1:{port}"
+
+    server.should_exit = True
+    await task
+
+
+@pytest_asyncio.fixture
+async def socketio_client_factory(live_server):
+    async def _create(token):
+        sio = socketio.AsyncClient()
+        await asyncio.wait_for(
+            sio.connect(
+                live_server,
+                transports=["websocket"],
+                headers={"Authorization": f"Bearer {token}"},
+            ),
+            timeout=5,
+        )
+        return sio
+
+    yield _create
 
 
 @pytest_asyncio.fixture
