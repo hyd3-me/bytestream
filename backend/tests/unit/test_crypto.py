@@ -60,3 +60,18 @@ def test_derive_ed25519_keypair_deterministic():
 def test_compute_shared_secret_exists():
     assert hasattr(crypto, "compute_shared_secret")
     assert callable(crypto.compute_shared_secret)
+
+
+def test_compute_shared_secret_symmetric():
+    master_key_a = b"\x03" * 32
+    master_key_b = b"\x04" * 32
+
+    alice_priv, alice_pub = crypto.derive_x25519_keypair(master_key_a)
+    bob_priv, bob_pub = crypto.derive_x25519_keypair(master_key_b)
+
+    secret_alice = crypto.compute_shared_secret(alice_priv, bob_pub)
+    secret_bob = crypto.compute_shared_secret(bob_priv, alice_pub)
+
+    assert isinstance(secret_alice, bytes)
+    assert len(secret_alice) == 32
+    assert secret_alice == secret_bob
