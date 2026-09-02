@@ -85,3 +85,14 @@ def test_encrypt_message_exists():
 def test_decrypt_message_exists():
     assert hasattr(crypto, "decrypt_message")
     assert callable(crypto.decrypt_message)
+
+
+def test_encrypt_message_returns_ciphertext():
+    key = b"\x11" * 32
+    plaintext = b"Hello, Bob!"
+    nonce = b"\x22" * 12
+
+    ciphertext = crypto.encrypt_message(key, plaintext, nonce)
+
+    assert isinstance(ciphertext, bytes)
+    assert ciphertext != plaintext
