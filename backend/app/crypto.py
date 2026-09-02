@@ -53,3 +53,7 @@ def encrypt_message(key: bytes, plaintext: bytes, nonce: bytes) -> bytes:
 def decrypt_message(key: bytes, ciphertext: bytes, nonce: bytes) -> bytes:
     aesgcm = AESGCM(key)
     return aesgcm.decrypt(nonce, ciphertext, None)
+
+
+def generate_timestamp() -> int:
+    pass
