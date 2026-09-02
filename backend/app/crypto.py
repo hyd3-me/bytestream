@@ -77,4 +77,8 @@ def compute_content_hash(message_id: bytes, content: bytes) -> bytes:
         raise ValueError("message_id must not be empty")
     if not content:
         raise ValueError("content must not be empty")
+    if not isinstance(message_id, bytes):
+        raise TypeError("message_id must be bytes")
+    if not isinstance(content, bytes):
+        raise TypeError("content must be bytes")
     return hashlib.sha256(message_id + content).digest()
