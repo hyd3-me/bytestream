@@ -2,6 +2,7 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import x25519, ed25519
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.exceptions import InvalidSignature
 import hashlib
 import time
 import secrets
@@ -105,4 +106,8 @@ def sign_payload(private_key, payload: bytes) -> bytes:
 
 
 def verify_payload(public_key, payload: bytes, signature: bytes) -> bool:
-    pass
+    try:
+        public_key.verify(signature, payload)
+        return True
+    except InvalidSignature:
+        return False
