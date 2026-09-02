@@ -107,3 +107,8 @@ def test_decrypt_message_returns_plaintext():
     decrypted = crypto.decrypt_message(key, ciphertext, nonce)
 
     assert decrypted == plaintext
+
+
+def test_generate_timestamp_exists():
+    assert hasattr(crypto, "generate_timestamp")
+    assert callable(crypto.generate_timestamp)
