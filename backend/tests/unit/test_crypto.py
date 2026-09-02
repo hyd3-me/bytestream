@@ -222,3 +222,12 @@ def test_sign_payload_returns_64_bytes_deterministic():
 def test_verify_payload_exists():
     assert hasattr(crypto, "verify_payload")
     assert callable(crypto.verify_payload)
+
+
+def test_verify_payload_accepts_valid_signature():
+    master_key = b"\x06" * 32
+    private_key, public_key = crypto.derive_ed25519_keypair(master_key)
+    payload = b"valid payload"
+    signature = crypto.sign_payload(private_key, payload)
+
+    assert crypto.verify_payload(public_key, payload, signature) is True
