@@ -64,3 +64,7 @@ def generate_timestamp() -> int:
 
 def generate_nonce() -> bytes:
     return secrets.token_bytes(12)
+
+
+def generate_message_id() -> bytes:
+    pass
