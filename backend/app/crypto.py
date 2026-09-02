@@ -82,3 +82,12 @@ def compute_content_hash(message_id: bytes, content: bytes) -> bytes:
     if not isinstance(content, bytes):
         raise TypeError("content must be bytes")
     return hashlib.sha256(message_id + content).digest()
+
+
+def build_sign_payload(
+    sender_address: str,
+    room_id: str,
+    message_id: bytes,
+    content_hash: bytes,
+) -> bytes:
+    pass
