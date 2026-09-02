@@ -217,3 +217,8 @@ def test_sign_payload_returns_64_bytes_deterministic():
     assert isinstance(sig1, bytes)
     assert len(sig1) == 64
     assert sig1 == sig2
+
+
+def test_verify_payload_exists():
+    assert hasattr(crypto, "verify_payload")
+    assert callable(crypto.verify_payload)
