@@ -80,3 +80,8 @@ def test_compute_shared_secret_symmetric():
 def test_encrypt_message_exists():
     assert hasattr(crypto, "encrypt_message")
     assert callable(crypto.encrypt_message)
+
+
+def test_decrypt_message_exists():
+    assert hasattr(crypto, "decrypt_message")
+    assert callable(crypto.decrypt_message)
