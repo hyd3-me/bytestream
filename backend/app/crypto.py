@@ -12,3 +12,7 @@ def derive_master_key(signature_bytes: bytes) -> bytes:
         info=constants.MASTER_KEY_INFO,
     )
     return hkdf.derive(signature_bytes)
+
+
+def derive_x25519_keypair(master_key: bytes):
+    pass
