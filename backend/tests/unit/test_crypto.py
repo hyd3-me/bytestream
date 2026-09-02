@@ -178,3 +178,8 @@ def test_compute_content_hash_different_content_hashes():
     hash2 = crypto.compute_content_hash(message_id, content2)
 
     assert hash1 != hash2
+
+
+def test_build_sign_payload_exists():
+    assert hasattr(crypto, "build_sign_payload")
+    assert callable(crypto.build_sign_payload)
