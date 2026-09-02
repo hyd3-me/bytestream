@@ -155,3 +155,15 @@ def test_build_message_id_returns_20_bytes_with_timestamp_and_nonce():
 def test_compute_content_hash_exists():
     assert hasattr(crypto, "compute_content_hash")
     assert callable(crypto.compute_content_hash)
+
+
+def test_compute_content_hash_deterministic():
+    message_id = b"\x01" * 20
+    content = b"Hello, Bob!"
+
+    hash1 = crypto.compute_content_hash(message_id, content)
+    hash2 = crypto.compute_content_hash(message_id, content)
+
+    assert isinstance(hash1, bytes)
+    assert len(hash1) == 32
+    assert hash1 == hash2
