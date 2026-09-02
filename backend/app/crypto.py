@@ -102,3 +102,7 @@ def build_sign_payload(
 
 def sign_payload(private_key, payload: bytes) -> bytes:
     return private_key.sign(payload)
+
+
+def verify_payload(public_key, payload: bytes, signature: bytes) -> bool:
+    pass
