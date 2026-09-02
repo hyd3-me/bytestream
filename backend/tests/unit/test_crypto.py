@@ -17,3 +17,15 @@ def test_derive_master_key_returns_32_bytes(test_account):
 
     assert isinstance(key, bytes)
     assert len(key) == 32
+
+
+def test_derive_master_key_deterministic(test_account):
+    message = encode_defunct(
+        text="Bytestream v1: Generate messaging keys for this device."
+    )
+    signature = test_account.sign_message(message).signature
+
+    key1 = crypto.derive_master_key(signature)
+    key2 = crypto.derive_master_key(signature)
+
+    assert key1 == key2
