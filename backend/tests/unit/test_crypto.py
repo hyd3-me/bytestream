@@ -204,3 +204,16 @@ def test_build_sign_payload_concatenates_fields_correctly():
 def test_sign_payload_exists():
     assert hasattr(crypto, "sign_payload")
     assert callable(crypto.sign_payload)
+
+
+def test_sign_payload_returns_64_bytes_deterministic():
+    master_key = b"\x05" * 32
+    private_key, _ = crypto.derive_ed25519_keypair(master_key)
+    payload = b"test payload"
+
+    sig1 = crypto.sign_payload(private_key, payload)
+    sig2 = crypto.sign_payload(private_key, payload)
+
+    assert isinstance(sig1, bytes)
+    assert len(sig1) == 64
+    assert sig1 == sig2
