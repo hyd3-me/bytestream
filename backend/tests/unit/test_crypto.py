@@ -124,3 +124,12 @@ def test_generate_timestamp_returns_positive_int():
 def test_generate_nonce_exists():
     assert hasattr(crypto, "generate_nonce")
     assert callable(crypto.generate_nonce)
+
+
+def test_generate_nonce_returns_12_bytes_unique():
+    nonce1 = crypto.generate_nonce()
+    nonce2 = crypto.generate_nonce()
+
+    assert isinstance(nonce1, bytes)
+    assert len(nonce1) == 12
+    assert nonce1 != nonce2
