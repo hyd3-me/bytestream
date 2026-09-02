@@ -96,3 +96,14 @@ def test_encrypt_message_returns_ciphertext():
 
     assert isinstance(ciphertext, bytes)
     assert ciphertext != plaintext
+
+
+def test_decrypt_message_returns_plaintext():
+    key = b"\x11" * 32
+    plaintext = b"Hello, Bob!"
+    nonce = b"\x22" * 12
+
+    ciphertext = crypto.encrypt_message(key, plaintext, nonce)
+    decrypted = crypto.decrypt_message(key, ciphertext, nonce)
+
+    assert decrypted == plaintext
