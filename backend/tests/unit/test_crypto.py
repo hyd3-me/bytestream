@@ -25,3 +25,8 @@ def test_derive_master_key_deterministic(test_account):
     key2 = crypto.derive_master_key(signature)
 
     assert key1 == key2
+
+
+def test_derive_x25519_keypair_exists():
+    assert hasattr(crypto, "derive_x25519_keypair")
+    assert callable(crypto.derive_x25519_keypair)
