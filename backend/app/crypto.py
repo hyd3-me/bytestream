@@ -38,3 +38,7 @@ def derive_ed25519_keypair(master_key: bytes):
     private_key = ed25519.Ed25519PrivateKey.from_private_bytes(private_bytes)
     public_key = private_key.public_key()
     return private_key, public_key
+
+
+def compute_shared_secret(private_key, peer_public_key) -> bytes:
+    pass
