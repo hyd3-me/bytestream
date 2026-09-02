@@ -2,6 +2,7 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import x25519, ed25519
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+import hashlib
 import time
 import secrets
 import struct
@@ -72,4 +73,8 @@ def build_message_id(timestamp: int, nonce: bytes) -> bytes:
 
 
 def compute_content_hash(message_id: bytes, content: bytes) -> bytes:
-    pass
+    if not message_id:
+        raise ValueError("message_id must not be empty")
+    if not content:
+        raise ValueError("content must not be empty")
+    return hashlib.sha256(message_id + content).digest()
