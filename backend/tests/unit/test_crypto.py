@@ -112,3 +112,10 @@ def test_decrypt_message_returns_plaintext():
 def test_generate_timestamp_exists():
     assert hasattr(crypto, "generate_timestamp")
     assert callable(crypto.generate_timestamp)
+
+
+def test_generate_timestamp_returns_positive_int():
+    ts = crypto.generate_timestamp()
+
+    assert isinstance(ts, int)
+    assert ts > 0
