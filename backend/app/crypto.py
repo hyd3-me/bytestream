@@ -3,7 +3,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import x25519, ed25519
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import time
-
+import secrets
 
 import app.crypto_constants as constants
 
@@ -63,4 +63,4 @@ def generate_timestamp() -> int:
 
 
 def generate_nonce() -> bytes:
-    pass
+    return secrets.token_bytes(12)
