@@ -150,3 +150,8 @@ def test_build_message_id_returns_20_bytes_with_timestamp_and_nonce():
     assert len(message_id) == 20
     assert message_id[:8] == timestamp.to_bytes(8, "big")
     assert message_id[8:] == nonce
+
+
+def test_compute_content_hash_exists():
+    assert hasattr(crypto, "compute_content_hash")
+    assert callable(crypto.compute_content_hash)
