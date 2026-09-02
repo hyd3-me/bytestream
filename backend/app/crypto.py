@@ -69,3 +69,7 @@ def generate_nonce() -> bytes:
 
 def build_message_id(timestamp: int, nonce: bytes) -> bytes:
     return struct.pack(">Q", timestamp) + nonce
+
+
+def compute_content_hash(message_id: bytes, content: bytes) -> bytes:
+    pass
