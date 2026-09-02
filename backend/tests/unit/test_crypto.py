@@ -1,5 +1,4 @@
 from app import crypto
-from web3 import Web3
 from eth_account.messages import encode_defunct
 
 
@@ -9,7 +8,6 @@ def test_derive_master_key_exists():
 
 
 def test_derive_master_key_returns_32_bytes(test_account):
-    w3 = Web3()
     message = encode_defunct(
         text="Bytestream v1: Generate messaging keys for this device."
     )

@@ -1,4 +1,4 @@
-from web3 import Web3
+from app.core.web3 import get_web3
 
 
 def sort_addresses(addr1: str, addr2: str):
@@ -13,4 +13,4 @@ def get_dm_room_id(addr1: str, addr2: str) -> str:
 
 
 def is_valid_eth_address(address: str) -> bool:
-    return Web3.is_address(address)
+    return get_web3().is_address(address)
