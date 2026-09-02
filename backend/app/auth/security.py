@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from jose import jwt
 from ..core.config import get_settings
-from web3 import Web3
-from eth_account.messages import encode_defunct
+import app.core.web3 as web3
 
 settings = get_settings()
 
@@ -29,8 +28,8 @@ def decode_token(token: str) -> dict:
 
 
 def verify_signature(address: str, message: str, signature: str) -> bool:
-    w3 = Web3()
-    message_encoded = encode_defunct(text=message)
+    w3 = web3.get_web3()
+    message_encoded = web3.encode_defunct(text=message)
     recovered_address = w3.eth.account.recover_message(
         message_encoded, signature=signature
     )
