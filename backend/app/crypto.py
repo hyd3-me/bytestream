@@ -101,4 +101,4 @@ def build_sign_payload(
 
 
 def sign_payload(private_key, payload: bytes) -> bytes:
-    pass
+    return private_key.sign(payload)
