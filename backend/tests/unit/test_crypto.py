@@ -240,3 +240,24 @@ def test_verify_payload_rejects_invalid_signature():
     bad_signature = b"\x00" * 64
 
     assert crypto.verify_payload(public_key, payload, bad_signature) is False
+
+
+def test_full_sign_verify_payload_cycle():
+    master_key = b"\x08" * 32
+    private_key, public_key = crypto.derive_ed25519_keypair(master_key)
+
+    sender_address = "0xabc"
+    room_id = "dm:0xaaa:0xbbb"
+    timestamp = crypto.generate_timestamp()
+    nonce = crypto.generate_nonce()
+    message_id = crypto.build_message_id(timestamp, nonce)
+
+    content = b"Hello, Bob!"
+    content_hash = crypto.compute_content_hash(message_id, content)
+
+    payload = crypto.build_sign_payload(
+        sender_address, room_id, message_id, content_hash
+    )
+    signature = crypto.sign_payload(private_key, payload)
+
+    assert crypto.verify_payload(public_key, payload, signature) is True
