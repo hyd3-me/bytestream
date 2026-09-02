@@ -26,3 +26,7 @@ def derive_x25519_keypair(master_key: bytes):
     private_key = x25519.X25519PrivateKey.from_private_bytes(private_bytes)
     public_key = private_key.public_key()
     return private_key, public_key
+
+
+def derive_ed25519_keypair(master_key: bytes):
+    pass
