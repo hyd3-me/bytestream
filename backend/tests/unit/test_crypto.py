@@ -119,3 +119,8 @@ def test_generate_timestamp_returns_positive_int():
 
     assert isinstance(ts, int)
     assert ts > 0
+
+
+def test_generate_nonce_exists():
+    assert hasattr(crypto, "generate_nonce")
+    assert callable(crypto.generate_nonce)
