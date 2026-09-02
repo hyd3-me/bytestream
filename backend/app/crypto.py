@@ -4,6 +4,7 @@ from cryptography.hazmat.primitives.asymmetric import x25519, ed25519
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import time
 import secrets
+import struct
 
 import app.crypto_constants as constants
 
@@ -66,5 +67,5 @@ def generate_nonce() -> bytes:
     return secrets.token_bytes(12)
 
 
-def build_message_id() -> bytes:
-    pass
+def build_message_id(timestamp: int, nonce: bytes) -> bytes:
+    return struct.pack(">Q", timestamp) + nonce
