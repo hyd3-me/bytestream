@@ -1,6 +1,7 @@
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import x25519, ed25519
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import app.crypto_constants as constants
 
 
@@ -45,7 +46,8 @@ def compute_shared_secret(private_key, peer_public_key) -> bytes:
 
 
 def encrypt_message(key: bytes, plaintext: bytes, nonce: bytes) -> bytes:
-    pass
+    aesgcm = AESGCM(key)
+    return aesgcm.encrypt(nonce, plaintext, None)
 
 
 def decrypt_message(key: bytes, ciphertext: bytes, nonce: bytes) -> bytes:
