@@ -133,3 +133,8 @@ def test_generate_nonce_returns_12_bytes_unique():
     assert isinstance(nonce1, bytes)
     assert len(nonce1) == 12
     assert nonce1 != nonce2
+
+
+def test_generate_message_id_exists():
+    assert hasattr(crypto, "generate_message_id")
+    assert callable(crypto.generate_message_id)
