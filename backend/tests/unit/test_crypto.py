@@ -183,3 +183,19 @@ def test_compute_content_hash_different_content_hashes():
 def test_build_sign_payload_exists():
     assert hasattr(crypto, "build_sign_payload")
     assert callable(crypto.build_sign_payload)
+
+
+def test_build_sign_payload_concatenates_fields_correctly():
+    sender_address = "0xabc"
+    room_id = "dm:0xaaa:0xbbb"
+    message_id = b"\x01" * 20
+    content_hash = b"\x02" * 32
+
+    payload = crypto.build_sign_payload(
+        sender_address, room_id, message_id, content_hash
+    )
+
+    assert (
+        payload
+        == sender_address.encode() + room_id.encode() + message_id + content_hash
+    )
