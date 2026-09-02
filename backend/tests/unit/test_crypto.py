@@ -199,3 +199,8 @@ def test_build_sign_payload_concatenates_fields_correctly():
         payload
         == sender_address.encode() + room_id.encode() + message_id + content_hash
     )
+
+
+def test_sign_payload_exists():
+    assert hasattr(crypto, "sign_payload")
+    assert callable(crypto.sign_payload)
