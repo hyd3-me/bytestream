@@ -45,3 +45,13 @@ def test_derive_x25519_keypair_deterministic():
 def test_derive_ed25519_keypair_exists():
     assert hasattr(crypto, "derive_ed25519_keypair")
     assert callable(crypto.derive_ed25519_keypair)
+
+
+def test_derive_ed25519_keypair_deterministic():
+    master_key = b"\x02" * 32
+
+    priv1, pub1 = crypto.derive_ed25519_keypair(master_key)
+    priv2, pub2 = crypto.derive_ed25519_keypair(master_key)
+
+    assert priv1.private_bytes_raw() == priv2.private_bytes_raw()
+    assert pub1.public_bytes_raw() == pub2.public_bytes_raw()
