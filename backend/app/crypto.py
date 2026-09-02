@@ -41,4 +41,4 @@ def derive_ed25519_keypair(master_key: bytes):
 
 
 def compute_shared_secret(private_key, peer_public_key) -> bytes:
-    pass
+    return private_key.exchange(peer_public_key)
