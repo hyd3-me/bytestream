@@ -46,3 +46,7 @@ def compute_shared_secret(private_key, peer_public_key) -> bytes:
 
 def encrypt_message(key: bytes, plaintext: bytes, nonce: bytes) -> bytes:
     pass
+
+
+def decrypt_message(key: bytes, ciphertext: bytes, nonce: bytes) -> bytes:
+    pass
