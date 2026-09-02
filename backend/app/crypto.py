@@ -1,5 +1,6 @@
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import x25519
 
 import app.crypto_constants as constants
 
@@ -15,4 +16,13 @@ def derive_master_key(signature_bytes: bytes) -> bytes:
 
 
 def derive_x25519_keypair(master_key: bytes):
-    pass
+    hkdf = HKDF(
+        algorithm=hashes.SHA256(),
+        length=constants.KEY_LENGTH,
+        salt=b"",
+        info=constants.X25519_INFO,
+    )
+    private_bytes = hkdf.derive(master_key)
+    private_key = x25519.X25519PrivateKey.from_private_bytes(private_bytes)
+    public_key = private_key.public_key()
+    return private_key, public_key
