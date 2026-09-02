@@ -2,6 +2,9 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import x25519, ed25519
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+import time
+
+
 import app.crypto_constants as constants
 
 
@@ -56,4 +59,4 @@ def decrypt_message(key: bytes, ciphertext: bytes, nonce: bytes) -> bytes:
 
 
 def generate_timestamp() -> int:
-    pass
+    return time.time_ns() // 1_000_000
