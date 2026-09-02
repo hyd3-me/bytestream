@@ -167,3 +167,14 @@ def test_compute_content_hash_deterministic():
     assert isinstance(hash1, bytes)
     assert len(hash1) == 32
     assert hash1 == hash2
+
+
+def test_compute_content_hash_different_content_hashes():
+    message_id = b"\x01" * 20
+    content1 = b"Hello"
+    content2 = b"Hell0"
+
+    hash1 = crypto.compute_content_hash(message_id, content1)
+    hash2 = crypto.compute_content_hash(message_id, content2)
+
+    assert hash1 != hash2
