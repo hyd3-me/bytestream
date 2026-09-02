@@ -138,3 +138,15 @@ def test_generate_nonce_returns_12_bytes_unique():
 def test_build_message_id_exists():
     assert hasattr(crypto, "build_message_id")
     assert callable(crypto.build_message_id)
+
+
+def test_build_message_id_returns_20_bytes_with_timestamp_and_nonce():
+    timestamp = 1000
+    nonce = b"\x01" * 12
+
+    message_id = crypto.build_message_id(timestamp, nonce)
+
+    assert isinstance(message_id, bytes)
+    assert len(message_id) == 20
+    assert message_id[:8] == timestamp.to_bytes(8, "big")
+    assert message_id[8:] == nonce
