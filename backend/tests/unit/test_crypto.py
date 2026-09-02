@@ -231,3 +231,12 @@ def test_verify_payload_accepts_valid_signature():
     signature = crypto.sign_payload(private_key, payload)
 
     assert crypto.verify_payload(public_key, payload, signature) is True
+
+
+def test_verify_payload_rejects_invalid_signature():
+    master_key = b"\x07" * 32
+    _, public_key = crypto.derive_ed25519_keypair(master_key)
+    payload = b"important payload"
+    bad_signature = b"\x00" * 64
+
+    assert crypto.verify_payload(public_key, payload, bad_signature) is False
