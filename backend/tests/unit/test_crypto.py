@@ -75,3 +75,8 @@ def test_compute_shared_secret_symmetric():
     assert isinstance(secret_alice, bytes)
     assert len(secret_alice) == 32
     assert secret_alice == secret_bob
+
+
+def test_encrypt_message_exists():
+    assert hasattr(crypto, "encrypt_message")
+    assert callable(crypto.encrypt_message)
