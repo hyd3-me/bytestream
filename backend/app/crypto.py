@@ -60,3 +60,7 @@ def decrypt_message(key: bytes, ciphertext: bytes, nonce: bytes) -> bytes:
 
 def generate_timestamp() -> int:
     return time.time_ns() // 1_000_000
+
+
+def generate_nonce() -> bytes:
+    pass
