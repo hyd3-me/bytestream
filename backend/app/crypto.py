@@ -90,4 +90,4 @@ def build_sign_payload(
     message_id: bytes,
     content_hash: bytes,
 ) -> bytes:
-    pass
+    return sender_address.encode() + room_id.encode() + message_id + content_hash
