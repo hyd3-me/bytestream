@@ -19,7 +19,7 @@ def derive_x25519_keypair(master_key: bytes):
     hkdf = HKDF(
         algorithm=hashes.SHA256(),
         length=constants.KEY_LENGTH,
-        salt=b"",
+        salt=constants.X25519_SALT,
         info=constants.X25519_INFO,
     )
     private_bytes = hkdf.derive(master_key)
