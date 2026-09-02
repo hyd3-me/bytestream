@@ -98,3 +98,7 @@ def build_sign_payload(
             content_hash,
         ]
     )
+
+
+def sign_payload(private_key, payload: bytes) -> bytes:
+    pass
