@@ -28,21 +28,33 @@ From the master key, two key pairs are derived using HKDF:
 The public keys are registered on the server and associated with the
 user's Ethereum address via a `key_id`.
 
-## 4. Key Registration and key_id
+## 4. Key Package
 
-Each user can register one or more device key profiles. A profile
-contains:
+Each user creates a key package containing their public keys, signed by
+their Ethereum wallet. This package is included in every message so that
+recipients can verify the authenticity of the public keys without relying
+on a server-side directory.
 
-- `signing_public_key` (Ed25519)
-- `encryption_public_key` (X25519)
+The key package has the following fields:
 
-The `key_id` has the format:
-<ethereum_address>:<unique_id>
+- `eth_address` (string): Ethereum address of the key owner.
+- `x25519_public_key` (string): base64-encoded X25519 public key.
+- `ed25519_public_key` (string): base64-encoded Ed25519 public key.
+- `created_at` (integer): Unix timestamp in milliseconds when the package
+  was created.
+- `eth_signature` (string): base64-encoded Ethereum signature over the
+  canonical JSON serialization of the other fields.
 
-For example: `0xabc123...:key_1`.
+The canonical serialization for signing is:
 
-The server stores public keys and resolves `key_id` to the corresponding
-public keys. It never stores private keys.
+```json
+{
+  "eth_address": "...",
+  "x25519_public_key": "...",
+  "ed25519_public_key": "...",
+  "created_at": 1234567890
+}
+sorted by key and without extra whitespace.
 
 ## 5. Message Format
 
@@ -58,8 +70,14 @@ following top-level fields:
   "content_hash": "<base64 32 bytes>",
   "signature": "<base64 64 bytes>",
   "sender_address": "0xaaa",
-  "key_id": "0xaaa:key_1",
-  "is_encrypted": false
+  "is_encrypted": false,
+  "keys": {
+    "eth_address": "0xaaa",
+    "x25519_public_key": "<base64>",
+    "ed25519_public_key": "<base64>",
+    "created_at": 1737381207123,
+    "eth_signature": "<base64>"
+  }
 }
 Fields:
 
