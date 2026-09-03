@@ -121,3 +121,7 @@ def derive_aes_key(shared_secret: bytes) -> bytes:
         info=constants.AES_INFO,
     )
     return hkdf.derive(shared_secret)
+
+
+def build_key_package(eth_account, master_key: bytes) -> dict:
+    pass
