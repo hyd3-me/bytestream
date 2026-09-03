@@ -330,3 +330,8 @@ def test_build_key_package_returns_base_package_without_signature():
     assert package["ed25519_public_key"]
     assert package["created_at"] == created_at
     assert "eth_signature" not in package
+
+
+def test_sign_key_package_exists():
+    assert hasattr(crypto, "sign_key_package")
+    assert callable(crypto.sign_key_package)
