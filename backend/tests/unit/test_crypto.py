@@ -378,3 +378,21 @@ def test_verify_key_package_accepts_valid_package(test_account):
     signed_package = crypto.sign_key_package(test_account, base_package)
 
     assert crypto.verify_key_package(signed_package) is True
+
+def test_verify_key_package_rejects_tampered_address(test_account):
+    master_key = b"\x0f" * 32
+    _, x_pub = crypto.derive_x25519_keypair(master_key)
+    _, e_pub = crypto.derive_ed25519_keypair(master_key)
+
+    base_package = crypto.build_key_package(
+        test_account.address,
+        x_pub.public_bytes_raw(),
+        e_pub.public_bytes_raw(),
+        1000,
+    )
+    signed_package = crypto.sign_key_package(test_account, base_package)
+
+    tampered = dict(signed_package)
+    tampered["eth_address"] = "0xdeadbeef"
+
+    assert crypto.verify_key_package(tampered) is False
