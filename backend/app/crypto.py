@@ -114,4 +114,10 @@ def verify_payload(public_key, payload: bytes, signature: bytes) -> bool:
 
 
 def derive_aes_key(shared_secret: bytes) -> bytes:
-    pass
+    hkdf = HKDF(
+        algorithm=hashes.SHA256(),
+        length=constants.KEY_LENGTH,
+        salt=constants.AES_SALT,
+        info=constants.AES_INFO,
+    )
+    return hkdf.derive(shared_secret)
