@@ -261,3 +261,8 @@ def test_full_sign_verify_payload_cycle():
     signature = crypto.sign_payload(private_key, payload)
 
     assert crypto.verify_payload(public_key, payload, signature) is True
+
+
+def test_derive_aes_key_exists():
+    assert hasattr(crypto, "derive_aes_key")
+    assert callable(crypto.derive_aes_key)
