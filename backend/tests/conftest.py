@@ -33,6 +33,8 @@ import redis.asyncio as redis
 from app.core.redis import get_redis
 from app.core.config import get_settings
 from app.auth import security
+import app.crypto as crypto
+
 
 settings = get_settings()
 
@@ -146,6 +148,20 @@ def test_account():
     w3 = Web3()
     account = w3.eth.account.from_key(private_key)
     return account
+
+@pytest.fixture
+def master_key():
+    return b"\x01" * 32
+
+
+@pytest.fixture
+def x25519_keypair(master_key):
+    return crypto.derive_x25519_keypair(master_key)
+
+
+@pytest.fixture
+def ed25519_keypair(master_key):
+    return crypto.derive_ed25519_keypair(master_key)
 
 
 @pytest.fixture

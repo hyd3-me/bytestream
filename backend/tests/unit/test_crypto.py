@@ -206,9 +206,8 @@ def test_sign_payload_exists():
     assert callable(crypto.sign_payload)
 
 
-def test_sign_payload_returns_64_bytes_deterministic():
-    master_key = b"\x05" * 32
-    private_key, _ = crypto.derive_ed25519_keypair(master_key)
+def test_sign_payload_returns_64_bytes_deterministic(ed25519_keypair):
+    private_key, _ = ed25519_keypair
     payload = b"test payload"
 
     sig1 = crypto.sign_payload(private_key, payload)
@@ -224,27 +223,24 @@ def test_verify_payload_exists():
     assert callable(crypto.verify_payload)
 
 
-def test_verify_payload_accepts_valid_signature():
-    master_key = b"\x06" * 32
-    private_key, public_key = crypto.derive_ed25519_keypair(master_key)
+def test_verify_payload_accepts_valid_signature(ed25519_keypair):
+    private_key, public_key = ed25519_keypair
     payload = b"valid payload"
     signature = crypto.sign_payload(private_key, payload)
 
     assert crypto.verify_payload(public_key, payload, signature) is True
 
 
-def test_verify_payload_rejects_invalid_signature():
-    master_key = b"\x07" * 32
-    _, public_key = crypto.derive_ed25519_keypair(master_key)
+def test_verify_payload_rejects_invalid_signature(ed25519_keypair):
+    _, public_key = ed25519_keypair
     payload = b"important payload"
     bad_signature = b"\x00" * 64
 
     assert crypto.verify_payload(public_key, payload, bad_signature) is False
 
 
-def test_full_sign_verify_payload_cycle():
-    master_key = b"\x08" * 32
-    private_key, public_key = crypto.derive_ed25519_keypair(master_key)
+def test_full_sign_verify_payload_cycle(ed25519_keypair):
+    private_key, public_key = ed25519_keypair
 
     sender_address = "0xabc"
     room_id = "dm:0xaaa:0xbbb"
@@ -255,9 +251,7 @@ def test_full_sign_verify_payload_cycle():
     content = b"Hello, Bob!"
     content_hash = crypto.compute_content_hash(message_id, content)
 
-    payload = crypto.build_sign_payload(
-        sender_address, room_id, message_id, content_hash
-    )
+    payload = crypto.build_sign_payload(sender_address, room_id, message_id, content_hash)
     signature = crypto.sign_payload(private_key, payload)
 
     assert crypto.verify_payload(public_key, payload, signature) is True
@@ -305,10 +299,9 @@ def test_build_key_package_exists():
     assert callable(crypto.build_key_package)
 
 
-def test_build_key_package_returns_base_package_without_signature():
-    master_key = b"\x0c" * 32
-    _, x_pub = crypto.derive_x25519_keypair(master_key)
-    _, e_pub = crypto.derive_ed25519_keypair(master_key)
+def test_build_key_package_returns_base_package_without_signature(x25519_keypair, ed25519_keypair):
+    _, x_pub = x25519_keypair
+    _, e_pub = ed25519_keypair
     address = "0xabc"
     created_at = 1000
 
@@ -337,10 +330,9 @@ def test_sign_key_package_exists():
     assert callable(crypto.sign_key_package)
 
 
-def test_sign_key_package_adds_eth_signature(test_account):
-    master_key = b"\x0d" * 32
-    _, x_pub = crypto.derive_x25519_keypair(master_key)
-    _, e_pub = crypto.derive_ed25519_keypair(master_key)
+def test_sign_key_package_adds_eth_signature(test_account, x25519_keypair, ed25519_keypair):
+    _, x_pub = x25519_keypair
+    _, e_pub = ed25519_keypair
 
     base_package = crypto.build_key_package(
         test_account.address,
@@ -363,10 +355,9 @@ def test_verify_key_package_exists():
     assert hasattr(crypto, "verify_key_package")
     assert callable(crypto.verify_key_package)
 
-def test_verify_key_package_accepts_valid_package(test_account):
-    master_key = b"\x0e" * 32
-    _, x_pub = crypto.derive_x25519_keypair(master_key)
-    _, e_pub = crypto.derive_ed25519_keypair(master_key)
+def test_verify_key_package_accepts_valid_package(test_account, x25519_keypair, ed25519_keypair):
+    _, x_pub = x25519_keypair
+    _, e_pub = ed25519_keypair
 
     base_package = crypto.build_key_package(
         test_account.address,
@@ -379,10 +370,9 @@ def test_verify_key_package_accepts_valid_package(test_account):
 
     assert crypto.verify_key_package(signed_package) is True
 
-def test_verify_key_package_rejects_tampered_address(test_account):
-    master_key = b"\x0f" * 32
-    _, x_pub = crypto.derive_x25519_keypair(master_key)
-    _, e_pub = crypto.derive_ed25519_keypair(master_key)
+def test_verify_key_package_rejects_tampered_address(test_account, x25519_keypair, ed25519_keypair):
+    _, x_pub = x25519_keypair
+    _, e_pub = ed25519_keypair
 
     base_package = crypto.build_key_package(
         test_account.address,
