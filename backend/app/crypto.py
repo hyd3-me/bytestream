@@ -7,6 +7,7 @@ import hashlib
 import time
 import secrets
 import struct
+import base64
 
 import app.crypto_constants as constants
 
@@ -123,5 +124,15 @@ def derive_aes_key(shared_secret: bytes) -> bytes:
     return hkdf.derive(shared_secret)
 
 
-def build_key_package(eth_account, master_key: bytes) -> dict:
-    pass
+def build_key_package(
+    eth_address: str,
+    x25519_public_key: bytes,
+    ed25519_public_key: bytes,
+    created_at: int,
+) -> dict:
+    return {
+        "eth_address": eth_address,
+        "x25519_public_key": base64.b64encode(x25519_public_key).decode("ascii"),
+        "ed25519_public_key": base64.b64encode(ed25519_public_key).decode("ascii"),
+        "created_at": created_at,
+    }
