@@ -298,3 +298,8 @@ def test_full_encryption_cycle_with_derived_key():
     decrypted = crypto.decrypt_message(aes_key, ciphertext, nonce)
 
     assert decrypted == plaintext
+
+
+def test_build_key_package_exists():
+    assert hasattr(crypto, "build_key_package")
+    assert callable(crypto.build_key_package)
