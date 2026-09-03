@@ -362,3 +362,19 @@ def test_sign_key_package_adds_eth_signature(test_account):
 def test_verify_key_package_exists():
     assert hasattr(crypto, "verify_key_package")
     assert callable(crypto.verify_key_package)
+
+def test_verify_key_package_accepts_valid_package(test_account):
+    master_key = b"\x0e" * 32
+    _, x_pub = crypto.derive_x25519_keypair(master_key)
+    _, e_pub = crypto.derive_ed25519_keypair(master_key)
+
+    base_package = crypto.build_key_package(
+        test_account.address,
+        x_pub.public_bytes_raw(),
+        e_pub.public_bytes_raw(),
+        1000,
+    )
+
+    signed_package = crypto.sign_key_package(test_account, base_package)
+
+    assert crypto.verify_key_package(signed_package) is True
