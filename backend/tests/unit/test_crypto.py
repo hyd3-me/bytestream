@@ -335,3 +335,26 @@ def test_build_key_package_returns_base_package_without_signature():
 def test_sign_key_package_exists():
     assert hasattr(crypto, "sign_key_package")
     assert callable(crypto.sign_key_package)
+
+
+def test_sign_key_package_adds_eth_signature(test_account):
+    master_key = b"\x0d" * 32
+    _, x_pub = crypto.derive_x25519_keypair(master_key)
+    _, e_pub = crypto.derive_ed25519_keypair(master_key)
+
+    base_package = crypto.build_key_package(
+        test_account.address,
+        x_pub.public_bytes_raw(),
+        e_pub.public_bytes_raw(),
+        1000,
+    )
+
+    signed_package = crypto.sign_key_package(test_account, base_package)
+
+    assert "eth_signature" in signed_package
+    assert isinstance(signed_package["eth_signature"], str)
+    assert signed_package["eth_signature"]
+    assert signed_package["eth_address"] == base_package["eth_address"]
+    assert signed_package["x25519_public_key"] == base_package["x25519_public_key"]
+    assert signed_package["ed25519_public_key"] == base_package["ed25519_public_key"]
+    assert signed_package["created_at"] == base_package["created_at"]
