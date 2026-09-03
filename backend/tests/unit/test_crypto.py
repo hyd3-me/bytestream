@@ -266,3 +266,14 @@ def test_full_sign_verify_payload_cycle():
 def test_derive_aes_key_exists():
     assert hasattr(crypto, "derive_aes_key")
     assert callable(crypto.derive_aes_key)
+
+
+def test_derive_aes_key_returns_32_bytes_deterministic():
+    shared_secret = b"\x09" * 32
+
+    key1 = crypto.derive_aes_key(shared_secret)
+    key2 = crypto.derive_aes_key(shared_secret)
+
+    assert isinstance(key1, bytes)
+    assert len(key1) == 32
+    assert key1 == key2
