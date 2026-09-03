@@ -111,3 +111,7 @@ def verify_payload(public_key, payload: bytes, signature: bytes) -> bool:
         return True
     except InvalidSignature:
         return False
+
+
+def derive_aes_key(shared_secret: bytes) -> bytes:
+    pass
