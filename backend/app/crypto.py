@@ -146,3 +146,6 @@ def sign_key_package(eth_account, base_package: dict) -> dict:
     signature = eth_account.sign_message(message).signature
     package = {**base_package, "eth_signature": base64.b64encode(signature).decode("ascii")}
     return package
+
+def verify_key_package(package: dict) -> bool:
+    pass
