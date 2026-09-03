@@ -12,6 +12,7 @@ import json
 
 import app.crypto_constants as constants
 import app.core.web3 as web3
+import app.auth.security as auth_security
 
 
 def derive_master_key(signature_bytes: bytes) -> bytes:
@@ -148,4 +149,16 @@ def sign_key_package(eth_account, base_package: dict) -> dict:
     return package
 
 def verify_key_package(package: dict) -> bool:
-    pass
+    base_package = {
+        "eth_address": package["eth_address"],
+        "x25519_public_key": package["x25519_public_key"],
+        "ed25519_public_key": package["ed25519_public_key"],
+        "created_at": package["created_at"],
+    }
+    canonical = json.dumps(base_package, sort_keys=True, separators=(",", ":"))
+    signature_bytes = base64.b64decode(package["eth_signature"])
+    return auth_security.verify_signature(
+        package["eth_address"],
+        canonical,
+        signature_bytes.hex(),
+    )
