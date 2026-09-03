@@ -8,8 +8,10 @@ import time
 import secrets
 import struct
 import base64
+import json
 
 import app.crypto_constants as constants
+import app.core.web3 as web3
 
 
 def derive_master_key(signature_bytes: bytes) -> bytes:
@@ -139,4 +141,8 @@ def build_key_package(
 
 
 def sign_key_package(eth_account, base_package: dict) -> dict:
-    pass
+    canonical = json.dumps(base_package, sort_keys=True, separators=(",", ":"))
+    message = web3.encode_defunct(text=canonical)
+    signature = eth_account.sign_message(message).signature
+    package = {**base_package, "eth_signature": base64.b64encode(signature).decode("ascii")}
+    return package
