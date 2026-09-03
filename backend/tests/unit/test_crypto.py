@@ -358,3 +358,7 @@ def test_sign_key_package_adds_eth_signature(test_account):
     assert signed_package["x25519_public_key"] == base_package["x25519_public_key"]
     assert signed_package["ed25519_public_key"] == base_package["ed25519_public_key"]
     assert signed_package["created_at"] == base_package["created_at"]
+
+def test_verify_key_package_exists():
+    assert hasattr(crypto, "verify_key_package")
+    assert callable(crypto.verify_key_package)
