@@ -136,3 +136,7 @@ def build_key_package(
         "ed25519_public_key": base64.b64encode(ed25519_public_key).decode("ascii"),
         "created_at": created_at,
     }
+
+
+def sign_key_package(eth_account, base_package: dict) -> dict:
+    pass
