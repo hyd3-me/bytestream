@@ -277,3 +277,24 @@ def test_derive_aes_key_returns_32_bytes_deterministic():
     assert isinstance(key1, bytes)
     assert len(key1) == 32
     assert key1 == key2
+
+
+def test_full_encryption_cycle_with_derived_key():
+    master_key_a = b"\x0a" * 32
+    master_key_b = b"\x0b" * 32
+
+    alice_priv, alice_pub = crypto.derive_x25519_keypair(master_key_a)
+    bob_priv, bob_pub = crypto.derive_x25519_keypair(master_key_b)
+
+    shared_alice = crypto.compute_shared_secret(alice_priv, bob_pub)
+    shared_bob = crypto.compute_shared_secret(bob_priv, alice_pub)
+
+    aes_key = crypto.derive_aes_key(shared_alice)
+
+    plaintext = b"Hello, Bob! This is encrypted."
+    nonce = crypto.generate_nonce()
+    ciphertext = crypto.encrypt_message(aes_key, plaintext, nonce)
+
+    decrypted = crypto.decrypt_message(aes_key, ciphertext, nonce)
+
+    assert decrypted == plaintext
