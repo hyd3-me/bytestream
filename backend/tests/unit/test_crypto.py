@@ -248,7 +248,9 @@ def test_full_sign_verify_payload_cycle(ed25519_keypair):
     content = b"Hello, Bob!"
     content_hash = crypto.compute_content_hash(message_id, content)
 
-    payload = crypto.build_sign_payload(sender_address, room_id, message_id, content_hash)
+    payload = crypto.build_sign_payload(
+        sender_address, room_id, message_id, content_hash
+    )
     signature = crypto.sign_payload(private_key, payload)
 
     assert crypto.verify_payload(public_key, payload, signature) is True
@@ -296,7 +298,9 @@ def test_build_key_package_exists():
     assert callable(crypto.build_key_package)
 
 
-def test_build_key_package_returns_base_package_without_signature(x25519_keypair, ed25519_keypair):
+def test_build_key_package_returns_base_package_without_signature(
+    x25519_keypair, ed25519_keypair
+):
     _, x_pub = x25519_keypair
     _, e_pub = ed25519_keypair
     address = "0xabc"
@@ -327,7 +331,9 @@ def test_sign_key_package_exists():
     assert callable(crypto.sign_key_package)
 
 
-def test_sign_key_package_adds_eth_signature(test_account, x25519_keypair, ed25519_keypair):
+def test_sign_key_package_adds_eth_signature(
+    test_account, x25519_keypair, ed25519_keypair
+):
     _, x_pub = x25519_keypair
     _, e_pub = ed25519_keypair
 
@@ -348,11 +354,15 @@ def test_sign_key_package_adds_eth_signature(test_account, x25519_keypair, ed255
     assert signed_package["ed25519_public_key"] == base_package["ed25519_public_key"]
     assert signed_package["created_at"] == base_package["created_at"]
 
+
 def test_verify_key_package_exists():
     assert hasattr(crypto, "verify_key_package")
     assert callable(crypto.verify_key_package)
 
-def test_verify_key_package_accepts_valid_package(test_account, x25519_keypair, ed25519_keypair):
+
+def test_verify_key_package_accepts_valid_package(
+    test_account, x25519_keypair, ed25519_keypair
+):
     _, x_pub = x25519_keypair
     _, e_pub = ed25519_keypair
 
@@ -367,7 +377,10 @@ def test_verify_key_package_accepts_valid_package(test_account, x25519_keypair, 
 
     assert crypto.verify_key_package(signed_package) is True
 
-def test_verify_key_package_rejects_tampered_address(test_account, x25519_keypair, ed25519_keypair):
+
+def test_verify_key_package_rejects_tampered_address(
+    test_account, x25519_keypair, ed25519_keypair
+):
     _, x_pub = x25519_keypair
     _, e_pub = ed25519_keypair
 
@@ -384,6 +397,25 @@ def test_verify_key_package_rejects_tampered_address(test_account, x25519_keypai
 
     assert crypto.verify_key_package(tampered) is False
 
+
 def test_request_key_package_exists():
     assert hasattr(crypto, "request_key_package")
     assert callable(crypto.request_key_package)
+
+
+def test_request_key_package_returns_expected_fields(test_account, ed25519_keypair):
+    private_key, _ = ed25519_keypair
+    sender_address = test_account.address
+
+    request = crypto.request_key_package(sender_address, private_key)
+
+    assert set(request.keys()) == {
+        "type",
+        "request_id",
+        "sender_address",
+        "signature",
+    }
+    assert request["type"] == "key_package_request"
+    assert request["sender_address"] == sender_address
+    assert request["request_id"]
+    assert request["signature"]
