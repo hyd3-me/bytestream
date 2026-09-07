@@ -145,8 +145,12 @@ def sign_key_package(eth_account, base_package: dict) -> dict:
     canonical = json.dumps(base_package, sort_keys=True, separators=(",", ":"))
     message = web3.encode_defunct(text=canonical)
     signature = eth_account.sign_message(message).signature
-    package = {**base_package, "eth_signature": base64.b64encode(signature).decode("ascii")}
+    package = {
+        **base_package,
+        "eth_signature": base64.b64encode(signature).decode("ascii"),
+    }
     return package
+
 
 def verify_key_package(package: dict) -> bool:
     base_package = {
@@ -162,3 +166,7 @@ def verify_key_package(package: dict) -> bool:
         canonical,
         signature_bytes.hex(),
     )
+
+
+def request_key_package():
+    pass
