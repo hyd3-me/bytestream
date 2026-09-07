@@ -383,3 +383,7 @@ def test_verify_key_package_rejects_tampered_address(test_account, x25519_keypai
     tampered["eth_address"] = "0xdeadbeef"
 
     assert crypto.verify_key_package(tampered) is False
+
+def test_request_key_package_exists():
+    assert hasattr(crypto, "request_key_package")
+    assert callable(crypto.request_key_package)
