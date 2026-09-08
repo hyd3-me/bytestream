@@ -209,4 +209,5 @@ def get_current_key_package() -> dict:
 
 
 def clear_key_package() -> None:
-    pass
+    global _current_key_package
+    _current_key_package = None
