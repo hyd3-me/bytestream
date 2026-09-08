@@ -129,15 +129,19 @@ def derive_aes_key(shared_secret: bytes) -> bytes:
 
 def build_key_package(
     eth_address: str,
-    x25519_public_key: bytes,
-    ed25519_public_key: bytes,
-    created_at: int,
+    x25519_public_key,
+    ed25519_public_key,
+    package_id_bytes: bytes,
 ) -> dict:
     return {
         "eth_address": eth_address,
-        "x25519_public_key": base64.b64encode(x25519_public_key).decode("ascii"),
-        "ed25519_public_key": base64.b64encode(ed25519_public_key).decode("ascii"),
-        "created_at": created_at,
+        "x25519_public_key": base64.b64encode(
+            x25519_public_key.public_bytes_raw()
+        ).decode("ascii"),
+        "ed25519_public_key": base64.b64encode(
+            ed25519_public_key.public_bytes_raw()
+        ).decode("ascii"),
+        "package_id": base64.b64encode(package_id_bytes).decode("ascii"),
     }
 
 
