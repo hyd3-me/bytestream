@@ -306,16 +306,15 @@ def test_build_key_package_returns_base_package_without_signature(
     _, e_pub = ed25519_keypair
     address = "0xabc"
 
-    timestamp = crypto.generate_timestamp()
-    nonce = crypto.generate_nonce()
-    package_id_bytes = crypto.build_message_id(timestamp, nonce)
-    package_id = base64.b64encode(package_id_bytes).decode("ascii")
+    package_id_bytes = crypto.build_message_id(
+        crypto.generate_timestamp(), crypto.generate_nonce()
+    )
 
     package = crypto.build_key_package(
         address,
-        x_pub.public_bytes_raw(),
-        e_pub.public_bytes_raw(),
-        package_id,
+        x_pub,
+        e_pub,
+        package_id_bytes,
     )
 
     assert set(package.keys()) == {
@@ -327,7 +326,7 @@ def test_build_key_package_returns_base_package_without_signature(
     assert package["eth_address"] == address
     assert package["x25519_public_key"]
     assert package["ed25519_public_key"]
-    assert package["package_id"] == package_id
+    assert package["package_id"] == base64.b64encode(package_id_bytes).decode("ascii")
     assert "eth_signature" not in package
 
 
