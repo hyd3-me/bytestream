@@ -197,3 +197,7 @@ def store_key_package(package: dict) -> None:
 
 def get_current_key_package() -> dict:
     pass
+
+
+def clear_key_package() -> None:
+    pass
