@@ -420,6 +420,12 @@ def test_request_key_package_returns_expected_fields(test_account, ed25519_keypa
     assert request["request_id"]
     assert request["signature"]
 
+
 def test_key_package_response_exists():
     assert hasattr(crypto, "key_package_response")
     assert callable(crypto.key_package_response)
+
+
+def test_store_key_package_exists():
+    assert hasattr(crypto, "store_key_package")
+    assert callable(crypto.store_key_package)
