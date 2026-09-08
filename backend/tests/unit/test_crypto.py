@@ -309,7 +309,7 @@ def test_build_key_package_returns_base_package_without_signature(
     timestamp = crypto.generate_timestamp()
     nonce = crypto.generate_nonce()
     package_id_bytes = crypto.build_message_id(timestamp, nonce)
-    package_id = base64.base64_encode(package_id_bytes)
+    package_id = base64.b64encode(package_id_bytes).decode("ascii")
 
     package = crypto.build_key_package(
         address,
