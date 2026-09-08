@@ -1,3 +1,4 @@
+import pytest
 import base64
 from app import crypto, crypto_constants
 import app.core.web3 as web3
@@ -480,3 +481,12 @@ def test_store_and_get_key_package_roundtrip(
     retrieved = crypto.get_current_key_package()
 
     assert retrieved == signed_package
+
+
+def test_clear_key_package_clears_stored_package():
+    crypto.store_key_package({"test": "data"})
+
+    crypto.clear_key_package()
+
+    with pytest.raises(ValueError):
+        crypto.get_current_key_package()
