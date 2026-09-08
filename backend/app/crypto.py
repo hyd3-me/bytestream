@@ -193,3 +193,7 @@ def key_package_response(request: dict, eth_account, master_key: bytes) -> dict:
 
 def store_key_package(package: dict) -> None:
     pass
+
+
+def get_current_key_package() -> dict:
+    pass
