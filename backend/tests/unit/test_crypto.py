@@ -456,3 +456,27 @@ def test_get_current_key_package_exists():
 def test_clear_key_package_exists():
     assert hasattr(crypto, "clear_key_package")
     assert callable(crypto.clear_key_package)
+
+
+def test_store_and_get_key_package_roundtrip(
+    test_account, x25519_keypair, ed25519_keypair
+):
+    _, x_pub = x25519_keypair
+    _, e_pub = ed25519_keypair
+
+    package_id_bytes = crypto.build_message_id(
+        crypto.generate_timestamp(), crypto.generate_nonce()
+    )
+    base_package = crypto.build_key_package(
+        test_account.address,
+        x_pub,
+        e_pub,
+        package_id_bytes,
+    )
+    signed_package = crypto.sign_key_package(test_account, base_package)
+
+    crypto.store_key_package(signed_package)
+
+    retrieved = crypto.get_current_key_package()
+
+    assert retrieved == signed_package
