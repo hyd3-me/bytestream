@@ -324,8 +324,12 @@ def test_build_key_package_returns_base_package_without_signature(
         "package_id",
     }
     assert package["eth_address"] == address
-    assert package["x25519_public_key"]
-    assert package["ed25519_public_key"]
+    assert package["x25519_public_key"] == base64.b64encode(
+        x_pub.public_bytes_raw()
+    ).decode("ascii")
+    assert package["ed25519_public_key"] == base64.b64encode(
+        e_pub.public_bytes_raw()
+    ).decode("ascii")
     assert package["package_id"] == base64.b64encode(package_id_bytes).decode("ascii")
     assert "eth_signature" not in package
 
@@ -341,11 +345,14 @@ def test_sign_key_package_adds_eth_signature(
     _, x_pub = x25519_keypair
     _, e_pub = ed25519_keypair
 
+    package_id_bytes = crypto.build_message_id(
+        crypto.generate_timestamp(), crypto.generate_nonce()
+    )
     base_package = crypto.build_key_package(
         test_account.address,
-        x_pub.public_bytes_raw(),
-        e_pub.public_bytes_raw(),
-        1000,
+        x_pub,
+        e_pub,
+        package_id_bytes,
     )
 
     signed_package = crypto.sign_key_package(test_account, base_package)
@@ -356,7 +363,7 @@ def test_sign_key_package_adds_eth_signature(
     assert signed_package["eth_address"] == base_package["eth_address"]
     assert signed_package["x25519_public_key"] == base_package["x25519_public_key"]
     assert signed_package["ed25519_public_key"] == base_package["ed25519_public_key"]
-    assert signed_package["created_at"] == base_package["created_at"]
+    assert signed_package["package_id"] == base_package["package_id"]
 
 
 def test_verify_key_package_exists():
@@ -370,11 +377,14 @@ def test_verify_key_package_accepts_valid_package(
     _, x_pub = x25519_keypair
     _, e_pub = ed25519_keypair
 
+    package_id_bytes = crypto.build_message_id(
+        crypto.generate_timestamp(), crypto.generate_nonce()
+    )
     base_package = crypto.build_key_package(
         test_account.address,
-        x_pub.public_bytes_raw(),
-        e_pub.public_bytes_raw(),
-        1000,
+        x_pub,
+        e_pub,
+        package_id_bytes,
     )
 
     signed_package = crypto.sign_key_package(test_account, base_package)
@@ -388,11 +398,14 @@ def test_verify_key_package_rejects_tampered_address(
     _, x_pub = x25519_keypair
     _, e_pub = ed25519_keypair
 
+    package_id_bytes = crypto.build_message_id(
+        crypto.generate_timestamp(), crypto.generate_nonce()
+    )
     base_package = crypto.build_key_package(
         test_account.address,
-        x_pub.public_bytes_raw(),
-        e_pub.public_bytes_raw(),
-        1000,
+        x_pub,
+        e_pub,
+        package_id_bytes,
     )
     signed_package = crypto.sign_key_package(test_account, base_package)
 

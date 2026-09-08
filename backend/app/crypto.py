@@ -161,7 +161,7 @@ def verify_key_package(package: dict) -> bool:
         "eth_address": package["eth_address"],
         "x25519_public_key": package["x25519_public_key"],
         "ed25519_public_key": package["ed25519_public_key"],
-        "created_at": package["created_at"],
+        "package_id": package["package_id"],
     }
     canonical = json.dumps(base_package, sort_keys=True, separators=(",", ":"))
     signature_bytes = base64.b64decode(package["eth_signature"])
