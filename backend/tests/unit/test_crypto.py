@@ -429,3 +429,8 @@ def test_key_package_response_exists():
 def test_store_key_package_exists():
     assert hasattr(crypto, "store_key_package")
     assert callable(crypto.store_key_package)
+
+
+def test_get_current_key_package_exists():
+    assert hasattr(crypto, "get_current_key_package")
+    assert callable(crypto.get_current_key_package)
