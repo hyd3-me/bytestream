@@ -14,6 +14,8 @@ import app.crypto_constants as constants
 import app.core.web3 as web3
 import app.auth.security as auth_security
 
+_current_key_package = None
+
 
 def derive_master_key(signature_bytes: bytes) -> bytes:
     hkdf = HKDF(
@@ -196,11 +198,14 @@ def key_package_response(request: dict, eth_account, master_key: bytes) -> dict:
 
 
 def store_key_package(package: dict) -> None:
-    pass
+    global _current_key_package
+    _current_key_package = package
 
 
 def get_current_key_package() -> dict:
-    pass
+    if _current_key_package is None:
+        raise ValueError("No key package stored")
+    return _current_key_package
 
 
 def clear_key_package() -> None:
