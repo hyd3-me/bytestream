@@ -1,3 +1,4 @@
+import base64
 from app import crypto, crypto_constants
 import app.core.web3 as web3
 
@@ -304,25 +305,29 @@ def test_build_key_package_returns_base_package_without_signature(
     _, x_pub = x25519_keypair
     _, e_pub = ed25519_keypair
     address = "0xabc"
-    created_at = 1000
+
+    timestamp = crypto.generate_timestamp()
+    nonce = crypto.generate_nonce()
+    package_id_bytes = crypto.build_message_id(timestamp, nonce)
+    package_id = base64.base64_encode(package_id_bytes)
 
     package = crypto.build_key_package(
         address,
         x_pub.public_bytes_raw(),
         e_pub.public_bytes_raw(),
-        created_at,
+        package_id,
     )
 
     assert set(package.keys()) == {
         "eth_address",
         "x25519_public_key",
         "ed25519_public_key",
-        "created_at",
+        "package_id",
     }
     assert package["eth_address"] == address
     assert package["x25519_public_key"]
     assert package["ed25519_public_key"]
-    assert package["created_at"] == created_at
+    assert package["package_id"] == package_id
     assert "eth_signature" not in package
 
 
