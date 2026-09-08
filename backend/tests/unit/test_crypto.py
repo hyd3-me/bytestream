@@ -434,3 +434,8 @@ def test_store_key_package_exists():
 def test_get_current_key_package_exists():
     assert hasattr(crypto, "get_current_key_package")
     assert callable(crypto.get_current_key_package)
+
+
+def test_clear_key_package_exists():
+    assert hasattr(crypto, "clear_key_package")
+    assert callable(crypto.clear_key_package)
