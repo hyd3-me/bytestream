@@ -193,7 +193,7 @@ def request_key_package(sender_address: str, ed25519_private_key) -> dict:
     }
 
 
-def key_package_response(request: dict, eth_account, master_key: bytes) -> dict:
+def key_package_response(request: dict, ed25519_private_key) -> dict:
     pass
 
 

@@ -1,5 +1,5 @@
 import pytest
-import base64
+import base64, json
 from client import crypto, crypto_constants
 from eth_account.messages import encode_defunct
 
@@ -490,3 +490,42 @@ def test_clear_key_package_clears_stored_package():
 
     with pytest.raises(ValueError):
         crypto.get_current_key_package()
+
+
+def test_key_package_response_returns_expected_fields(
+    test_account, x25519_keypair_a, ed25519_keypair_a
+):
+    _, x_pub = x25519_keypair_a
+    e_priv, e_pub = ed25519_keypair_a
+
+    package_id_bytes = crypto.build_message_id(
+        crypto.generate_timestamp(), crypto.generate_nonce()
+    )
+    base_package = crypto.build_key_package(
+        test_account.address,
+        x_pub,
+        e_pub,
+        package_id_bytes,
+    )
+    signed_package = crypto.sign_key_package(test_account, base_package)
+    crypto.store_key_package(signed_package)
+
+    request = crypto.request_key_package(test_account.address, e_priv)
+
+    response = crypto.key_package_response(request, e_priv)
+
+    assert set(response.keys()) == {
+        "type",
+        "request_id",
+        "sender_address",
+        "content",
+        "signature",
+    }
+    assert response["type"] == "key_package"
+    assert response["request_id"] == request["request_id"]
+    assert response["sender_address"] == test_account.address
+    assert response["content"]
+    assert response["signature"]
+
+    decoded_content = base64.b64decode(response["content"]).decode("utf-8")
+    assert json.loads(decoded_content) == signed_package
