@@ -496,7 +496,7 @@ def test_key_package_response_returns_expected_fields(
     test_account, x25519_keypair_a, ed25519_keypair_a
 ):
     _, x_pub = x25519_keypair_a
-    e_priv, e_pub = ed25519_keypair_a
+    _, e_pub = ed25519_keypair_a
 
     package_id_bytes = crypto.build_message_id(
         crypto.generate_timestamp(), crypto.generate_nonce()
@@ -510,22 +510,22 @@ def test_key_package_response_returns_expected_fields(
     signed_package = crypto.sign_key_package(test_account, base_package)
     crypto.store_key_package(signed_package)
 
-    request = crypto.request_key_package(test_account.address, e_priv)
+    request = crypto.request_key_package(
+        test_account.address, crypto.derive_ed25519_keypair(b"\x01" * 32)[0]
+    )
 
-    response = crypto.key_package_response(request, e_priv)
+    response = crypto.key_package_response(request)
 
     assert set(response.keys()) == {
         "type",
         "request_id",
         "sender_address",
         "content",
-        "signature",
     }
     assert response["type"] == "key_package"
     assert response["request_id"] == request["request_id"]
     assert response["sender_address"] == test_account.address
     assert response["content"]
-    assert response["signature"]
 
     decoded_content = base64.b64decode(response["content"]).decode("utf-8")
     assert json.loads(decoded_content) == signed_package
