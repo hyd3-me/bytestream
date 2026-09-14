@@ -33,9 +33,6 @@ import redis.asyncio as redis
 from app.core.redis import get_redis
 from app.core.config import get_settings
 from app.auth import security
-import app.crypto as crypto
-import app.crypto_constants as crypto_constants
-import app.core.web3 as web3
 
 settings = get_settings()
 
@@ -149,66 +146,6 @@ def test_account():
     w3 = Web3()
     account = w3.eth.account.from_key(private_key)
     return account
-
-
-@pytest.fixture(scope="session")
-def test_account_b():
-    env_vars = dotenv_values(env_path)
-    private_key = env_vars.get("TEST_ACCOUNT_PRIVATE_KEY_2")
-    if not private_key:
-        pytest.fail("TEST_ACCOUNT_PRIVATE_KEY_2 not set in .env")
-    w3 = Web3()
-    account = w3.eth.account.from_key(private_key)
-    return account
-
-
-@pytest.fixture
-def master_key():
-    return b"\x01" * 32
-
-
-@pytest.fixture
-def x25519_keypair(master_key):
-    return crypto.derive_x25519_keypair(master_key)
-
-
-@pytest.fixture
-def ed25519_keypair(master_key):
-    return crypto.derive_ed25519_keypair(master_key)
-
-
-@pytest.fixture(scope="session")
-def master_key_a(test_account):
-    message = web3.encode_defunct(text=crypto_constants.FIXED_MESSAGE)
-    signature = test_account.sign_message(message).signature
-    return crypto.derive_master_key(signature)
-
-
-@pytest.fixture(scope="session")
-def master_key_b(test_account_b):
-    message = web3.encode_defunct(text=crypto_constants.FIXED_MESSAGE)
-    signature = test_account_b.sign_message(message).signature
-    return crypto.derive_master_key(signature)
-
-
-@pytest.fixture(scope="session")
-def x25519_keypair_a(master_key_a):
-    return crypto.derive_x25519_keypair(master_key_a)
-
-
-@pytest.fixture(scope="session")
-def x25519_keypair_b(master_key_b):
-    return crypto.derive_x25519_keypair(master_key_b)
-
-
-@pytest.fixture(scope="session")
-def ed25519_keypair_a(master_key_a):
-    return crypto.derive_ed25519_keypair(master_key_a)
-
-
-@pytest.fixture(scope="session")
-def ed25519_keypair_b(master_key_b):
-    return crypto.derive_ed25519_keypair(master_key_b)
 
 
 @pytest.fixture

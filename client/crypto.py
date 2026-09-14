@@ -10,9 +10,9 @@ import struct
 import base64
 import json
 
-import app.crypto_constants as constants
-import app.core.web3 as web3
+import client.crypto_constants as constants
 import app.auth.security as auth_security
+from eth_account.messages import encode_defunct
 
 _current_key_package = None
 
@@ -149,7 +149,7 @@ def build_key_package(
 
 def sign_key_package(eth_account, base_package: dict) -> dict:
     canonical = json.dumps(base_package, sort_keys=True, separators=(",", ":"))
-    message = web3.encode_defunct(text=canonical)
+    message = encode_defunct(text=canonical)
     signature = eth_account.sign_message(message).signature
     package = {
         **base_package,
