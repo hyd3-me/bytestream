@@ -97,3 +97,12 @@ def signed_package(test_account, x25519_keypair_a, ed25519_keypair_a):
         test_account.address, x_pub, e_pub, package_id_bytes
     )
     return crypto.sign_key_package(test_account, base)
+
+
+@pytest.fixture(autouse=True)
+def _clear_crypto_state():
+    crypto._packages.clear()
+    crypto._current_package_ids.clear()
+    yield
+    crypto._packages.clear()
+    crypto._current_package_ids.clear()

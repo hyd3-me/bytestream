@@ -482,8 +482,6 @@ def test_store_key_package_stores_by_address_and_id(test_account, signed_package
 
 
 def test_store_key_package_does_not_set_current(test_account, signed_package):
-    crypto.clear_key_package(test_account.address)
-
     crypto.store_key_package(signed_package)
 
     with pytest.raises(ValueError):
