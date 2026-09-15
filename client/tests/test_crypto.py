@@ -532,3 +532,8 @@ def test_key_package_response_returns_by_requested_id(test_account, signed_packa
 
     decoded = base64.b64decode(response["content"]).decode("utf-8")
     assert json.loads(decoded) == signed_package
+
+
+def test_process_key_package_response_exists():
+    assert hasattr(crypto, "process_key_package_response")
+    assert callable(crypto.process_key_package_response)
