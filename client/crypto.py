@@ -252,4 +252,15 @@ def clear_key_package(eth_address: str) -> None:
 
 
 def process_key_package_response(response: dict) -> dict:
-    pass
+    if response.get("type") != "key_package":
+        return {}
+    if not response.get("content"):
+        return {}
+
+    content_bytes = base64.b64decode(response["content"])
+    package = json.loads(content_bytes.decode("utf-8"))
+
+    if not verify_key_package(package):
+        return {}
+
+    return package
