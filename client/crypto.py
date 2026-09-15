@@ -174,13 +174,16 @@ def verify_key_package(package: dict) -> bool:
     )
 
 
-def request_key_package(sender_address: str) -> dict:
+def request_key_package(
+    sender_address: str, requested_package_id: str = "current"
+) -> dict:
     request_id = build_message_id(generate_timestamp(), generate_nonce())
 
     return {
         "type": "key_package_request",
         "request_id": base64.b64encode(request_id).decode("ascii"),
         "sender_address": sender_address,
+        "requested_package_id": requested_package_id,
     }
 
 
@@ -191,9 +194,14 @@ def key_package_response(request: dict) -> dict:
         return {}
 
     package = get_current_key_package()
-    content_bytes = json.dumps(
-        package, sort_keys=True, separators=(",", ":")
-    ).encode("utf-8")
+
+    requested_id = request.get("requested_package_id", "current")
+    if requested_id != "current" and requested_id != package["package_id"]:
+        return {}
+
+    content_bytes = json.dumps(package, sort_keys=True, separators=(",", ":")).encode(
+        "utf-8"
+    )
 
     return {
         "type": "key_package",
