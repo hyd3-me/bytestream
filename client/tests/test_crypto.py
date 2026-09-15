@@ -555,3 +555,24 @@ def test_process_key_package_response_returns_valid_package(
     result = crypto.process_key_package_response(response)
 
     assert result == signed_package
+
+
+def test_process_key_package_response_rejects_tampered_package(
+    test_account, signed_package
+):
+    tampered = dict(signed_package)
+    tampered["eth_address"] = "0xdeadbeef"
+
+    content_bytes = json.dumps(
+        tampered, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    response = {
+        "type": "key_package",
+        "request_id": "test_request_id",
+        "sender_address": tampered["eth_address"],
+        "content": base64.b64encode(content_bytes).decode("ascii"),
+    }
+
+    result = crypto.process_key_package_response(response)
+
+    assert result == {}
