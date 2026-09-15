@@ -537,3 +537,21 @@ def test_key_package_response_returns_by_requested_id(test_account, signed_packa
 def test_process_key_package_response_exists():
     assert hasattr(crypto, "process_key_package_response")
     assert callable(crypto.process_key_package_response)
+
+
+def test_process_key_package_response_returns_valid_package(
+    test_account, signed_package
+):
+    content_bytes = json.dumps(
+        signed_package, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    response = {
+        "type": "key_package",
+        "request_id": "test_request_id",
+        "sender_address": signed_package["eth_address"],
+        "content": base64.b64encode(content_bytes).decode("ascii"),
+    }
+
+    result = crypto.process_key_package_response(response)
+
+    assert result == signed_package
