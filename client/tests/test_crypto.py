@@ -483,10 +483,12 @@ def test_request_key_package_returns_expected_fields(test_account):
         "type",
         "request_id",
         "sender_address",
+        "requested_package_id",
     }
     assert request["type"] == "key_package_request"
     assert request["sender_address"] == sender_address
     assert request["request_id"]
+    assert request["requested_package_id"] == "current"
 
 
 def test_key_package_response_returns_expected_fields(
@@ -524,3 +526,29 @@ def test_key_package_response_returns_expected_fields(
 
     decoded_content = base64.b64decode(response["content"]).decode("utf-8")
     assert json.loads(decoded_content) == signed_package
+
+
+def test_key_package_response_returns_empty_for_unknown_package_id(
+    test_account, x25519_keypair_a, ed25519_keypair_a
+):
+    _, x_pub = x25519_keypair_a
+    _, e_pub = ed25519_keypair_a
+
+    package_id_bytes = crypto.build_message_id(
+        crypto.generate_timestamp(), crypto.generate_nonce()
+    )
+    base_package = crypto.build_key_package(
+        test_account.address,
+        x_pub,
+        e_pub,
+        package_id_bytes,
+    )
+    signed_package = crypto.sign_key_package(test_account, base_package)
+    crypto.store_key_package(signed_package)
+
+    request = crypto.request_key_package(test_account.address)
+    request["requested_package_id"] = "unknown_id"
+
+    response = crypto.key_package_response(request)
+
+    assert response == {}
