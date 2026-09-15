@@ -249,3 +249,7 @@ def get_key_package(eth_address: str, package_id: str = "current"):
 def clear_key_package(eth_address: str) -> None:
     _packages.pop(eth_address, None)
     _current_package_ids.pop(eth_address, None)
+
+
+def process_key_package_response(response: dict) -> dict:
+    pass
