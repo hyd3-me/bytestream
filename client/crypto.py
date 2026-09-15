@@ -185,7 +185,22 @@ def request_key_package(sender_address: str) -> dict:
 
 
 def key_package_response(request: dict) -> dict:
-    pass
+    if request.get("type") != "key_package_request":
+        return {}
+    if not request.get("request_id"):
+        return {}
+
+    package = get_current_key_package()
+    content_bytes = json.dumps(
+        package, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+
+    return {
+        "type": "key_package",
+        "request_id": request["request_id"],
+        "sender_address": package["eth_address"],
+        "content": base64.b64encode(content_bytes).decode("ascii"),
+    }
 
 
 def store_key_package(package: dict) -> None:
