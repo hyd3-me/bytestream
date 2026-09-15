@@ -84,3 +84,16 @@ def x25519_keypair(master_key):
 @pytest.fixture
 def ed25519_keypair(master_key):
     return crypto.derive_ed25519_keypair(master_key)
+
+
+@pytest.fixture
+def signed_package(test_account, x25519_keypair_a, ed25519_keypair_a):
+    _, x_pub = x25519_keypair_a
+    _, e_pub = ed25519_keypair_a
+    package_id_bytes = crypto.build_message_id(
+        crypto.generate_timestamp(), crypto.generate_nonce()
+    )
+    base = crypto.build_key_package(
+        test_account.address, x_pub, e_pub, package_id_bytes
+    )
+    return crypto.sign_key_package(test_account, base)
