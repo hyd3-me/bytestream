@@ -453,13 +453,21 @@ def test_clear_key_package_exists():
     assert callable(crypto.clear_key_package)
 
 
-def test_clear_key_package_clears_stored_package():
-    crypto.store_key_package({"test": "data"})
+def test_clear_key_package_removes_all(
+    test_account, x25519_keypair_a, ed25519_keypair_a
+):
+    package = _make_signed_package(test_account, x25519_keypair_a, ed25519_keypair_a)
+    crypto.store_key_package(package)
+    crypto.set_current_key_package(test_account.address, package["package_id"])
 
-    crypto.clear_key_package()
+    crypto.clear_key_package(test_account.address)
 
     with pytest.raises(ValueError):
-        crypto.get_current_key_package()
+        crypto.get_current_key_package(test_account.address)
+    assert (
+        crypto.get_key_package_by_id(test_account.address, package["package_id"])
+        is None
+    )
 
 
 def test_request_key_package_returns_expected_fields(test_account):
@@ -479,27 +487,15 @@ def test_request_key_package_returns_expected_fields(test_account):
     assert request["requested_package_id"] == "current"
 
 
-def test_key_package_response_returns_expected_fields(
+def test_key_package_response_returns_current_package(
     test_account, x25519_keypair_a, ed25519_keypair_a
 ):
-    _, x_pub = x25519_keypair_a
-    _, e_pub = ed25519_keypair_a
-
-    package_id_bytes = crypto.build_message_id(
-        crypto.generate_timestamp(), crypto.generate_nonce()
-    )
-    base_package = crypto.build_key_package(
-        test_account.address,
-        x_pub,
-        e_pub,
-        package_id_bytes,
-    )
-    signed_package = crypto.sign_key_package(test_account, base_package)
-    crypto.store_key_package(signed_package)
+    package = _make_signed_package(test_account, x25519_keypair_a, ed25519_keypair_a)
+    crypto.store_key_package(package)
+    crypto.set_current_key_package(test_account.address, package["package_id"])
 
     request = crypto.request_key_package(test_account.address)
-
-    response = crypto.key_package_response(request)
+    response = crypto.key_package_response(request, test_account.address)
 
     assert set(response.keys()) == {
         "type",
@@ -510,35 +506,22 @@ def test_key_package_response_returns_expected_fields(
     assert response["type"] == "key_package"
     assert response["request_id"] == request["request_id"]
     assert response["sender_address"] == test_account.address
-    assert response["content"]
 
-    decoded_content = base64.b64decode(response["content"]).decode("utf-8")
-    assert json.loads(decoded_content) == signed_package
+    decoded = base64.b64decode(response["content"]).decode("utf-8")
+    assert json.loads(decoded) == package
 
 
 def test_key_package_response_returns_empty_for_unknown_package_id(
     test_account, x25519_keypair_a, ed25519_keypair_a
 ):
-    _, x_pub = x25519_keypair_a
-    _, e_pub = ed25519_keypair_a
-
-    package_id_bytes = crypto.build_message_id(
-        crypto.generate_timestamp(), crypto.generate_nonce()
-    )
-    base_package = crypto.build_key_package(
-        test_account.address,
-        x_pub,
-        e_pub,
-        package_id_bytes,
-    )
-    signed_package = crypto.sign_key_package(test_account, base_package)
-    crypto.store_key_package(signed_package)
+    package = _make_signed_package(test_account, x25519_keypair_a, ed25519_keypair_a)
+    crypto.store_key_package(package)
+    crypto.set_current_key_package(test_account.address, package["package_id"])
 
     request = crypto.request_key_package(test_account.address)
-    request["requested_package_id"] = "unknown_id"
+    request["requested_package_id"] = "unknown"
 
-    response = crypto.key_package_response(request)
-
+    response = crypto.key_package_response(request, test_account.address)
     assert response == {}
 
 
@@ -558,9 +541,25 @@ def test_store_key_package_stores_by_address_and_id(
 def test_store_key_package_does_not_set_current(
     test_account, x25519_keypair_a, ed25519_keypair_a
 ):
+    crypto.clear_key_package(test_account.address)
     package = _make_signed_package(test_account, x25519_keypair_a, ed25519_keypair_a)
 
     crypto.store_key_package(package)
 
     with pytest.raises(ValueError):
         crypto.get_current_key_package(test_account.address)
+
+
+def test_key_package_response_returns_by_requested_id(
+    test_account, x25519_keypair_a, ed25519_keypair_a
+):
+    package = _make_signed_package(test_account, x25519_keypair_a, ed25519_keypair_a)
+    crypto.store_key_package(package)
+
+    request = crypto.request_key_package(test_account.address)
+    request["requested_package_id"] = package["package_id"]
+
+    response = crypto.key_package_response(request, test_account.address)
+
+    decoded = base64.b64decode(response["content"]).decode("utf-8")
+    assert json.loads(decoded) == package

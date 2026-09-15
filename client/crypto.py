@@ -14,7 +14,8 @@ import client.crypto_constants as constants
 import app.auth.security as auth_security
 from eth_account.messages import encode_defunct
 
-_current_key_package = None
+_packages = {}
+_current_package_ids = {}
 
 
 def derive_master_key(signature_bytes: bytes) -> bytes:
@@ -187,16 +188,15 @@ def request_key_package(
     }
 
 
-def key_package_response(request: dict) -> dict:
+def key_package_response(request: dict, eth_address: str) -> dict:
     if request.get("type") != "key_package_request":
         return {}
     if not request.get("request_id"):
         return {}
 
-    package = get_current_key_package()
-
     requested_id = request.get("requested_package_id", "current")
-    if requested_id != "current" and requested_id != package["package_id"]:
+    package = get_key_package(eth_address, requested_id)
+    if package is None:
         return {}
 
     content_bytes = json.dumps(package, sort_keys=True, separators=(",", ":")).encode(
@@ -212,16 +212,40 @@ def key_package_response(request: dict) -> dict:
 
 
 def store_key_package(package: dict) -> None:
-    global _current_key_package
-    _current_key_package = package
+    eth_address = package["eth_address"]
+    package_id = package["package_id"]
+    if eth_address not in _packages:
+        _packages[eth_address] = {}
+    _packages[eth_address][package_id] = package
 
 
-def get_current_key_package() -> dict:
-    if _current_key_package is None:
-        raise ValueError("No key package stored")
-    return _current_key_package
+def set_current_key_package(eth_address: str, package_id: str) -> None:
+    _current_package_ids[eth_address] = package_id
 
 
-def clear_key_package() -> None:
-    global _current_key_package
-    _current_key_package = None
+def get_current_key_package(eth_address: str) -> dict:
+    package_id = _current_package_ids.get(eth_address)
+    if package_id is None:
+        raise ValueError("No current key package")
+    package = _packages.get(eth_address, {}).get(package_id)
+    if package is None:
+        raise ValueError("Current package not found")
+    return package
+
+
+def get_key_package_by_id(eth_address: str, package_id: str):
+    return _packages.get(eth_address, {}).get(package_id)
+
+
+def get_key_package(eth_address: str, package_id: str = "current"):
+    if package_id == "current":
+        try:
+            return get_current_key_package(eth_address)
+        except ValueError:
+            return None
+    return get_key_package_by_id(eth_address, package_id)
+
+
+def clear_key_package(eth_address: str) -> None:
+    _packages.pop(eth_address, None)
+    _current_package_ids.pop(eth_address, None)
