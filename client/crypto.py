@@ -174,22 +174,13 @@ def verify_key_package(package: dict) -> bool:
     )
 
 
-def request_key_package(sender_address: str, ed25519_private_key) -> dict:
+def request_key_package(sender_address: str) -> dict:
     request_id = build_message_id(generate_timestamp(), generate_nonce())
-    request_type = "key_package_request"
-    payload = build_sign_payload(
-        sender_address,
-        request_type,
-        request_id,
-        b"",
-    )
-    signature = sign_payload(ed25519_private_key, payload)
 
     return {
-        "type": request_type,
+        "type": "key_package_request",
         "request_id": base64.b64encode(request_id).decode("ascii"),
         "sender_address": sender_address,
-        "signature": base64.b64encode(signature).decode("ascii"),
     }
 
 

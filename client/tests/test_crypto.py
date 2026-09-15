@@ -421,24 +421,6 @@ def test_request_key_package_exists():
     assert callable(crypto.request_key_package)
 
 
-def test_request_key_package_returns_expected_fields(test_account, ed25519_keypair):
-    private_key, _ = ed25519_keypair
-    sender_address = test_account.address
-
-    request = crypto.request_key_package(sender_address, private_key)
-
-    assert set(request.keys()) == {
-        "type",
-        "request_id",
-        "sender_address",
-        "signature",
-    }
-    assert request["type"] == "key_package_request"
-    assert request["sender_address"] == sender_address
-    assert request["request_id"]
-    assert request["signature"]
-
-
 def test_key_package_response_exists():
     assert hasattr(crypto, "key_package_response")
     assert callable(crypto.key_package_response)
@@ -492,6 +474,21 @@ def test_clear_key_package_clears_stored_package():
         crypto.get_current_key_package()
 
 
+def test_request_key_package_returns_expected_fields(test_account):
+    sender_address = test_account.address
+
+    request = crypto.request_key_package(sender_address)
+
+    assert set(request.keys()) == {
+        "type",
+        "request_id",
+        "sender_address",
+    }
+    assert request["type"] == "key_package_request"
+    assert request["sender_address"] == sender_address
+    assert request["request_id"]
+
+
 def test_key_package_response_returns_expected_fields(
     test_account, x25519_keypair_a, ed25519_keypair_a
 ):
@@ -510,9 +507,7 @@ def test_key_package_response_returns_expected_fields(
     signed_package = crypto.sign_key_package(test_account, base_package)
     crypto.store_key_package(signed_package)
 
-    request = crypto.request_key_package(
-        test_account.address, crypto.derive_ed25519_keypair(b"\x01" * 32)[0]
-    )
+    request = crypto.request_key_package(test_account.address)
 
     response = crypto.key_package_response(request)
 
