@@ -4,6 +4,18 @@ from client import crypto, crypto_constants
 from eth_account.messages import encode_defunct
 
 
+def _make_signed_package(test_account, x25519_keypair, ed25519_keypair):
+    _, x_pub = x25519_keypair
+    _, e_pub = ed25519_keypair
+    package_id_bytes = crypto.build_message_id(
+        crypto.generate_timestamp(), crypto.generate_nonce()
+    )
+    base = crypto.build_key_package(
+        test_account.address, x_pub, e_pub, package_id_bytes
+    )
+    return crypto.sign_key_package(test_account, base)
+
+
 def test_derive_master_key_exists():
     assert hasattr(crypto, "derive_master_key")
     assert callable(crypto.derive_master_key)
@@ -441,30 +453,6 @@ def test_clear_key_package_exists():
     assert callable(crypto.clear_key_package)
 
 
-def test_store_and_get_key_package_roundtrip(
-    test_account, x25519_keypair, ed25519_keypair
-):
-    _, x_pub = x25519_keypair
-    _, e_pub = ed25519_keypair
-
-    package_id_bytes = crypto.build_message_id(
-        crypto.generate_timestamp(), crypto.generate_nonce()
-    )
-    base_package = crypto.build_key_package(
-        test_account.address,
-        x_pub,
-        e_pub,
-        package_id_bytes,
-    )
-    signed_package = crypto.sign_key_package(test_account, base_package)
-
-    crypto.store_key_package(signed_package)
-
-    retrieved = crypto.get_current_key_package()
-
-    assert retrieved == signed_package
-
-
 def test_clear_key_package_clears_stored_package():
     crypto.store_key_package({"test": "data"})
 
@@ -552,3 +540,27 @@ def test_key_package_response_returns_empty_for_unknown_package_id(
     response = crypto.key_package_response(request)
 
     assert response == {}
+
+
+def test_store_key_package_stores_by_address_and_id(
+    test_account, x25519_keypair_a, ed25519_keypair_a
+):
+    package = _make_signed_package(test_account, x25519_keypair_a, ed25519_keypair_a)
+
+    crypto.store_key_package(package)
+
+    retrieved = crypto.get_key_package_by_id(
+        test_account.address, package["package_id"]
+    )
+    assert retrieved == package
+
+
+def test_store_key_package_does_not_set_current(
+    test_account, x25519_keypair_a, ed25519_keypair_a
+):
+    package = _make_signed_package(test_account, x25519_keypair_a, ed25519_keypair_a)
+
+    crypto.store_key_package(package)
+
+    with pytest.raises(ValueError):
+        crypto.get_current_key_package(test_account.address)
