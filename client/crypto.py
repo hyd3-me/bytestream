@@ -267,4 +267,5 @@ def process_key_package_response(response: dict) -> dict:
 
 
 def load_x25519_public_key(public_key_b64: str):
-    pass
+    raw = base64.b64decode(public_key_b64)
+    return x25519.X25519PublicKey.from_public_bytes(raw)
