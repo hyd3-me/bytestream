@@ -264,3 +264,7 @@ def process_key_package_response(response: dict) -> dict:
         return {}
 
     return package
+
+
+def load_x25519_public_key(public_key_b64: str):
+    pass
