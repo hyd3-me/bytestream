@@ -576,3 +576,8 @@ def test_process_key_package_response_rejects_tampered_package(
     result = crypto.process_key_package_response(response)
 
     assert result == {}
+
+
+def test_load_x25519_public_key_exists():
+    assert hasattr(crypto, "load_x25519_public_key")
+    assert callable(crypto.load_x25519_public_key)
