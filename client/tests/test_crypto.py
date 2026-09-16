@@ -581,3 +581,12 @@ def test_process_key_package_response_rejects_tampered_package(
 def test_load_x25519_public_key_exists():
     assert hasattr(crypto, "load_x25519_public_key")
     assert callable(crypto.load_x25519_public_key)
+
+
+def test_load_x25519_public_key_roundtrip(x25519_keypair_a):
+    _, x_pub = x25519_keypair_a
+    encoded = base64.b64encode(x_pub.public_bytes_raw()).decode("ascii")
+
+    loaded = crypto.load_x25519_public_key(encoded)
+
+    assert loaded.public_bytes_raw() == x_pub.public_bytes_raw()
