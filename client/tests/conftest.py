@@ -106,3 +106,16 @@ def _clear_crypto_state():
     yield
     crypto._packages.clear()
     crypto._current_package_ids.clear()
+
+
+@pytest.fixture
+def signed_package_b(test_account_b, x25519_keypair_b, ed25519_keypair_b):
+    _, x_pub = x25519_keypair_b
+    _, e_pub = ed25519_keypair_b
+    package_id_bytes = crypto.build_message_id(
+        crypto.generate_timestamp(), crypto.generate_nonce()
+    )
+    base = crypto.build_key_package(
+        test_account_b.address, x_pub, e_pub, package_id_bytes
+    )
+    return crypto.sign_key_package(test_account_b, base)
