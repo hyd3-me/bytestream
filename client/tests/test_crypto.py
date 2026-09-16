@@ -563,9 +563,9 @@ def test_process_key_package_response_rejects_tampered_package(
     tampered = dict(signed_package)
     tampered["eth_address"] = "0xdeadbeef"
 
-    content_bytes = json.dumps(
-        tampered, sort_keys=True, separators=(",", ":")
-    ).encode("utf-8")
+    content_bytes = json.dumps(tampered, sort_keys=True, separators=(",", ":")).encode(
+        "utf-8"
+    )
     response = {
         "type": "key_package",
         "request_id": "test_request_id",
@@ -590,3 +590,43 @@ def test_load_x25519_public_key_roundtrip(x25519_keypair_a):
     loaded = crypto.load_x25519_public_key(encoded)
 
     assert loaded.public_bytes_raw() == x_pub.public_bytes_raw()
+
+
+def test_full_key_exchange_cycle(
+    test_account,
+    test_account_b,
+    x25519_keypair_a,
+    x25519_keypair_b,
+    signed_package,
+    signed_package_b,
+):
+    crypto.store_key_package(signed_package)
+    crypto.set_current_key_package(test_account.address, signed_package["package_id"])
+    crypto.store_key_package(signed_package_b)
+    crypto.set_current_key_package(
+        test_account_b.address, signed_package_b["package_id"]
+    )
+
+    request_from_a = crypto.request_key_package(test_account.address)
+    response_from_b = crypto.key_package_response(
+        request_from_a, test_account_b.address
+    )
+    package_from_b = crypto.process_key_package_response(response_from_b)
+
+    request_from_b = crypto.request_key_package(test_account_b.address)
+    response_from_a = crypto.key_package_response(request_from_b, test_account.address)
+    package_from_a = crypto.process_key_package_response(response_from_a)
+
+    assert package_from_b == signed_package_b
+    assert package_from_a == signed_package
+
+    x_priv_a, _ = x25519_keypair_a
+    x_priv_b, _ = x25519_keypair_b
+
+    b_x_pub = crypto.load_x25519_public_key(package_from_b["x25519_public_key"])
+    a_x_pub = crypto.load_x25519_public_key(package_from_a["x25519_public_key"])
+
+    secret_a = crypto.compute_shared_secret(x_priv_a, b_x_pub)
+    secret_b = crypto.compute_shared_secret(x_priv_b, a_x_pub)
+
+    assert secret_a == secret_b
