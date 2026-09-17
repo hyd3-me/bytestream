@@ -659,3 +659,24 @@ def test_build_package_id_pair_returns_sorted_pair_with_colon():
 def test_get_peer_key_package_exists():
     assert hasattr(crypto, "get_peer_key_package")
     assert callable(crypto.get_peer_key_package)
+
+
+def test_get_peer_key_package_returns_latest(
+    test_account, x25519_keypair_a, ed25519_keypair_a
+):
+    _, x_pub = x25519_keypair_a
+    _, e_pub = ed25519_keypair_a
+
+    old_pid = crypto.build_message_id(1000, b"\x01" * 12)
+    old_base = crypto.build_key_package(test_account.address, x_pub, e_pub, old_pid)
+    old_pkg = crypto.sign_key_package(test_account, old_base)
+
+    new_pid = crypto.build_message_id(2000, b"\x02" * 12)
+    new_base = crypto.build_key_package(test_account.address, x_pub, e_pub, new_pid)
+    new_pkg = crypto.sign_key_package(test_account, new_base)
+
+    crypto.store_key_package(old_pkg)
+    crypto.store_key_package(new_pkg)
+
+    result = crypto.get_peer_key_package(test_account.address)
+    assert result == new_pkg
