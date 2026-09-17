@@ -294,4 +294,12 @@ def ensure_peer_key_package(own_address: str, peer_address: str) -> dict:
 
 
 def build_key_exchange_request(own_address: str, peer_address: str) -> dict:
-    pass
+    request_id = build_message_id(generate_timestamp(), generate_nonce())
+    own_package = get_current_key_package(own_address)
+    return {
+        "type": "key_exchange_request",
+        "request_id": base64.b64encode(request_id).decode("ascii"),
+        "sender_address": own_address,
+        "requested_package_id": "current",
+        "sender_package": own_package,
+    }
