@@ -291,3 +291,7 @@ def ensure_peer_key_package(own_address: str, peer_address: str) -> dict:
     if package:
         return {"action": "use_cached", "package": package}
     return None
+
+
+def build_key_exchange_request(own_address: str, peer_address: str) -> dict:
+    pass
