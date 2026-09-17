@@ -763,3 +763,8 @@ def test_handle_key_exchange_request_stores_sender_package_and_returns_response(
         test_account_b.address, signed_package_b["package_id"]
     )
     assert stored == signed_package_b
+
+
+def test_handle_key_exchange_response_exists():
+    assert hasattr(crypto, "handle_key_exchange_response")
+    assert callable(crypto.handle_key_exchange_response)
