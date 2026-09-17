@@ -630,3 +630,8 @@ def test_full_key_exchange_cycle(
     secret_b = crypto.compute_shared_secret(x_priv_b, a_x_pub)
 
     assert secret_a == secret_b
+
+
+def test_build_package_id_pair_exists():
+    assert hasattr(crypto, "build_package_id_pair")
+    assert callable(crypto.build_package_id_pair)
