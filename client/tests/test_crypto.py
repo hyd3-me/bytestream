@@ -736,3 +736,30 @@ def test_build_key_exchange_request_returns_message_with_own_package(
 def test_handle_key_exchange_request_exists():
     assert hasattr(crypto, "handle_key_exchange_request")
     assert callable(crypto.handle_key_exchange_request)
+
+
+def test_handle_key_exchange_request_stores_sender_package_and_returns_response(
+    test_account, test_account_b, signed_package, signed_package_b
+):
+    crypto.store_key_package(signed_package)
+    crypto.set_current_key_package(test_account.address, signed_package["package_id"])
+
+    message = {
+        "type": "key_exchange_request",
+        "request_id": "dGVzdF9yZXF1ZXN0X2lk",
+        "sender_address": test_account_b.address,
+        "requested_package_id": "current",
+        "sender_package": signed_package_b,
+    }
+
+    response = crypto.handle_key_exchange_request(message, test_account.address)
+
+    assert response["type"] == "key_exchange_response"
+    assert response["request_id"] == message["request_id"]
+    assert response["sender_address"] == test_account.address
+    assert response["package"] == signed_package
+
+    stored = crypto.get_key_package_by_id(
+        test_account_b.address, signed_package_b["package_id"]
+    )
+    assert stored == signed_package_b
