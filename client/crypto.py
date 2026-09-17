@@ -287,4 +287,7 @@ def get_peer_key_package(peer_address: str) -> dict | None:
 
 
 def ensure_peer_key_package(own_address: str, peer_address: str) -> dict:
-    pass
+    package = get_peer_key_package(peer_address)
+    if package:
+        return {"action": "use_cached", "package": package}
+    return None
