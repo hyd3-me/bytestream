@@ -306,4 +306,22 @@ def build_key_exchange_request(own_address: str, peer_address: str) -> dict:
 
 
 def handle_key_exchange_request(message: dict, own_address: str) -> dict:
-    pass
+    if message.get("type") != "key_exchange_request":
+        return {}
+    sender_package = message.get("sender_package")
+    if not sender_package:
+        return {}
+    if not verify_key_package(sender_package):
+        return {}
+    if sender_package["eth_address"] != message.get("sender_address"):
+        return {}
+
+    store_key_package(sender_package)
+    own_package = get_current_key_package(own_address)
+
+    return {
+        "type": "key_exchange_response",
+        "request_id": message["request_id"],
+        "sender_address": own_address,
+        "package": own_package,
+    }
