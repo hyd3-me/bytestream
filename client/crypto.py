@@ -325,3 +325,7 @@ def handle_key_exchange_request(message: dict, own_address: str) -> dict:
         "sender_address": own_address,
         "package": own_package,
     }
+
+
+def handle_key_exchange_response(response: dict, own_address: str) -> dict | None:
+    pass
