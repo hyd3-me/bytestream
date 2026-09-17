@@ -273,3 +273,7 @@ def load_x25519_public_key(public_key_b64: str):
 
 def build_package_id_pair(pid_1: str, pid_2: str) -> str:
     return ":".join(sorted([pid_1, pid_2]))
+
+
+def get_peer_key_package(peer_address: str) -> dict | None:
+    pass
