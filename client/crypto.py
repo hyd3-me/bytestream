@@ -340,3 +340,7 @@ def handle_key_exchange_response(response: dict, own_address: str) -> dict | Non
 
     store_key_package(package)
     return package
+
+
+def derive_and_store_secret(own_address: str, peer_address: str) -> dict:
+    pass
