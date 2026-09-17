@@ -680,3 +680,7 @@ def test_get_peer_key_package_returns_latest(
 
     result = crypto.get_peer_key_package(test_account.address)
     assert result == new_pkg
+
+
+def test_get_peer_key_package_returns_none_when_empty(test_account):
+    assert crypto.get_peer_key_package(test_account.address) is None
