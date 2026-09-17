@@ -303,3 +303,7 @@ def build_key_exchange_request(own_address: str, peer_address: str) -> dict:
         "requested_package_id": "current",
         "sender_package": own_package,
     }
+
+
+def handle_key_exchange_request(message: dict, own_address: str) -> dict:
+    pass
