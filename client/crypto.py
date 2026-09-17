@@ -272,5 +272,4 @@ def load_x25519_public_key(public_key_b64: str):
 
 
 def build_package_id_pair(pid_1: str, pid_2: str) -> str:
-    a, b = sorted([pid_1, pid_2])
-    return f"{a}:{b}"
+    return ":".join(sorted([pid_1, pid_2]))
