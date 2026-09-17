@@ -635,3 +635,22 @@ def test_full_key_exchange_cycle(
 def test_build_package_id_pair_exists():
     assert hasattr(crypto, "build_package_id_pair")
     assert callable(crypto.build_package_id_pair)
+
+
+def test_build_package_id_pair_is_symmetric():
+    pid_a = "AAAB"
+    pid_b = "AAAC"
+
+    pair_ab = crypto.build_package_id_pair(pid_a, pid_b)
+    pair_ba = crypto.build_package_id_pair(pid_b, pid_a)
+
+    assert pair_ab == pair_ba
+
+
+def test_build_package_id_pair_returns_sorted_pair_with_colon():
+    pid_a = "ZZZZ"
+    pid_b = "AAAA"
+
+    pair = crypto.build_package_id_pair(pid_a, pid_b)
+
+    assert pair == "AAAA:ZZZZ"
