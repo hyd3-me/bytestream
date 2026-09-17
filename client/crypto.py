@@ -284,3 +284,7 @@ def get_peer_key_package(peer_address: str) -> dict | None:
         key=lambda pid: base64.b64decode(pid)[:8],
     )
     return packages[latest_id]
+
+
+def ensure_peer_key_package(own_address: str, peer_address: str) -> dict:
+    pass
