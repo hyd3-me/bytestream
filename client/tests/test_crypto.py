@@ -707,3 +707,27 @@ def test_ensure_peer_key_package_returns_cached_package(
 def test_build_key_exchange_request_exists():
     assert hasattr(crypto, "build_key_exchange_request")
     assert callable(crypto.build_key_exchange_request)
+
+
+def test_build_key_exchange_request_returns_message_with_own_package(
+    test_account, test_account_b, signed_package
+):
+    crypto.store_key_package(signed_package)
+    crypto.set_current_key_package(test_account.address, signed_package["package_id"])
+
+    message = crypto.build_key_exchange_request(
+        test_account.address, test_account_b.address
+    )
+
+    assert set(message.keys()) == {
+        "type",
+        "request_id",
+        "sender_address",
+        "requested_package_id",
+        "sender_package",
+    }
+    assert message["type"] == "key_exchange_request"
+    assert message["sender_address"] == test_account.address
+    assert message["requested_package_id"] == "current"
+    assert message["request_id"]
+    assert message["sender_package"] == signed_package
