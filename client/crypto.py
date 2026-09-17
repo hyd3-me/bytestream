@@ -276,4 +276,11 @@ def build_package_id_pair(pid_1: str, pid_2: str) -> str:
 
 
 def get_peer_key_package(peer_address: str) -> dict | None:
-    pass
+    packages = _packages.get(peer_address)
+    if not packages:
+        return None
+    latest_id = max(
+        packages.keys(),
+        key=lambda pid: base64.b64decode(pid)[:8],
+    )
+    return packages[latest_id]
