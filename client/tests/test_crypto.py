@@ -788,3 +788,8 @@ def test_handle_key_exchange_response_stores_peer_package(
         test_account.address, signed_package["package_id"]
     )
     assert stored == signed_package
+
+
+def test_derive_and_store_secret_exists():
+    assert hasattr(crypto, "derive_and_store_secret")
+    assert callable(crypto.derive_and_store_secret)
