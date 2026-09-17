@@ -702,3 +702,8 @@ def test_ensure_peer_key_package_returns_cached_package(
 
     assert result["action"] == "use_cached"
     assert result["package"] == signed_package_b
+
+
+def test_build_key_exchange_request_exists():
+    assert hasattr(crypto, "build_key_exchange_request")
+    assert callable(crypto.build_key_exchange_request)
