@@ -328,4 +328,15 @@ def handle_key_exchange_request(message: dict, own_address: str) -> dict:
 
 
 def handle_key_exchange_response(response: dict, own_address: str) -> dict | None:
-    pass
+    if response.get("type") != "key_exchange_response":
+        return None
+    package = response.get("package")
+    if not package:
+        return None
+    if not verify_key_package(package):
+        return None
+    if package["eth_address"] != response.get("sender_address"):
+        return None
+
+    store_key_package(package)
+    return package
