@@ -654,3 +654,8 @@ def test_build_package_id_pair_returns_sorted_pair_with_colon():
     pair = crypto.build_package_id_pair(pid_a, pid_b)
 
     assert pair == "AAAA:ZZZZ"
+
+
+def test_get_peer_key_package_exists():
+    assert hasattr(crypto, "get_peer_key_package")
+    assert callable(crypto.get_peer_key_package)
