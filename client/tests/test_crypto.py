@@ -684,3 +684,8 @@ def test_get_peer_key_package_returns_latest(
 
 def test_get_peer_key_package_returns_none_when_empty(test_account):
     assert crypto.get_peer_key_package(test_account.address) is None
+
+
+def test_ensure_peer_key_package_exists():
+    assert hasattr(crypto, "ensure_peer_key_package")
+    assert callable(crypto.ensure_peer_key_package)
