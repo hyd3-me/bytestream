@@ -768,3 +768,23 @@ def test_handle_key_exchange_request_stores_sender_package_and_returns_response(
 def test_handle_key_exchange_response_exists():
     assert hasattr(crypto, "handle_key_exchange_response")
     assert callable(crypto.handle_key_exchange_response)
+
+
+def test_handle_key_exchange_response_stores_peer_package(
+    test_account, test_account_b, signed_package
+):
+    response = {
+        "type": "key_exchange_response",
+        "request_id": "dGVzdF9yZXF1ZXN0X2lk",
+        "sender_address": test_account.address,
+        "package": signed_package,
+    }
+
+    result = crypto.handle_key_exchange_response(response, test_account_b.address)
+
+    assert result == signed_package
+
+    stored = crypto.get_key_package_by_id(
+        test_account.address, signed_package["package_id"]
+    )
+    assert stored == signed_package
