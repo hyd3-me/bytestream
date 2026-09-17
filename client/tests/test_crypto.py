@@ -731,3 +731,8 @@ def test_build_key_exchange_request_returns_message_with_own_package(
     assert message["requested_package_id"] == "current"
     assert message["request_id"]
     assert message["sender_package"] == signed_package
+
+
+def test_handle_key_exchange_request_exists():
+    assert hasattr(crypto, "handle_key_exchange_request")
+    assert callable(crypto.handle_key_exchange_request)
