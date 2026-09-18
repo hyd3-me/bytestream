@@ -128,3 +128,7 @@ def derive_aes_key(shared_secret: bytes) -> bytes:
 def load_x25519_public_key(public_key_b64: str):
     raw = base64.b64decode(public_key_b64)
     return x25519.X25519PublicKey.from_public_bytes(raw)
+
+
+def generate_package_id() -> bytes:
+    pass
