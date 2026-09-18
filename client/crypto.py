@@ -9,13 +9,11 @@ import secrets
 import struct
 import base64
 import json
-
-import client.crypto_constants as constants
-import app.auth.security as auth_security
 from eth_account.messages import encode_defunct
 
-_packages = {}
-_current_package_ids = {}
+import client.crypto_constants as constants
+from client.keystore import packages as keystore_packages
+import app.auth.security as auth_security
 
 
 def derive_master_key(signature_bytes: bytes) -> bytes:
@@ -195,7 +193,7 @@ def key_package_response(request: dict, eth_address: str) -> dict:
         return {}
 
     requested_id = request.get("requested_package_id", "current")
-    package = get_key_package(eth_address, requested_id)
+    package = keystore_packages.get_key_package(eth_address, requested_id)
     if package is None:
         return {}
 
@@ -209,46 +207,6 @@ def key_package_response(request: dict, eth_address: str) -> dict:
         "sender_address": package["eth_address"],
         "content": base64.b64encode(content_bytes).decode("ascii"),
     }
-
-
-def store_key_package(package: dict) -> None:
-    eth_address = package["eth_address"]
-    package_id = package["package_id"]
-    if eth_address not in _packages:
-        _packages[eth_address] = {}
-    _packages[eth_address][package_id] = package
-
-
-def set_current_key_package(eth_address: str, package_id: str) -> None:
-    _current_package_ids[eth_address] = package_id
-
-
-def get_current_key_package(eth_address: str) -> dict:
-    package_id = _current_package_ids.get(eth_address)
-    if package_id is None:
-        raise ValueError("No current key package")
-    package = _packages.get(eth_address, {}).get(package_id)
-    if package is None:
-        raise ValueError("Current package not found")
-    return package
-
-
-def get_key_package_by_id(eth_address: str, package_id: str):
-    return _packages.get(eth_address, {}).get(package_id)
-
-
-def get_key_package(eth_address: str, package_id: str = "current"):
-    if package_id == "current":
-        try:
-            return get_current_key_package(eth_address)
-        except ValueError:
-            return None
-    return get_key_package_by_id(eth_address, package_id)
-
-
-def clear_key_package(eth_address: str) -> None:
-    _packages.pop(eth_address, None)
-    _current_package_ids.pop(eth_address, None)
 
 
 def process_key_package_response(response: dict) -> dict:
@@ -275,19 +233,8 @@ def build_package_id_pair(pid_1: str, pid_2: str) -> str:
     return ":".join(sorted([pid_1, pid_2]))
 
 
-def get_peer_key_package(peer_address: str) -> dict | None:
-    packages = _packages.get(peer_address)
-    if not packages:
-        return None
-    latest_id = max(
-        packages.keys(),
-        key=lambda pid: base64.b64decode(pid)[:8],
-    )
-    return packages[latest_id]
-
-
 def ensure_peer_key_package(own_address: str, peer_address: str) -> dict:
-    package = get_peer_key_package(peer_address)
+    package = keystore_packages.get_peer_key_package(peer_address)
     if package:
         return {"action": "use_cached", "package": package}
     return None
@@ -295,7 +242,7 @@ def ensure_peer_key_package(own_address: str, peer_address: str) -> dict:
 
 def build_key_exchange_request(own_address: str, peer_address: str) -> dict:
     request_id = build_message_id(generate_timestamp(), generate_nonce())
-    own_package = get_current_key_package(own_address)
+    own_package = keystore_packages.get_current_key_package(own_address)
     return {
         "type": "key_exchange_request",
         "request_id": base64.b64encode(request_id).decode("ascii"),
@@ -316,8 +263,8 @@ def handle_key_exchange_request(message: dict, own_address: str) -> dict:
     if sender_package["eth_address"] != message.get("sender_address"):
         return {}
 
-    store_key_package(sender_package)
-    own_package = get_current_key_package(own_address)
+    keystore_packages.store_key_package(sender_package)
+    own_package = keystore_packages.get_current_key_package(own_address)
 
     return {
         "type": "key_exchange_response",
@@ -338,7 +285,7 @@ def handle_key_exchange_response(response: dict, own_address: str) -> dict | Non
     if package["eth_address"] != response.get("sender_address"):
         return None
 
-    store_key_package(package)
+    keystore_packages.store_key_package(package)
     return package
 
 

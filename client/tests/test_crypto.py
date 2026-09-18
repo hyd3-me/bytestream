@@ -1,6 +1,7 @@
 import pytest
 import base64, json
 from client import crypto, crypto_constants
+from client.keystore import packages as keystore_packages
 from eth_account.messages import encode_defunct
 
 
@@ -427,18 +428,18 @@ def test_key_package_response_exists():
 
 
 def test_store_key_package_exists():
-    assert hasattr(crypto, "store_key_package")
-    assert callable(crypto.store_key_package)
+    assert hasattr(keystore_packages, "store_key_package")
+    assert callable(keystore_packages.store_key_package)
 
 
 def test_get_current_key_package_exists():
-    assert hasattr(crypto, "get_current_key_package")
-    assert callable(crypto.get_current_key_package)
+    assert hasattr(keystore_packages, "get_current_key_package")
+    assert callable(keystore_packages.get_current_key_package)
 
 
 def test_clear_key_package_exists():
-    assert hasattr(crypto, "clear_key_package")
-    assert callable(crypto.clear_key_package)
+    assert hasattr(keystore_packages, "clear_key_package")
+    assert callable(keystore_packages.clear_key_package)
 
 
 def test_request_key_package_returns_expected_fields(test_account):
@@ -459,38 +460,44 @@ def test_request_key_package_returns_expected_fields(test_account):
 
 
 def test_clear_key_package_removes_all(test_account, signed_package):
-    crypto.store_key_package(signed_package)
-    crypto.set_current_key_package(test_account.address, signed_package["package_id"])
+    keystore_packages.store_key_package(signed_package)
+    keystore_packages.set_current_key_package(
+        test_account.address, signed_package["package_id"]
+    )
 
-    crypto.clear_key_package(test_account.address)
+    keystore_packages.clear_key_package(test_account.address)
 
     with pytest.raises(ValueError):
-        crypto.get_current_key_package(test_account.address)
+        keystore_packages.get_current_key_package(test_account.address)
     assert (
-        crypto.get_key_package_by_id(test_account.address, signed_package["package_id"])
+        keystore_packages.get_key_package_by_id(
+            test_account.address, signed_package["package_id"]
+        )
         is None
     )
 
 
 def test_store_key_package_stores_by_address_and_id(test_account, signed_package):
-    crypto.store_key_package(signed_package)
+    keystore_packages.store_key_package(signed_package)
 
-    retrieved = crypto.get_key_package_by_id(
+    retrieved = keystore_packages.get_key_package_by_id(
         test_account.address, signed_package["package_id"]
     )
     assert retrieved == signed_package
 
 
 def test_store_key_package_does_not_set_current(test_account, signed_package):
-    crypto.store_key_package(signed_package)
+    keystore_packages.store_key_package(signed_package)
 
     with pytest.raises(ValueError):
-        crypto.get_current_key_package(test_account.address)
+        keystore_packages.get_current_key_package(test_account.address)
 
 
 def test_key_package_response_returns_current_package(test_account, signed_package):
-    crypto.store_key_package(signed_package)
-    crypto.set_current_key_package(test_account.address, signed_package["package_id"])
+    keystore_packages.store_key_package(signed_package)
+    keystore_packages.set_current_key_package(
+        test_account.address, signed_package["package_id"]
+    )
 
     request = crypto.request_key_package(test_account.address)
     response = crypto.key_package_response(request, test_account.address)
@@ -512,8 +519,10 @@ def test_key_package_response_returns_current_package(test_account, signed_packa
 def test_key_package_response_returns_empty_for_unknown_package_id(
     test_account, signed_package
 ):
-    crypto.store_key_package(signed_package)
-    crypto.set_current_key_package(test_account.address, signed_package["package_id"])
+    keystore_packages.store_key_package(signed_package)
+    keystore_packages.set_current_key_package(
+        test_account.address, signed_package["package_id"]
+    )
 
     request = crypto.request_key_package(test_account.address)
     request["requested_package_id"] = "unknown"
@@ -523,7 +532,7 @@ def test_key_package_response_returns_empty_for_unknown_package_id(
 
 
 def test_key_package_response_returns_by_requested_id(test_account, signed_package):
-    crypto.store_key_package(signed_package)
+    keystore_packages.store_key_package(signed_package)
 
     request = crypto.request_key_package(test_account.address)
     request["requested_package_id"] = signed_package["package_id"]
@@ -600,10 +609,12 @@ def test_full_key_exchange_cycle(
     signed_package,
     signed_package_b,
 ):
-    crypto.store_key_package(signed_package)
-    crypto.set_current_key_package(test_account.address, signed_package["package_id"])
-    crypto.store_key_package(signed_package_b)
-    crypto.set_current_key_package(
+    keystore_packages.store_key_package(signed_package)
+    keystore_packages.set_current_key_package(
+        test_account.address, signed_package["package_id"]
+    )
+    keystore_packages.store_key_package(signed_package_b)
+    keystore_packages.set_current_key_package(
         test_account_b.address, signed_package_b["package_id"]
     )
 
@@ -657,8 +668,8 @@ def test_build_package_id_pair_returns_sorted_pair_with_colon():
 
 
 def test_get_peer_key_package_exists():
-    assert hasattr(crypto, "get_peer_key_package")
-    assert callable(crypto.get_peer_key_package)
+    assert hasattr(keystore_packages, "get_peer_key_package")
+    assert callable(keystore_packages.get_peer_key_package)
 
 
 def test_get_peer_key_package_returns_latest(
@@ -675,15 +686,15 @@ def test_get_peer_key_package_returns_latest(
     new_base = crypto.build_key_package(test_account.address, x_pub, e_pub, new_pid)
     new_pkg = crypto.sign_key_package(test_account, new_base)
 
-    crypto.store_key_package(old_pkg)
-    crypto.store_key_package(new_pkg)
+    keystore_packages.store_key_package(old_pkg)
+    keystore_packages.store_key_package(new_pkg)
 
-    result = crypto.get_peer_key_package(test_account.address)
+    result = keystore_packages.get_peer_key_package(test_account.address)
     assert result == new_pkg
 
 
 def test_get_peer_key_package_returns_none_when_empty(test_account):
-    assert crypto.get_peer_key_package(test_account.address) is None
+    assert keystore_packages.get_peer_key_package(test_account.address) is None
 
 
 def test_ensure_peer_key_package_exists():
@@ -694,7 +705,7 @@ def test_ensure_peer_key_package_exists():
 def test_ensure_peer_key_package_returns_cached_package(
     test_account, test_account_b, signed_package_b
 ):
-    crypto.store_key_package(signed_package_b)
+    keystore_packages.store_key_package(signed_package_b)
 
     result = crypto.ensure_peer_key_package(
         test_account.address, test_account_b.address
@@ -712,8 +723,10 @@ def test_build_key_exchange_request_exists():
 def test_build_key_exchange_request_returns_message_with_own_package(
     test_account, test_account_b, signed_package
 ):
-    crypto.store_key_package(signed_package)
-    crypto.set_current_key_package(test_account.address, signed_package["package_id"])
+    keystore_packages.store_key_package(signed_package)
+    keystore_packages.set_current_key_package(
+        test_account.address, signed_package["package_id"]
+    )
 
     message = crypto.build_key_exchange_request(
         test_account.address, test_account_b.address
@@ -741,8 +754,10 @@ def test_handle_key_exchange_request_exists():
 def test_handle_key_exchange_request_stores_sender_package_and_returns_response(
     test_account, test_account_b, signed_package, signed_package_b
 ):
-    crypto.store_key_package(signed_package)
-    crypto.set_current_key_package(test_account.address, signed_package["package_id"])
+    keystore_packages.store_key_package(signed_package)
+    keystore_packages.set_current_key_package(
+        test_account.address, signed_package["package_id"]
+    )
 
     message = {
         "type": "key_exchange_request",
@@ -759,7 +774,7 @@ def test_handle_key_exchange_request_stores_sender_package_and_returns_response(
     assert response["sender_address"] == test_account.address
     assert response["package"] == signed_package
 
-    stored = crypto.get_key_package_by_id(
+    stored = keystore_packages.get_key_package_by_id(
         test_account_b.address, signed_package_b["package_id"]
     )
     assert stored == signed_package_b
@@ -784,7 +799,7 @@ def test_handle_key_exchange_response_stores_peer_package(
 
     assert result == signed_package
 
-    stored = crypto.get_key_package_by_id(
+    stored = keystore_packages.get_key_package_by_id(
         test_account.address, signed_package["package_id"]
     )
     assert stored == signed_package

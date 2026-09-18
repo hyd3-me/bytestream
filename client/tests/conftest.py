@@ -13,6 +13,7 @@ from eth_account.messages import encode_defunct
 import pytest
 
 from client import crypto, crypto_constants
+from client.keystore import packages as keystore_packages
 
 env_path = project_root / ".env"
 
@@ -101,11 +102,11 @@ def signed_package(test_account, x25519_keypair_a, ed25519_keypair_a):
 
 @pytest.fixture(autouse=True)
 def _clear_crypto_state():
-    crypto._packages.clear()
-    crypto._current_package_ids.clear()
+    keystore_packages._packages.clear()
+    keystore_packages._current_package_ids.clear()
     yield
-    crypto._packages.clear()
-    crypto._current_package_ids.clear()
+    keystore_packages._packages.clear()
+    keystore_packages._current_package_ids.clear()
 
 
 @pytest.fixture
