@@ -10,7 +10,6 @@ import struct
 import base64
 
 import client.crypto_constants as constants
-from client.keystore import packages as keystore_packages
 
 
 def derive_master_key(signature_bytes: bytes) -> bytes:
