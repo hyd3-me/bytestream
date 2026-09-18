@@ -173,57 +173,6 @@ def verify_key_package(package: dict) -> bool:
     )
 
 
-def request_key_package(
-    sender_address: str, requested_package_id: str = "current"
-) -> dict:
-    request_id = build_message_id(generate_timestamp(), generate_nonce())
-
-    return {
-        "type": "key_package_request",
-        "request_id": base64.b64encode(request_id).decode("ascii"),
-        "sender_address": sender_address,
-        "requested_package_id": requested_package_id,
-    }
-
-
-def key_package_response(request: dict, eth_address: str) -> dict:
-    if request.get("type") != "key_package_request":
-        return {}
-    if not request.get("request_id"):
-        return {}
-
-    requested_id = request.get("requested_package_id", "current")
-    package = keystore_packages.get_key_package(eth_address, requested_id)
-    if package is None:
-        return {}
-
-    content_bytes = json.dumps(package, sort_keys=True, separators=(",", ":")).encode(
-        "utf-8"
-    )
-
-    return {
-        "type": "key_package",
-        "request_id": request["request_id"],
-        "sender_address": package["eth_address"],
-        "content": base64.b64encode(content_bytes).decode("ascii"),
-    }
-
-
-def process_key_package_response(response: dict) -> dict:
-    if response.get("type") != "key_package":
-        return {}
-    if not response.get("content"):
-        return {}
-
-    content_bytes = base64.b64decode(response["content"])
-    package = json.loads(content_bytes.decode("utf-8"))
-
-    if not verify_key_package(package):
-        return {}
-
-    return package
-
-
 def load_x25519_public_key(public_key_b64: str):
     raw = base64.b64decode(public_key_b64)
     return x25519.X25519PublicKey.from_public_bytes(raw)

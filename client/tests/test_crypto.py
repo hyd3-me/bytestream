@@ -417,16 +417,6 @@ def test_verify_key_package_rejects_tampered_address(
     assert crypto.verify_key_package(tampered) is False
 
 
-def test_request_key_package_exists():
-    assert hasattr(crypto, "request_key_package")
-    assert callable(crypto.request_key_package)
-
-
-def test_key_package_response_exists():
-    assert hasattr(crypto, "key_package_response")
-    assert callable(crypto.key_package_response)
-
-
 def test_store_key_package_exists():
     assert hasattr(keystore_packages, "store_key_package")
     assert callable(keystore_packages.store_key_package)
@@ -440,23 +430,6 @@ def test_get_current_key_package_exists():
 def test_clear_key_package_exists():
     assert hasattr(keystore_packages, "clear_key_package")
     assert callable(keystore_packages.clear_key_package)
-
-
-def test_request_key_package_returns_expected_fields(test_account):
-    sender_address = test_account.address
-
-    request = crypto.request_key_package(sender_address)
-
-    assert set(request.keys()) == {
-        "type",
-        "request_id",
-        "sender_address",
-        "requested_package_id",
-    }
-    assert request["type"] == "key_package_request"
-    assert request["sender_address"] == sender_address
-    assert request["request_id"]
-    assert request["requested_package_id"] == "current"
 
 
 def test_clear_key_package_removes_all(test_account, signed_package):
@@ -493,100 +466,6 @@ def test_store_key_package_does_not_set_current(test_account, signed_package):
         keystore_packages.get_current_key_package(test_account.address)
 
 
-def test_key_package_response_returns_current_package(test_account, signed_package):
-    keystore_packages.store_key_package(signed_package)
-    keystore_packages.set_current_key_package(
-        test_account.address, signed_package["package_id"]
-    )
-
-    request = crypto.request_key_package(test_account.address)
-    response = crypto.key_package_response(request, test_account.address)
-
-    assert set(response.keys()) == {
-        "type",
-        "request_id",
-        "sender_address",
-        "content",
-    }
-    assert response["type"] == "key_package"
-    assert response["request_id"] == request["request_id"]
-    assert response["sender_address"] == test_account.address
-
-    decoded = base64.b64decode(response["content"]).decode("utf-8")
-    assert json.loads(decoded) == signed_package
-
-
-def test_key_package_response_returns_empty_for_unknown_package_id(
-    test_account, signed_package
-):
-    keystore_packages.store_key_package(signed_package)
-    keystore_packages.set_current_key_package(
-        test_account.address, signed_package["package_id"]
-    )
-
-    request = crypto.request_key_package(test_account.address)
-    request["requested_package_id"] = "unknown"
-
-    response = crypto.key_package_response(request, test_account.address)
-    assert response == {}
-
-
-def test_key_package_response_returns_by_requested_id(test_account, signed_package):
-    keystore_packages.store_key_package(signed_package)
-
-    request = crypto.request_key_package(test_account.address)
-    request["requested_package_id"] = signed_package["package_id"]
-
-    response = crypto.key_package_response(request, test_account.address)
-
-    decoded = base64.b64decode(response["content"]).decode("utf-8")
-    assert json.loads(decoded) == signed_package
-
-
-def test_process_key_package_response_exists():
-    assert hasattr(crypto, "process_key_package_response")
-    assert callable(crypto.process_key_package_response)
-
-
-def test_process_key_package_response_returns_valid_package(
-    test_account, signed_package
-):
-    content_bytes = json.dumps(
-        signed_package, sort_keys=True, separators=(",", ":")
-    ).encode("utf-8")
-    response = {
-        "type": "key_package",
-        "request_id": "test_request_id",
-        "sender_address": signed_package["eth_address"],
-        "content": base64.b64encode(content_bytes).decode("ascii"),
-    }
-
-    result = crypto.process_key_package_response(response)
-
-    assert result == signed_package
-
-
-def test_process_key_package_response_rejects_tampered_package(
-    test_account, signed_package
-):
-    tampered = dict(signed_package)
-    tampered["eth_address"] = "0xdeadbeef"
-
-    content_bytes = json.dumps(tampered, sort_keys=True, separators=(",", ":")).encode(
-        "utf-8"
-    )
-    response = {
-        "type": "key_package",
-        "request_id": "test_request_id",
-        "sender_address": tampered["eth_address"],
-        "content": base64.b64encode(content_bytes).decode("ascii"),
-    }
-
-    result = crypto.process_key_package_response(response)
-
-    assert result == {}
-
-
 def test_load_x25519_public_key_exists():
     assert hasattr(crypto, "load_x25519_public_key")
     assert callable(crypto.load_x25519_public_key)
@@ -599,48 +478,6 @@ def test_load_x25519_public_key_roundtrip(x25519_keypair_a):
     loaded = crypto.load_x25519_public_key(encoded)
 
     assert loaded.public_bytes_raw() == x_pub.public_bytes_raw()
-
-
-def test_full_key_exchange_cycle(
-    test_account,
-    test_account_b,
-    x25519_keypair_a,
-    x25519_keypair_b,
-    signed_package,
-    signed_package_b,
-):
-    keystore_packages.store_key_package(signed_package)
-    keystore_packages.set_current_key_package(
-        test_account.address, signed_package["package_id"]
-    )
-    keystore_packages.store_key_package(signed_package_b)
-    keystore_packages.set_current_key_package(
-        test_account_b.address, signed_package_b["package_id"]
-    )
-
-    request_from_a = crypto.request_key_package(test_account.address)
-    response_from_b = crypto.key_package_response(
-        request_from_a, test_account_b.address
-    )
-    package_from_b = crypto.process_key_package_response(response_from_b)
-
-    request_from_b = crypto.request_key_package(test_account_b.address)
-    response_from_a = crypto.key_package_response(request_from_b, test_account.address)
-    package_from_a = crypto.process_key_package_response(response_from_a)
-
-    assert package_from_b == signed_package_b
-    assert package_from_a == signed_package
-
-    x_priv_a, _ = x25519_keypair_a
-    x_priv_b, _ = x25519_keypair_b
-
-    b_x_pub = crypto.load_x25519_public_key(package_from_b["x25519_public_key"])
-    a_x_pub = crypto.load_x25519_public_key(package_from_a["x25519_public_key"])
-
-    secret_a = crypto.compute_shared_secret(x_priv_a, b_x_pub)
-    secret_b = crypto.compute_shared_secret(x_priv_b, a_x_pub)
-
-    assert secret_a == secret_b
 
 
 def test_build_package_id_pair_exists():
