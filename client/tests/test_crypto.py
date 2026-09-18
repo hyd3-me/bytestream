@@ -2,6 +2,7 @@ import pytest
 import base64, json
 from client import crypto, crypto_constants
 from client.keystore import packages as keystore_packages
+from client.keystore import secrets as keystore_secrets
 from client.keystore import exchange as keystore_exchange
 from eth_account.messages import encode_defunct
 
@@ -644,5 +645,5 @@ def test_handle_key_exchange_response_stores_peer_package(
 
 
 def test_derive_and_store_secret_exists():
-    assert hasattr(crypto, "derive_and_store_secret")
-    assert callable(crypto.derive_and_store_secret)
+    assert hasattr(keystore_secrets, "derive_and_store_secret")
+    assert callable(keystore_secrets.derive_and_store_secret)
