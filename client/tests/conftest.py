@@ -94,10 +94,10 @@ def signed_package(test_account, x25519_keypair_a, ed25519_keypair_a):
     package_id_bytes = crypto.build_message_id(
         crypto.generate_timestamp(), crypto.generate_nonce()
     )
-    base = crypto.build_key_package(
+    base = keystore_packages.build_key_package(
         test_account.address, x_pub, e_pub, package_id_bytes
     )
-    return crypto.sign_key_package(test_account, base)
+    return keystore_packages.sign_key_package(test_account, base)
 
 
 @pytest.fixture(autouse=True)
@@ -116,7 +116,7 @@ def signed_package_b(test_account_b, x25519_keypair_b, ed25519_keypair_b):
     package_id_bytes = crypto.build_message_id(
         crypto.generate_timestamp(), crypto.generate_nonce()
     )
-    base = crypto.build_key_package(
+    base = keystore_packages.build_key_package(
         test_account_b.address, x_pub, e_pub, package_id_bytes
     )
-    return crypto.sign_key_package(test_account_b, base)
+    return keystore_packages.sign_key_package(test_account_b, base)
