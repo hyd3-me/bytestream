@@ -2,6 +2,7 @@ import pytest
 import base64, json
 from client import crypto, crypto_constants
 from client.keystore import packages as keystore_packages
+from client.keystore import exchange as keystore_exchange
 from eth_account.messages import encode_defunct
 
 
@@ -481,16 +482,16 @@ def test_load_x25519_public_key_roundtrip(x25519_keypair_a):
 
 
 def test_build_package_id_pair_exists():
-    assert hasattr(crypto, "build_package_id_pair")
-    assert callable(crypto.build_package_id_pair)
+    assert hasattr(keystore_exchange, "build_package_id_pair")
+    assert callable(keystore_exchange.build_package_id_pair)
 
 
 def test_build_package_id_pair_is_symmetric():
     pid_a = "AAAB"
     pid_b = "AAAC"
 
-    pair_ab = crypto.build_package_id_pair(pid_a, pid_b)
-    pair_ba = crypto.build_package_id_pair(pid_b, pid_a)
+    pair_ab = keystore_exchange.build_package_id_pair(pid_a, pid_b)
+    pair_ba = keystore_exchange.build_package_id_pair(pid_b, pid_a)
 
     assert pair_ab == pair_ba
 
@@ -499,7 +500,7 @@ def test_build_package_id_pair_returns_sorted_pair_with_colon():
     pid_a = "ZZZZ"
     pid_b = "AAAA"
 
-    pair = crypto.build_package_id_pair(pid_a, pid_b)
+    pair = keystore_exchange.build_package_id_pair(pid_a, pid_b)
 
     assert pair == "AAAA:ZZZZ"
 
@@ -535,8 +536,8 @@ def test_get_peer_key_package_returns_none_when_empty(test_account):
 
 
 def test_ensure_peer_key_package_exists():
-    assert hasattr(crypto, "ensure_peer_key_package")
-    assert callable(crypto.ensure_peer_key_package)
+    assert hasattr(keystore_exchange, "ensure_peer_key_package")
+    assert callable(keystore_exchange.ensure_peer_key_package)
 
 
 def test_ensure_peer_key_package_returns_cached_package(
@@ -544,7 +545,7 @@ def test_ensure_peer_key_package_returns_cached_package(
 ):
     keystore_packages.store_key_package(signed_package_b)
 
-    result = crypto.ensure_peer_key_package(
+    result = keystore_exchange.ensure_peer_key_package(
         test_account.address, test_account_b.address
     )
 
@@ -553,8 +554,8 @@ def test_ensure_peer_key_package_returns_cached_package(
 
 
 def test_build_key_exchange_request_exists():
-    assert hasattr(crypto, "build_key_exchange_request")
-    assert callable(crypto.build_key_exchange_request)
+    assert hasattr(keystore_exchange, "build_key_exchange_request")
+    assert callable(keystore_exchange.build_key_exchange_request)
 
 
 def test_build_key_exchange_request_returns_message_with_own_package(
@@ -565,7 +566,7 @@ def test_build_key_exchange_request_returns_message_with_own_package(
         test_account.address, signed_package["package_id"]
     )
 
-    message = crypto.build_key_exchange_request(
+    message = keystore_exchange.build_key_exchange_request(
         test_account.address, test_account_b.address
     )
 
@@ -584,8 +585,8 @@ def test_build_key_exchange_request_returns_message_with_own_package(
 
 
 def test_handle_key_exchange_request_exists():
-    assert hasattr(crypto, "handle_key_exchange_request")
-    assert callable(crypto.handle_key_exchange_request)
+    assert hasattr(keystore_exchange, "handle_key_exchange_request")
+    assert callable(keystore_exchange.handle_key_exchange_request)
 
 
 def test_handle_key_exchange_request_stores_sender_package_and_returns_response(
@@ -604,7 +605,7 @@ def test_handle_key_exchange_request_stores_sender_package_and_returns_response(
         "sender_package": signed_package_b,
     }
 
-    response = crypto.handle_key_exchange_request(message, test_account.address)
+    response = keystore_exchange.handle_key_exchange_request(message, test_account.address)
 
     assert response["type"] == "key_exchange_response"
     assert response["request_id"] == message["request_id"]
@@ -618,8 +619,8 @@ def test_handle_key_exchange_request_stores_sender_package_and_returns_response(
 
 
 def test_handle_key_exchange_response_exists():
-    assert hasattr(crypto, "handle_key_exchange_response")
-    assert callable(crypto.handle_key_exchange_response)
+    assert hasattr(keystore_exchange, "handle_key_exchange_response")
+    assert callable(keystore_exchange.handle_key_exchange_response)
 
 
 def test_handle_key_exchange_response_stores_peer_package(
@@ -632,7 +633,7 @@ def test_handle_key_exchange_response_stores_peer_package(
         "package": signed_package,
     }
 
-    result = crypto.handle_key_exchange_response(response, test_account_b.address)
+    result = keystore_exchange.handle_key_exchange_response(response, test_account_b.address)
 
     assert result == signed_package
 
