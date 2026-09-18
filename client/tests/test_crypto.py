@@ -652,3 +652,15 @@ def test_derive_and_store_secret_exists():
 def test_generate_package_id_exists():
     assert hasattr(crypto, "generate_package_id")
     assert callable(crypto.generate_package_id)
+
+
+def test_generate_package_id_uses_build_message_id(mocker):
+    mock_build = mocker.patch(
+        "client.crypto.build_message_id",
+        return_value=b"\x00" * 20,
+    )
+
+    result = crypto.generate_package_id()
+
+    assert result == b"\x00" * 20
+    mock_build.assert_called_once()
