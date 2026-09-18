@@ -8,12 +8,9 @@ import time
 import secrets
 import struct
 import base64
-import json
-from eth_account.messages import encode_defunct
 
 import client.crypto_constants as constants
 from client.keystore import packages as keystore_packages
-import app.auth.security as auth_security
 
 
 def derive_master_key(signature_bytes: bytes) -> bytes:
@@ -128,51 +125,6 @@ def derive_aes_key(shared_secret: bytes) -> bytes:
     return hkdf.derive(shared_secret)
 
 
-def build_key_package(
-    eth_address: str,
-    x25519_public_key,
-    ed25519_public_key,
-    package_id_bytes: bytes,
-) -> dict:
-    return {
-        "eth_address": eth_address,
-        "x25519_public_key": base64.b64encode(
-            x25519_public_key.public_bytes_raw()
-        ).decode("ascii"),
-        "ed25519_public_key": base64.b64encode(
-            ed25519_public_key.public_bytes_raw()
-        ).decode("ascii"),
-        "package_id": base64.b64encode(package_id_bytes).decode("ascii"),
-    }
-
-
-def sign_key_package(eth_account, base_package: dict) -> dict:
-    canonical = json.dumps(base_package, sort_keys=True, separators=(",", ":"))
-    message = encode_defunct(text=canonical)
-    signature = eth_account.sign_message(message).signature
-    package = {
-        **base_package,
-        "eth_signature": base64.b64encode(signature).decode("ascii"),
-    }
-    return package
-
-
-def verify_key_package(package: dict) -> bool:
-    base_package = {
-        "eth_address": package["eth_address"],
-        "x25519_public_key": package["x25519_public_key"],
-        "ed25519_public_key": package["ed25519_public_key"],
-        "package_id": package["package_id"],
-    }
-    canonical = json.dumps(base_package, sort_keys=True, separators=(",", ":"))
-    signature_bytes = base64.b64decode(package["eth_signature"])
-    return auth_security.verify_signature(
-        package["eth_address"],
-        canonical,
-        signature_bytes.hex(),
-    )
-
-
 def load_x25519_public_key(public_key_b64: str):
     raw = base64.b64decode(public_key_b64)
     return x25519.X25519PublicKey.from_public_bytes(raw)
@@ -207,7 +159,7 @@ def handle_key_exchange_request(message: dict, own_address: str) -> dict:
     sender_package = message.get("sender_package")
     if not sender_package:
         return {}
-    if not verify_key_package(sender_package):
+    if not keystore_packages.verify_key_package(sender_package):
         return {}
     if sender_package["eth_address"] != message.get("sender_address"):
         return {}
@@ -229,7 +181,7 @@ def handle_key_exchange_response(response: dict, own_address: str) -> dict | Non
     package = response.get("package")
     if not package:
         return None
-    if not verify_key_package(package):
+    if not keystore_packages.verify_key_package(package):
         return None
     if package["eth_address"] != response.get("sender_address"):
         return None
