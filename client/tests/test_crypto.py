@@ -647,3 +647,8 @@ def test_handle_key_exchange_response_stores_peer_package(
 def test_derive_and_store_secret_exists():
     assert hasattr(keystore_secrets, "derive_and_store_secret")
     assert callable(keystore_secrets.derive_and_store_secret)
+
+
+def test_generate_package_id_exists():
+    assert hasattr(crypto, "generate_package_id")
+    assert callable(crypto.generate_package_id)
