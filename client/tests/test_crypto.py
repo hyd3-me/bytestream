@@ -664,3 +664,8 @@ def test_generate_package_id_uses_build_message_id(mocker):
 
     assert result == b"\x00" * 20
     mock_build.assert_called_once()
+
+
+def test_compute_master_key_id_exists():
+    assert hasattr(crypto, "compute_master_key_id")
+    assert callable(crypto.compute_master_key_id)
