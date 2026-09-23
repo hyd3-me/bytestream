@@ -11,4 +11,9 @@ def load_master_key(eth_address: str, master_key_id: str) -> bytes | None:
 
 
 def list_master_key_ids(eth_address: str) -> list[str]:
-    pass
+    prefix = f"{eth_address}:"
+    return [
+        key[len(prefix):]
+        for key in _master_keys
+        if key.startswith(prefix)
+    ]
