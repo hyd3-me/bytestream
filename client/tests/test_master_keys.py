@@ -20,3 +20,8 @@ def test_store_and_load_master_key_roundtrip():
     loaded = master_keys.load_master_key(eth_address, master_key_id)
 
     assert loaded == master_key
+
+
+def test_list_master_key_ids_exists():
+    assert hasattr(master_keys, "list_master_key_ids")
+    assert callable(master_keys.list_master_key_ids)
