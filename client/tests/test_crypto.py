@@ -669,3 +669,15 @@ def test_generate_package_id_uses_build_message_id(mocker):
 def test_compute_master_key_id_exists():
     assert hasattr(crypto, "compute_master_key_id")
     assert callable(crypto.compute_master_key_id)
+
+
+def test_compute_master_key_id_deterministic(x25519_keypair_a, ed25519_keypair_a):
+    _, x_pub = x25519_keypair_a
+    _, e_pub = ed25519_keypair_a
+
+    id1 = crypto.compute_master_key_id(x_pub, e_pub)
+    id2 = crypto.compute_master_key_id(x_pub, e_pub)
+
+    assert isinstance(id1, bytes)
+    assert len(id1) == 32
+    assert id1 == id2
