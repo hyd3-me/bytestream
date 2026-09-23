@@ -134,4 +134,8 @@ def generate_package_id() -> bytes:
 
 
 def compute_master_key_id(x25519_public_key, ed25519_public_key) -> bytes:
-    pass
+    raw = (
+        x25519_public_key.public_bytes_raw()
+        + ed25519_public_key.public_bytes_raw()
+    )
+    return hashlib.sha256(raw).digest()
