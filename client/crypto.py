@@ -131,3 +131,7 @@ def load_x25519_public_key(public_key_b64: str):
 
 def generate_package_id() -> bytes:
     return build_message_id(generate_timestamp(), generate_nonce())
+
+
+def compute_master_key_id(x25519_public_key, ed25519_public_key) -> bytes:
+    pass
