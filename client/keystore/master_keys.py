@@ -1,6 +1,10 @@
+_master_keys = {}
+
 def store_master_key(
     eth_address: str, master_key_id: str, master_key: bytes
 ) -> None:
-    pass
+    key = f"{eth_address}:{master_key_id}"
+    _master_keys[key] = master_key
 def load_master_key(eth_address: str, master_key_id: str) -> bytes | None:
-    pass
+    key = f"{eth_address}:{master_key_id}"
+    return _master_keys.get(key)
