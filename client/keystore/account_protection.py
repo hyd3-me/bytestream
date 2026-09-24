@@ -7,8 +7,11 @@
 import hashlib
 import hmac
 import secrets
+import time
 
 PBKDF2_ITERATIONS = 600_000
+MAX_ATTEMPTS = 3
+LOCKOUT_SECONDS = 900
 
 # --- Storage ---
 
@@ -42,6 +45,8 @@ def set_pin(eth_address: str, pin: str) -> None:
 
 
 def verify_pin(eth_address: str, pin: str) -> bool:
+    if is_locked(eth_address):
+        return False
     record = _account_protection.get(eth_address)
     if record is None:
         return False
@@ -52,11 +57,24 @@ def verify_pin(eth_address: str, pin: str) -> bool:
         PBKDF2_ITERATIONS,
         dklen=32,
     )
-    return hmac.compare_digest(pin_hash, record["hash"])
+    if hmac.compare_digest(pin_hash, record["hash"]):
+        _attempts.pop(eth_address, None)
+        return True
+    entry = _attempts.get(eth_address, {"count": 0, "last_attempt": 0.0})
+    entry["count"] += 1
+    entry["last_attempt"] = time.time()
+    if entry["count"] >= MAX_ATTEMPTS:
+        entry["count"] = 0
+        entry["locked_until"] = time.time() + LOCKOUT_SECONDS
+    _attempts[eth_address] = entry
+    return False
 
 
 def is_locked(eth_address: str) -> bool:
-    record = _attempts.get(eth_address)
-    if record is None:
+    entry = _attempts.get(eth_address)
+    if entry is None:
         return False
-    return False
+    locked_until = entry.get("locked_until")
+    if locked_until is None:
+        return False
+    return time.time() < locked_until
