@@ -48,3 +48,9 @@ def test_verify_pin_returns_true_for_correct_pin():
     account_protection.set_pin("0xabc", "1234")
 
     assert account_protection.verify_pin("0xabc", "1234") is True
+
+
+def test_verify_pin_returns_false_for_wrong_pin():
+    account_protection.set_pin("0xabc", "1234")
+
+    assert account_protection.verify_pin("0xabc", "9999") is False
