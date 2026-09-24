@@ -101,3 +101,12 @@ def test_is_locked_expires_after_lockout_period(mocker):
 def test_clear_protection_exists():
     assert hasattr(account_protection, "clear_protection")
     assert callable(account_protection.clear_protection)
+
+
+def test_clear_protection_removes_pin_record():
+    account_protection.set_pin("0xabc", "1234")
+    assert account_protection.get_protection_type("0xabc")["type"] == "pin"
+
+    account_protection.clear_protection("0xabc")
+
+    assert account_protection.get_protection_type("0xabc") == {"type": "none"}
