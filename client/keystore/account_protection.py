@@ -5,6 +5,7 @@
 # --- Imports ---
 
 import hashlib
+import hmac
 import secrets
 
 PBKDF2_ITERATIONS = 600_000
@@ -41,4 +42,14 @@ def set_pin(eth_address: str, pin: str) -> None:
 
 
 def verify_pin(eth_address: str, pin: str) -> bool:
-    pass
+    record = _account_protection.get(eth_address)
+    if record is None:
+        return False
+    pin_hash = hashlib.pbkdf2_hmac(
+        "sha256",
+        pin.encode("utf-8"),
+        record["salt"],
+        PBKDF2_ITERATIONS,
+        dklen=32,
+    )
+    return hmac.compare_digest(pin_hash, record["hash"])
