@@ -1,10 +1,20 @@
+"""Nonce generation and Redis-backed storage."""
+
+# path: backend/app/auth/utils.py
+
+# --- Imports ---
+
 import secrets
 from redis.asyncio import Redis
 from ..core.config import get_settings
 from typing import Optional
 
+# --- Setup ---
+
 settings = get_settings()
 
+
+# --- Public API ---
 
 def generate_nonce() -> str:
     """Generate a cryptographically secure random nonce."""

@@ -1,3 +1,9 @@
+"""FastAPI auth router: nonce endpoint and signature verification."""
+
+# path: backend/app/auth/router.py
+
+# --- Imports ---
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from redis.asyncio import Redis
 from app.auth import utils, security, schemas
@@ -5,10 +11,14 @@ from ..core.redis import get_redis
 from ..core.config import get_settings
 from ..core.logging import get_logger
 
+# --- Setup ---
+
 router = APIRouter(prefix="/auth", tags=["auth"])
 settings = get_settings()
 logger = get_logger(__name__)
 
+
+# --- Public API ---
 
 @router.get("/nonce/{address}")
 async def get_nonce(address: str, redis: Redis = Depends(get_redis)):

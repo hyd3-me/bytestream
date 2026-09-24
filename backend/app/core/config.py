@@ -1,9 +1,17 @@
+"""Application settings loaded from environment."""
+
+# path: backend/app/core/config.py
+
+# --- Imports ---
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field, ValidationError
 from functools import lru_cache
 from pydantic import Field
 from typing import Optional
 
+
+# --- Public API ---
 
 class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"

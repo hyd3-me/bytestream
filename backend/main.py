@@ -1,3 +1,9 @@
+"""Application entry point: FastAPI app, lifespan, and Socket.IO mount."""
+
+# path: backend/main.py
+
+# --- Imports ---
+
 import sys
 from pathlib import Path
 
@@ -14,10 +20,14 @@ from app.ws import manager as ws_manager
 from app.core.dependencies import get_db_conn
 import asyncpg
 
+# --- Setup ---
+
 settings = get_settings()
 setup_logging(settings)
 logger = get_logger(__name__)
 
+
+# --- Public API ---
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

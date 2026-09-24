@@ -1,5 +1,13 @@
+"""Integration tests for /auth/nonce."""
+
+# path: backend/tests/integration/test_auth.py
+
+# --- Imports ---
+
 import pytest
 
+
+# --- Tests ---
 
 @pytest.mark.asyncio
 async def test_get_nonce_returns_200_and_nonce(client):

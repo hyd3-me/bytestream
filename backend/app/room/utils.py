@@ -1,5 +1,13 @@
+"""Room ID generation and address validation."""
+
+# path: backend/app/room/utils.py
+
+# --- Imports ---
+
 from app.core.web3 import get_web3
 
+
+# --- Public API ---
 
 def sort_addresses(addr1: str, addr2: str):
     """Return tuple of addresses sorted lexicographically."""

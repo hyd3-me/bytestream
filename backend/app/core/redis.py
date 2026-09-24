@@ -1,10 +1,20 @@
+"""Redis connection pool and dependency provider."""
+
+# path: backend/app/core/redis.py
+
+# --- Imports ---
+
 from redis.asyncio import Redis
 from functools import lru_cache
 from .config import get_settings
 from .logging import get_logger
 
+# --- Setup ---
+
 logger = get_logger(__name__)
 
+
+# --- Public API ---
 
 @lru_cache
 def get_redis_pool() -> Redis:

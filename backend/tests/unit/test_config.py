@@ -1,6 +1,14 @@
+"""Unit tests for app.core.config."""
+
+# path: backend/tests/unit/test_config.py
+
+# --- Imports ---
+
 import pytest
 from app.core.config import Settings
 
+
+# --- Tests ---
 
 def test_logging_settings_have_defaults():
     settings = Settings()

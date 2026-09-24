@@ -1,9 +1,17 @@
+"""Integration test for PostgreSQL connectivity."""
+
+# path: backend/tests/integration/test_db_connection.py
+
+# --- Imports ---
+
 import pytest
 import asyncpg
 from app.core.config import get_settings
 
 settings = get_settings()
 
+
+# --- Tests ---
 
 @pytest.mark.asyncio
 async def test_database_connection():

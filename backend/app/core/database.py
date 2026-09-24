@@ -1,10 +1,20 @@
+"""PostgreSQL connection pool manager."""
+
+# path: backend/app/core/database.py
+
+# --- Imports ---
+
 import asyncpg
 from .config import get_settings
 from .logging import get_logger
 from contextlib import asynccontextmanager
 
+# --- Setup ---
+
 logger = get_logger(__name__)
 
+
+# --- Public API ---
 
 class DatabaseManager:
     def __init__(self):

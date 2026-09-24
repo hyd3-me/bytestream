@@ -1,10 +1,20 @@
+"""JWT creation, decoding, and Ethereum signature verification."""
+
+# path: backend/app/auth/security.py
+
+# --- Imports ---
+
 from datetime import datetime, timedelta, timezone
 from jose import jwt
 from ..core.config import get_settings
 import app.core.web3 as web3
 
+# --- Setup ---
+
 settings = get_settings()
 
+
+# --- Public API ---
 
 def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
     to_encode = data.copy()

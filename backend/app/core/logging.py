@@ -1,3 +1,9 @@
+"""Logging configuration for development and production."""
+
+# path: backend/app/core/logging.py
+
+# --- Imports ---
+
 import logging
 import sys
 from logging.handlers import RotatingFileHandler
@@ -5,6 +11,8 @@ from pathlib import Path
 from typing import Optional
 from .config import Settings
 
+
+# --- Public API ---
 
 def setup_logging(settings: Settings) -> None:
     """Configure root logger based on environment."""

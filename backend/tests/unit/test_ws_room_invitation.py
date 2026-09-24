@@ -1,8 +1,16 @@
+"""Unit tests for create_room_request handler."""
+
+# path: backend/tests/unit/test_ws_room_invitation.py
+
+# --- Imports ---
+
 import pytest
 import json
 from app.ws import manager
 from app.room import utils
 
+
+# --- Tests ---
 
 @pytest.mark.asyncio
 async def test_handle_create_room_request_exists():

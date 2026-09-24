@@ -1,10 +1,20 @@
+"""Helpers for .env file manipulation."""
+
+# path: backend/app/core/env_utils.py
+
+# --- Imports ---
+
 from pathlib import Path
 import secrets
 from dotenv import dotenv_values, set_key
 from .logging import get_logger
 
+# --- Setup ---
+
 logger = get_logger(__name__)
 
+
+# --- Public API ---
 
 def ensure_jwt_secret_in_env(env_path: Path) -> None:
     """

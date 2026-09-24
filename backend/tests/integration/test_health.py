@@ -1,7 +1,15 @@
+"""Integration test for /health."""
+
+# path: backend/tests/integration/test_health.py
+
+# --- Imports ---
+
 import pytest
 from httpx import AsyncClient, ASGITransport
 from main import fastapi_app
 
+
+# --- Tests ---
 
 @pytest.mark.asyncio
 async def test_health_endpoint():

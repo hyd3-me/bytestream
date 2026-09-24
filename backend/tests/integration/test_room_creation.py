@@ -1,3 +1,9 @@
+"""Integration tests for room creation in PostgreSQL."""
+
+# path: backend/tests/integration/test_room_creation.py
+
+# --- Imports ---
+
 import pytest
 from pathlib import Path
 from urllib.parse import urlparse
@@ -5,8 +11,12 @@ from pgsql_test import get_connections
 from app.core.config import get_settings
 from app.room import crud, utils
 
+# --- Setup ---
+
 settings = get_settings()
 
+
+# --- Fixtures ---
 
 @pytest.fixture(scope="session")
 def db_connection():
@@ -33,6 +43,8 @@ def db(db_connection):
     yield db_connection.db
     db_connection.db.after_each()
 
+
+# --- Tests ---
 
 @pytest.mark.asyncio
 async def test_create_dm_room(async_db):

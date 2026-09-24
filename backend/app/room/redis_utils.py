@@ -1,9 +1,19 @@
+"""Redis helpers for room keys and invitations."""
+
+# path: backend/app/room/redis_utils.py
+
+# --- Imports ---
+
 import json
 from redis.asyncio import Redis
 from app.core.config import get_settings
 
+# --- Setup ---
+
 settings = get_settings()
 
+
+# --- Public API ---
 
 def get_personal_room_key(address: str) -> str:
     return f"{settings.redis_key_prefix}user:{address}"

@@ -1,8 +1,16 @@
+"""Integration tests for /auth/verify."""
+
+# path: backend/tests/integration/test_auth_verify.py
+
+# --- Imports ---
+
 import pytest
 from web3 import Web3
 from eth_account.messages import encode_defunct
 from app.auth import utils as auth_utils
 
+
+# --- Tests ---
 
 @pytest.mark.asyncio
 async def test_verify_endpoint_success(client, redis_client, test_account):

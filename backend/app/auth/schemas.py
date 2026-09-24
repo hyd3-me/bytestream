@@ -1,4 +1,12 @@
+"""Pydantic schemas for authentication endpoints."""
+
+# path: backend/app/auth/schemas.py
+
+# --- Imports ---
+
 from pydantic import BaseModel
+
+# --- Public API ---
 
 class VerifyRequest(BaseModel):
     address: str

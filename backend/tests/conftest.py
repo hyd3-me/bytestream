@@ -1,3 +1,9 @@
+"""Shared pytest fixtures for backend tests."""
+
+# path: backend/tests/conftest.py
+
+# --- Imports ---
+
 import os
 import sys
 from pathlib import Path
@@ -54,6 +60,8 @@ async def reset_infrastructure():
     reset_redis_pool()
     await reset_db_pool()
 
+
+# --- Fixtures ---
 
 @pytest_asyncio.fixture
 async def live_server():

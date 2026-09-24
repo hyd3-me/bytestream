@@ -1,6 +1,14 @@
+"""Unit tests for app.room.utils."""
+
+# path: backend/tests/unit/test_room_utils.py
+
+# --- Imports ---
+
 import pytest
 from app.room import utils
 
+
+# --- Tests ---
 
 def test_sort_addresses_returns_sorted_pair():
     addr1 = "0xbbb"

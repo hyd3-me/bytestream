@@ -1,3 +1,9 @@
+"""Unit tests for the test account fixture source."""
+
+# path: backend/tests/unit/test_test_account.py
+
+# --- Imports ---
+
 import pytest
 from web3 import Web3
 from dotenv import dotenv_values
@@ -6,6 +12,8 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 ENV_PATH = PROJECT_ROOT / ".env"
 
+
+# --- Tests ---
 
 def test_test_account_private_key_exists():
     """Test that .env file exists and contains TEST_ACCOUNT_PRIVATE_KEY with valid format."""

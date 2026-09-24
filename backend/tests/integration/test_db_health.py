@@ -1,5 +1,13 @@
+"""Integration test for /db-health."""
+
+# path: backend/tests/integration/test_db_health.py
+
+# --- Imports ---
+
 import pytest
 
+
+# --- Tests ---
 
 @pytest.mark.asyncio
 async def test_db_health(client):

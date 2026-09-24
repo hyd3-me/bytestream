@@ -1,9 +1,19 @@
+"""Unit tests for nonce deletion."""
+
+# path: backend/tests/unit/test_nonce_utils.py
+
+# --- Imports ---
+
 import pytest
 from app.auth import utils as auth_utils
 from app.core.config import get_settings
 
+# --- Setup ---
+
 settings = get_settings()
 
+
+# --- Tests ---
 
 @pytest.mark.asyncio
 async def test_delete_nonce_removes_key(redis_client):

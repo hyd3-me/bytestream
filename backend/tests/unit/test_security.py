@@ -1,3 +1,9 @@
+"""Unit tests for JWT creation and decoding."""
+
+# path: backend/tests/unit/test_security.py
+
+# --- Imports ---
+
 import pytest
 from datetime import timedelta
 from jose import jwt
@@ -6,8 +12,12 @@ from app.core.config import get_settings
 
 from app.auth.security import create_access_token, decode_token
 
+# --- Setup ---
+
 settings = get_settings()
 
+
+# --- Tests ---
 
 def test_create_access_token_returns_string():
     token = create_access_token({"sub": "test_user"})

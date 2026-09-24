@@ -1,8 +1,16 @@
+"""Integration test for full room lifecycle over Socket.IO."""
+
+# path: backend/tests/integration/test_room_cycle.py
+
+# --- Imports ---
+
 import pytest
 import asyncio
 
 from app.room import crud, utils, redis_utils
 
+
+# --- Tests ---
 
 @pytest.mark.asyncio
 async def test_socketio_connect_with_jwt(room_users, socketio_client_factory):

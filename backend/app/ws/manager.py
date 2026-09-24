@@ -1,3 +1,9 @@
+"""Socket.IO manager: connection, rooms, and message handlers."""
+
+# path: backend/app/ws/manager.py
+
+# --- Imports ---
+
 import socketio
 import secrets
 from app.core.database import db_manager
@@ -6,8 +12,12 @@ from app.core.logging import get_logger
 from app.auth import security
 from app.room import crud, utils, redis_utils
 
+# --- Setup ---
+
 logger = get_logger(__name__)
 
+
+# --- Public API ---
 
 class SocketIOManager:
     def __init__(self):

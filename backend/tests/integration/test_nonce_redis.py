@@ -1,6 +1,14 @@
+"""Integration test for nonce storage in Redis."""
+
+# path: backend/tests/integration/test_nonce_redis.py
+
+# --- Imports ---
+
 import pytest
 from app.auth import utils
 
+
+# --- Tests ---
 
 @pytest.mark.asyncio
 async def test_nonce_stored_in_redis(client, redis_client):

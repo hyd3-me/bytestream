@@ -1,3 +1,9 @@
+"""Unit tests for app.core.logging."""
+
+# path: backend/tests/unit/test_logging.py
+
+# --- Imports ---
+
 import pytest
 import logging
 import tempfile
@@ -6,6 +12,8 @@ from pathlib import Path
 from app.core.config import Settings
 from app.core.logging import setup_logging, get_logger
 
+
+# --- Tests ---
 
 def test_get_logger_returns_logger():
     logger = get_logger(__name__)

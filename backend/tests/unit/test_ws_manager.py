@@ -1,3 +1,9 @@
+"""Unit tests for SocketIOManager room handlers."""
+
+# path: backend/tests/unit/test_ws_manager.py
+
+# --- Imports ---
+
 import pytest
 import pytest_asyncio
 
@@ -12,6 +18,8 @@ class FakeAsyncContextManager:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         pass
 
+
+# --- Fixtures ---
 
 @pytest_asyncio.fixture
 async def decline_setup(mocker):
@@ -39,6 +47,8 @@ async def decline_setup(mocker):
         "mock_create_room": mock_create_room,
     }
 
+
+# --- Tests ---
 
 def test_create_room_request_handler_is_registered():
     handlers = manager.ws_manager.sio.handlers["/"]
