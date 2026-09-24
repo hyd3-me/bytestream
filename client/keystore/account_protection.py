@@ -38,3 +38,7 @@ def set_pin(eth_address: str, pin: str) -> None:
         "salt": salt,
         "hash": pin_hash,
     }
+
+
+def verify_pin(eth_address: str, pin: str) -> bool:
+    pass
