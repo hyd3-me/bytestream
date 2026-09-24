@@ -117,6 +117,7 @@ def _clear_crypto_state():
     keystore_packages._current_package_ids.clear()
     keystore_secrets._secrets.clear()
     keystore_master_keys._master_keys.clear()
+    keystore_master_keys._current_master_key_ids.clear()
     keystore_account_protection._account_protection.clear()
     keystore_account_protection._attempts.clear()
     yield
@@ -124,6 +125,7 @@ def _clear_crypto_state():
     keystore_packages._current_package_ids.clear()
     keystore_secrets._secrets.clear()
     keystore_master_keys._master_keys.clear()
+    keystore_master_keys._current_master_key_ids.clear()
     keystore_account_protection._account_protection.clear()
     keystore_account_protection._attempts.clear()
 
