@@ -29,3 +29,7 @@ def list_master_key_ids(eth_address: str) -> list[str]:
 
 def list_known_addresses() -> list[str]:
     pass
+
+
+def set_current_master_key_id(eth_address: str, master_key_id: str) -> None:
+    pass
