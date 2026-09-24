@@ -43,3 +43,8 @@ def test_list_master_key_ids_returns_only_for_given_address():
     result = master_keys.list_master_key_ids("0xaaa")
 
     assert sorted(result) == ["mkid_a1", "mkid_a2"]
+
+
+def test_list_known_addresses_exists():
+    assert hasattr(master_keys, "list_known_addresses")
+    assert callable(master_keys.list_known_addresses)
