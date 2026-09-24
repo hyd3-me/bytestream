@@ -53,3 +53,7 @@ def verify_pin(eth_address: str, pin: str) -> bool:
         dklen=32,
     )
     return hmac.compare_digest(pin_hash, record["hash"])
+
+
+def is_locked(eth_address: str) -> bool:
+    pass
