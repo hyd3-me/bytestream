@@ -96,3 +96,8 @@ def test_is_locked_expires_after_lockout_period(mocker):
     mock_time.return_value = now + account_protection.LOCKOUT_SECONDS + 1
 
     assert account_protection.is_locked("0xabc") is False
+
+
+def test_clear_protection_exists():
+    assert hasattr(account_protection, "clear_protection")
+    assert callable(account_protection.clear_protection)
