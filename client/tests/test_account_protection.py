@@ -42,3 +42,9 @@ def test_set_pin_stores_salt_and_hash():
 def test_verify_pin_exists():
     assert hasattr(account_protection, "verify_pin")
     assert callable(account_protection.verify_pin)
+
+
+def test_verify_pin_returns_true_for_correct_pin():
+    account_protection.set_pin("0xabc", "1234")
+
+    assert account_protection.verify_pin("0xabc", "1234") is True
