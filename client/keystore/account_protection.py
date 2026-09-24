@@ -12,13 +12,7 @@ def get_protection_type(eth_address: str) -> dict:
     record = _account_protection.get(eth_address)
     if record is None:
         return {"type": "none"}
-    if record["type"] == "pin":
-        return {
-            "type": "pin",
-            "salt": record["salt"],
-            "hash": record["hash"],
-        }
-    return {"type": record["type"]}
+    return record
 
 
 def set_pin(eth_address: str, pin: str) -> None:
