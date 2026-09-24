@@ -63,3 +63,11 @@ def test_is_locked_exists():
 
 def test_is_locked_returns_false_for_unknown_address():
     assert account_protection.is_locked("0xunknown") is False
+
+
+def test_is_locked_returns_true_after_max_attempts():
+    account_protection.set_pin("0xabc", "1234")
+    for _ in range(account_protection.MAX_ATTEMPTS):
+        account_protection.verify_pin("0xabc", "0000")
+
+    assert account_protection.is_locked("0xabc") is True
