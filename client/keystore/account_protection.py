@@ -56,4 +56,7 @@ def verify_pin(eth_address: str, pin: str) -> bool:
 
 
 def is_locked(eth_address: str) -> bool:
-    pass
+    record = _attempts.get(eth_address)
+    if record is None:
+        return False
+    return False
