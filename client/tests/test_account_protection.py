@@ -37,3 +37,8 @@ def test_set_pin_stores_salt_and_hash():
     assert isinstance(result["hash"], bytes)
     assert len(result["salt"]) > 0
     assert len(result["hash"]) > 0
+
+
+def test_verify_pin_exists():
+    assert hasattr(account_protection, "verify_pin")
+    assert callable(account_protection.verify_pin)
