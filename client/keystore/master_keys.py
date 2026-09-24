@@ -25,3 +25,7 @@ def list_master_key_ids(eth_address: str) -> list[str]:
         for key in _master_keys
         if key.startswith(prefix)
     ]
+
+
+def list_known_addresses() -> list[str]:
+    pass
