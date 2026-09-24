@@ -59,3 +59,7 @@ def test_verify_pin_returns_false_for_wrong_pin():
 def test_is_locked_exists():
     assert hasattr(account_protection, "is_locked")
     assert callable(account_protection.is_locked)
+
+
+def test_is_locked_returns_false_for_unknown_address():
+    assert account_protection.is_locked("0xunknown") is False
