@@ -58,3 +58,9 @@ def test_set_current_master_key_id_exists():
 def test_get_current_master_key_id_exists():
     assert hasattr(master_keys, "get_current_master_key_id")
     assert callable(master_keys.get_current_master_key_id)
+
+
+def test_set_and_get_current_master_key_id_roundtrip():
+    master_keys.set_current_master_key_id("0xabc", "mkid_1")
+
+    assert master_keys.get_current_master_key_id("0xabc") == "mkid_1"
