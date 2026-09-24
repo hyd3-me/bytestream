@@ -1,3 +1,9 @@
+"""Crypto constants: HKDF salts and info strings, fixed message."""
+
+# path: client/crypto_constants.py
+
+# --- Constants ---
+
 KEY_LENGTH = 32
 MASTER_KEY_SALT = b"bytestream_salt_v1"
 X25519_SALT = b"bytestream_x25519_salt_v1"

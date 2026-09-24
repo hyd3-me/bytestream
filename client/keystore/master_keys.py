@@ -1,4 +1,12 @@
+"""Master key storage: per-address master keys, encrypted at rest (future)."""
+
+# path: client/keystore/master_keys.py
+
+# --- Storage ---
+
 _master_keys = {}
+
+# --- Public API ---
 
 def store_master_key(
     eth_address: str, master_key_id: str, master_key: bytes

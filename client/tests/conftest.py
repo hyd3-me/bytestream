@@ -1,3 +1,9 @@
+"""Shared pytest fixtures for client tests."""
+
+# path: client/tests/conftest.py
+
+# --- Imports ---
+
 import sys
 from pathlib import Path
 
@@ -19,6 +25,8 @@ from client.keystore import master_keys as keystore_master_keys
 
 env_path = project_root / ".env"
 
+
+# --- Fixtures ---
 
 @pytest.fixture(scope="session")
 def test_account():

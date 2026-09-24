@@ -1,8 +1,16 @@
+"""Key exchange protocol: request, response, and processing."""
+
+# path: client/keystore/exchange.py
+
+# --- Imports ---
+
 import base64
 
 import client.crypto as crypto
 from client.keystore import packages as keystore_packages
 
+
+# --- Public API ---
 
 def build_package_id_pair(pid_1: str, pid_2: str) -> str:
     return ":".join(sorted([pid_1, pid_2]))

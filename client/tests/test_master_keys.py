@@ -1,5 +1,13 @@
+"""Tests for client/keystore/master_keys."""
+
+# path: client/tests/test_master_keys.py
+
+# --- Imports ---
+
 from client.keystore import master_keys
 
+
+# --- Tests ---
 
 def test_store_master_key_exists():
     assert hasattr(master_keys, "store_master_key")

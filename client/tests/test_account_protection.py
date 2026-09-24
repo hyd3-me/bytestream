@@ -1,5 +1,13 @@
+"""Tests for client/keystore/account_protection."""
+
+# path: client/tests/test_account_protection.py
+
+# --- Imports ---
+
 from client.keystore import account_protection
 
+
+# --- Tests ---
 
 def test_get_protection_type_exists():
     assert hasattr(account_protection, "get_protection_type")

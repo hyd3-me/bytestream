@@ -1,3 +1,9 @@
+"""Tests for client/crypto and client/keystore modules."""
+
+# path: client/tests/test_crypto.py
+
+# --- Imports ---
+
 import pytest
 import base64, json
 from client import crypto, crypto_constants
@@ -6,6 +12,8 @@ from client.keystore import secrets as keystore_secrets
 from client.keystore import exchange as keystore_exchange
 from eth_account.messages import encode_defunct
 
+
+# --- Tests ---
 
 def test_derive_master_key_exists():
     assert hasattr(crypto, "derive_master_key")

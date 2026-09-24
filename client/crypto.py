@@ -1,3 +1,9 @@
+"""Cryptographic primitives: HKDF, X25519/Ed25519, ECDH, AES-GCM, hashing."""
+
+# path: client/crypto.py
+
+# --- Imports ---
+
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import x25519, ed25519
@@ -11,6 +17,8 @@ import base64
 
 import client.crypto_constants as constants
 
+
+# --- Public API ---
 
 def derive_master_key(signature_bytes: bytes) -> bytes:
     hkdf = HKDF(

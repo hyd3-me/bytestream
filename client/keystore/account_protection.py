@@ -1,12 +1,21 @@
+"""Account protection: PIN storage and verification."""
+
+# path: client/keystore/account_protection.py
+
+# --- Imports ---
+
 import hashlib
 import secrets
 
 PBKDF2_ITERATIONS = 600_000
 
+# --- Storage ---
+
 _account_protection = {}
 _attempts = {}
 
 
+# --- Public API ---
 
 def get_protection_type(eth_address: str) -> dict:
     record = _account_protection.get(eth_address)

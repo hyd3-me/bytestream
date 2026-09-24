@@ -1,11 +1,21 @@
+"""Public key packages: build, sign, verify, and store."""
+
+# path: client/keystore/packages.py
+
+# --- Imports ---
+
 import base64
 import json
 from eth_account.messages import encode_defunct
 import app.auth.security as auth_security
 
+# --- Storage ---
+
 _packages = {}
 _current_package_ids = {}
 
+
+# --- Public API ---
 
 def store_key_package(package: dict) -> None:
     eth_address = package["eth_address"]
