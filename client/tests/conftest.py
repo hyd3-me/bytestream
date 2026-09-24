@@ -22,6 +22,7 @@ from client import crypto, crypto_constants
 from client.keystore import packages as keystore_packages
 from client.keystore import secrets as keystore_secrets
 from client.keystore import master_keys as keystore_master_keys
+from client.keystore import account_protection as keystore_account_protection
 
 env_path = project_root / ".env"
 
@@ -116,11 +117,15 @@ def _clear_crypto_state():
     keystore_packages._current_package_ids.clear()
     keystore_secrets._secrets.clear()
     keystore_master_keys._master_keys.clear()
+    keystore_account_protection._account_protection.clear()
+    keystore_account_protection._attempts.clear()
     yield
     keystore_packages._packages.clear()
     keystore_packages._current_package_ids.clear()
     keystore_secrets._secrets.clear()
     keystore_master_keys._master_keys.clear()
+    keystore_account_protection._account_protection.clear()
+    keystore_account_protection._attempts.clear()
 
 
 @pytest.fixture
