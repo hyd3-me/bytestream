@@ -53,3 +53,8 @@ def test_list_known_addresses_exists():
 def test_set_current_master_key_id_exists():
     assert hasattr(master_keys, "set_current_master_key_id")
     assert callable(master_keys.set_current_master_key_id)
+
+
+def test_get_current_master_key_id_exists():
+    assert hasattr(master_keys, "get_current_master_key_id")
+    assert callable(master_keys.get_current_master_key_id)
