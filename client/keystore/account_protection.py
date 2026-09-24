@@ -78,3 +78,7 @@ def is_locked(eth_address: str) -> bool:
     if locked_until is None:
         return False
     return time.time() < locked_until
+
+
+def clear_protection(eth_address: str) -> None:
+    pass
