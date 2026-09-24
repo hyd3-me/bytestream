@@ -8,3 +8,7 @@ def get_protection_type(eth_address: str) -> dict:
     if record is None:
         return {"type": "none"}
     return {"type": record["type"]}
+
+
+def set_pin(eth_address: str, pin: str) -> None:
+    pass
