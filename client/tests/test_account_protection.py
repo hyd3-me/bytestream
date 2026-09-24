@@ -71,3 +71,13 @@ def test_is_locked_returns_true_after_max_attempts():
         account_protection.verify_pin("0xabc", "0000")
 
     assert account_protection.is_locked("0xabc") is True
+
+
+def test_verify_pin_resets_counter_on_success():
+    account_protection.set_pin("0xabc", "1234")
+    account_protection.verify_pin("0xabc", "0000")
+    account_protection.verify_pin("0xabc", "0000")
+
+    account_protection.verify_pin("0xabc", "1234")
+
+    assert account_protection._attempts.get("0xabc") is None
