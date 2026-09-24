@@ -48,3 +48,8 @@ def test_list_master_key_ids_returns_only_for_given_address():
 def test_list_known_addresses_exists():
     assert hasattr(master_keys, "list_known_addresses")
     assert callable(master_keys.list_known_addresses)
+
+
+def test_set_current_master_key_id_exists():
+    assert hasattr(master_keys, "set_current_master_key_id")
+    assert callable(master_keys.set_current_master_key_id)
