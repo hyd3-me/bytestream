@@ -54,3 +54,8 @@ def test_verify_pin_returns_false_for_wrong_pin():
     account_protection.set_pin("0xabc", "1234")
 
     assert account_protection.verify_pin("0xabc", "9999") is False
+
+
+def test_is_locked_exists():
+    assert hasattr(account_protection, "is_locked")
+    assert callable(account_protection.is_locked)
