@@ -10,6 +10,7 @@ import client.crypto as crypto
 # --- Storage ---
 
 _device_key = None
+_tab_secret = None
 
 # --- Public API ---
 
@@ -29,3 +30,7 @@ def encrypt_master_key(master_key: bytes, key: bytes) -> tuple[bytes, bytes]:
 
 def decrypt_master_key(ciphertext: bytes, nonce: bytes, key: bytes) -> bytes:
     return crypto.decrypt_message(key, ciphertext, nonce)
+
+
+def set_tab_secret(secret: bytes) -> None:
+    pass
