@@ -18,3 +18,15 @@ def test_get_or_create_device_key_returns_stable_32_bytes():
 def test_encrypt_master_key_exists():
     assert hasattr(session_store, "encrypt_master_key")
     assert callable(session_store.encrypt_master_key)
+
+
+def test_encrypt_master_key_returns_ciphertext_and_nonce():
+    master_key = b"\x01" * 32
+    key = b"\x02" * 32
+
+    ciphertext, nonce = session_store.encrypt_master_key(master_key, key)
+
+    assert isinstance(ciphertext, bytes)
+    assert isinstance(nonce, bytes)
+    assert len(nonce) == 12
+    assert ciphertext != master_key
