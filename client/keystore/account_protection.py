@@ -9,6 +9,8 @@ import hmac
 import secrets
 import time
 
+# --- Constants ---
+
 PBKDF2_ITERATIONS = 600_000
 MAX_ATTEMPTS = 3
 LOCKOUT_SECONDS = 900
@@ -18,8 +20,8 @@ LOCKOUT_SECONDS = 900
 _account_protection = {}
 _attempts = {}
 
-
 # --- Public API ---
+
 
 def get_protection_type(eth_address: str) -> dict:
     record = _account_protection.get(eth_address)

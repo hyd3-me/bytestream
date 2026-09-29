@@ -16,6 +16,7 @@ settings = get_settings()
 
 # --- Public API ---
 
+
 def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
     to_encode = data.copy()
     if expires_delta:

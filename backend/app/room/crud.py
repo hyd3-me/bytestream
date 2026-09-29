@@ -7,8 +7,8 @@
 from typing import Optional
 from . import utils
 
-
 # --- Public API ---
+
 
 async def create_room(conn, room_id: str, user1: str, user2: str) -> None:
     await conn.execute(

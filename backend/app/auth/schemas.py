@@ -8,9 +8,11 @@ from pydantic import BaseModel
 
 # --- Public API ---
 
+
 class VerifyRequest(BaseModel):
     address: str
     signature: str
+
 
 class TokenResponse(BaseModel):
     access_token: str

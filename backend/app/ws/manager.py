@@ -19,6 +19,7 @@ logger = get_logger(__name__)
 
 # --- Public API ---
 
+
 class SocketIOManager:
     def __init__(self):
         self.sio = socketio.AsyncServer(

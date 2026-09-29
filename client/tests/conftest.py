@@ -30,6 +30,7 @@ env_path = project_root / ".env"
 
 # --- Fixtures ---
 
+
 @pytest.fixture(scope="session")
 def test_account():
     env_vars = dotenv_values(env_path)

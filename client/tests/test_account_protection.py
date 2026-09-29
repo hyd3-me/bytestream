@@ -6,8 +6,8 @@
 
 from client.keystore import account_protection
 
-
 # --- Tests ---
+
 
 def test_get_protection_type_exists():
     assert hasattr(account_protection, "get_protection_type")
@@ -84,17 +84,15 @@ def test_verify_pin_resets_counter_on_success():
 
 
 def test_is_locked_expires_after_lockout_period(mocker):
-    import time as _time
+    mock_time = mocker.patch("client.keystore.account_protection.time.time")
+    mock_time.return_value = 1000.0
 
     account_protection.set_pin("0xabc", "1234")
     for _ in range(account_protection.MAX_ATTEMPTS):
         account_protection.verify_pin("0xabc", "0000")
     assert account_protection.is_locked("0xabc") is True
 
-    now = _time.time()
-    mock_time = mocker.patch("client.keystore.account_protection.time.time")
-    mock_time.return_value = now + account_protection.LOCKOUT_SECONDS + 1
-
+    mock_time.return_value = 1000.0 + account_protection.LOCKOUT_SECONDS + 1
     assert account_protection.is_locked("0xabc") is False
 
 

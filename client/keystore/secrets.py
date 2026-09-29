@@ -9,6 +9,7 @@ _secrets = {}
 
 # --- Public API ---
 
+
 def store_secret(package_id_pair: str, shared_secret: bytes, aes_key: bytes) -> None:
     _secrets[package_id_pair] = {
         "shared_secret": shared_secret,

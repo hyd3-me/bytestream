@@ -9,8 +9,8 @@ import asyncio
 
 from app.room import crud, utils, redis_utils
 
-
 # --- Tests ---
+
 
 @pytest.mark.asyncio
 async def test_socketio_connect_with_jwt(room_users, socketio_client_factory):

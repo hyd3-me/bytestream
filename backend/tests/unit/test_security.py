@@ -19,6 +19,7 @@ settings = get_settings()
 
 # --- Tests ---
 
+
 def test_create_access_token_returns_string():
     token = create_access_token({"sub": "test_user"})
     assert isinstance(token, str)

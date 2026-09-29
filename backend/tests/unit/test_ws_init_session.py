@@ -8,8 +8,8 @@ import pytest
 from app.ws import manager
 from app.room import redis_utils
 
-
 # --- Tests ---
+
 
 @pytest.mark.asyncio
 async def test_init_session_with_address_joins_personal_room_and_confirms(mocker):

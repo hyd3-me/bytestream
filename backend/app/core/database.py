@@ -16,6 +16,7 @@ logger = get_logger(__name__)
 
 # --- Public API ---
 
+
 class DatabaseManager:
     def __init__(self):
         self._pool = None

@@ -4,21 +4,22 @@
 
 # --- Imports ---
 
-from cryptography.hazmat.primitives.kdf.hkdf import HKDF
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import x25519, ed25519
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from cryptography.exceptions import InvalidSignature
+import base64
 import hashlib
-import time
 import secrets
 import struct
-import base64
+import time
+
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import ed25519, x25519
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
 import client.crypto_constants as constants
 
-
 # --- Public API ---
+
 
 def derive_master_key(signature_bytes: bytes) -> bytes:
     hkdf = HKDF(
@@ -142,8 +143,5 @@ def generate_package_id() -> bytes:
 
 
 def compute_master_key_id(x25519_public_key, ed25519_public_key) -> bytes:
-    raw = (
-        x25519_public_key.public_bytes_raw()
-        + ed25519_public_key.public_bytes_raw()
-    )
+    raw = x25519_public_key.public_bytes_raw() + ed25519_public_key.public_bytes_raw()
     return hashlib.sha256(raw).digest()

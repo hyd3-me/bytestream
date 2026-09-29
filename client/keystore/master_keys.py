@@ -10,13 +10,10 @@ _current_master_key_ids = {}
 
 # --- Public API ---
 
+
 def list_master_key_ids(eth_address: str) -> list[str]:
     prefix = f"{eth_address}:"
-    return [
-        key[len(prefix):]
-        for key in _master_keys
-        if key.startswith(prefix)
-    ]
+    return [key[len(prefix) :] for key in _master_keys if key.startswith(prefix)]
 
 
 def list_known_addresses() -> list[str]:

@@ -11,8 +11,8 @@ from pathlib import Path
 from typing import Optional
 from .config import Settings
 
-
 # --- Public API ---
+
 
 def setup_logging(settings: Settings) -> None:
     """Configure root logger based on environment."""

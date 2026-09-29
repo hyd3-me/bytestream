@@ -13,6 +13,7 @@ settings = get_settings()
 
 # --- Tests ---
 
+
 @pytest.mark.asyncio
 async def test_database_connection():
     dsn = settings.database_url

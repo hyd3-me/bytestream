@@ -7,8 +7,8 @@
 import pytest
 from app.auth.utils import generate_nonce
 
-
 # --- Tests ---
+
 
 def test_generate_nonce_returns_string():
     nonce = generate_nonce()

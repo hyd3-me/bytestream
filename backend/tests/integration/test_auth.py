@@ -6,8 +6,8 @@
 
 import pytest
 
-
 # --- Tests ---
+
 
 @pytest.mark.asyncio
 async def test_get_nonce_returns_200_and_nonce(client):

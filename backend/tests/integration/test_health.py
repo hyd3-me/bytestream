@@ -8,8 +8,8 @@ import pytest
 from httpx import AsyncClient, ASGITransport
 from main import fastapi_app
 
-
 # --- Tests ---
+
 
 @pytest.mark.asyncio
 async def test_health_endpoint():

@@ -4,16 +4,19 @@
 
 # --- Imports ---
 
+import base64
+import json
+
 import pytest
-import base64, json
-from client import crypto, crypto_constants
-from client.keystore import packages as keystore_packages
-from client.keystore import secrets as keystore_secrets
-from client.keystore import exchange as keystore_exchange
 from eth_account.messages import encode_defunct
 
+from client import crypto, crypto_constants
+from client.keystore import exchange as keystore_exchange
+from client.keystore import packages as keystore_packages
+from client.keystore import secrets as keystore_secrets
 
 # --- Tests ---
+
 
 def test_derive_master_key_exists():
     assert hasattr(crypto, "derive_master_key")
@@ -526,11 +529,15 @@ def test_get_peer_key_package_returns_latest(
     _, e_pub = ed25519_keypair_a
 
     old_pid = crypto.build_message_id(1000, b"\x01" * 12)
-    old_base = keystore_packages.build_key_package(test_account.address, x_pub, e_pub, old_pid)
+    old_base = keystore_packages.build_key_package(
+        test_account.address, x_pub, e_pub, old_pid
+    )
     old_pkg = keystore_packages.sign_key_package(test_account, old_base)
 
     new_pid = crypto.build_message_id(2000, b"\x02" * 12)
-    new_base = keystore_packages.build_key_package(test_account.address, x_pub, e_pub, new_pid)
+    new_base = keystore_packages.build_key_package(
+        test_account.address, x_pub, e_pub, new_pid
+    )
     new_pkg = keystore_packages.sign_key_package(test_account, new_base)
 
     keystore_packages.store_key_package(old_pkg)
@@ -614,7 +621,9 @@ def test_handle_key_exchange_request_stores_sender_package_and_returns_response(
         "sender_package": signed_package_b,
     }
 
-    response = keystore_exchange.handle_key_exchange_request(message, test_account.address)
+    response = keystore_exchange.handle_key_exchange_request(
+        message, test_account.address
+    )
 
     assert response["type"] == "key_exchange_response"
     assert response["request_id"] == message["request_id"]
@@ -642,7 +651,9 @@ def test_handle_key_exchange_response_stores_peer_package(
         "package": signed_package,
     }
 
-    result = keystore_exchange.handle_key_exchange_response(response, test_account_b.address)
+    result = keystore_exchange.handle_key_exchange_response(
+        response, test_account_b.address
+    )
 
     assert result == signed_package
 

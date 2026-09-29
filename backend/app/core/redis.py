@@ -16,6 +16,7 @@ logger = get_logger(__name__)
 
 # --- Public API ---
 
+
 @lru_cache
 def get_redis_pool() -> Redis:
     settings = get_settings()

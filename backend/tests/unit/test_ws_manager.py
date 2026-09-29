@@ -21,6 +21,7 @@ class FakeAsyncContextManager:
 
 # --- Fixtures ---
 
+
 @pytest_asyncio.fixture
 async def decline_setup(mocker):
     sid = "test_sid"
@@ -49,6 +50,7 @@ async def decline_setup(mocker):
 
 
 # --- Tests ---
+
 
 def test_create_room_request_handler_is_registered():
     handlers = manager.ws_manager.sio.handlers["/"]

@@ -16,6 +16,7 @@ logger = get_logger(__name__)
 
 # --- Public API ---
 
+
 def ensure_jwt_secret_in_env(env_path: Path) -> None:
     """
     Ensure that the .env file contains a non-empty JWT_SECRET_KEY.

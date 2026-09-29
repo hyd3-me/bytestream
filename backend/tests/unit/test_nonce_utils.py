@@ -15,6 +15,7 @@ settings = get_settings()
 
 # --- Tests ---
 
+
 @pytest.mark.asyncio
 async def test_delete_nonce_removes_key(redis_client):
     address = "0x1234567890123456789012345678901234567890"

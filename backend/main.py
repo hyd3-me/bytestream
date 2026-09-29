@@ -29,6 +29,7 @@ logger = get_logger(__name__)
 
 # --- Public API ---
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting up...")

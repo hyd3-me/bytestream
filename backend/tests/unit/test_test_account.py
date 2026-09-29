@@ -15,6 +15,7 @@ ENV_PATH = PROJECT_ROOT / ".env"
 
 # --- Tests ---
 
+
 def test_test_account_private_key_exists():
     """Test that .env file exists and contains TEST_ACCOUNT_PRIVATE_KEY with valid format."""
     assert ENV_PATH.exists(), f".env file not found at {ENV_PATH}"

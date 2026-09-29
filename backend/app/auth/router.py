@@ -20,6 +20,7 @@ logger = get_logger(__name__)
 
 # --- Public API ---
 
+
 @router.get("/nonce/{address}")
 async def get_nonce(address: str, redis: Redis = Depends(get_redis)):
     logger.info(f"Generating nonce for address {address}")

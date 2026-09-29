@@ -14,6 +14,7 @@ ENV_PATH = PROJECT_ROOT / ".env"
 
 # --- Tests ---
 
+
 def test_jwt_secret_key_exists_and_non_empty():
     """Test that JWT_SECRET_KEY is present in .env and not empty."""
     env_vars = dotenv_values(ENV_PATH)

@@ -15,6 +15,7 @@ settings = get_settings()
 
 # --- Public API ---
 
+
 def get_personal_room_key(address: str) -> str:
     return f"{settings.redis_key_prefix}user:{address}"
 

@@ -8,8 +8,8 @@ import pytest
 from app.ws import manager
 from app.auth import security
 
-
 # --- Tests ---
+
 
 @pytest.mark.asyncio
 async def test_connect_without_auth_header_rejected():

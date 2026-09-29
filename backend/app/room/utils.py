@@ -6,8 +6,8 @@
 
 from app.core.web3 import get_web3
 
-
 # --- Public API ---
+
 
 def sort_addresses(addr1: str, addr2: str):
     """Return tuple of addresses sorted lexicographically."""

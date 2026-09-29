@@ -6,8 +6,8 @@
 
 from client.keystore import master_keys
 
-
 # --- Tests ---
+
 
 def test_list_master_key_ids_exists():
     assert hasattr(master_keys, "list_master_key_ids")
@@ -74,13 +74,9 @@ def test_delete_master_key_exists():
     assert callable(master_keys.delete_master_key)
 
 
-
-
 def test_delete_master_key_removes_recovery_store():
     master_key_id = "mkid_1"
-    master_keys.store_master_key_for_recovery(
-        master_key_id, b"\xaa" * 48, b"\x01" * 12
-    )
+    master_keys.store_master_key_for_recovery(master_key_id, b"\xaa" * 48, b"\x01" * 12)
 
     master_keys.delete_master_key(master_key_id)
 

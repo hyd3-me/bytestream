@@ -7,8 +7,8 @@
 import pytest
 from app.room import utils
 
-
 # --- Tests ---
+
 
 def test_sort_addresses_returns_sorted_pair():
     addr1 = "0xbbb"

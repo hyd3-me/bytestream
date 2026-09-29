@@ -9,14 +9,14 @@ import base64
 import client.crypto as crypto
 from client.keystore import packages as keystore_packages
 
-
 # --- Public API ---
+
 
 def build_package_id_pair(pid_1: str, pid_2: str) -> str:
     return ":".join(sorted([pid_1, pid_2]))
 
 
-def ensure_peer_key_package(own_address: str, peer_address: str) -> dict:
+def ensure_peer_key_package(own_address: str, peer_address: str) -> dict | None:
     package = keystore_packages.get_peer_key_package(peer_address)
     if package:
         return {"action": "use_cached", "package": package}

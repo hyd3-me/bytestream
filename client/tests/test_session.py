@@ -6,8 +6,8 @@
 
 from client.keystore import session
 
-
 # --- Tests ---
+
 
 def test_unlock_session_exists():
     assert hasattr(session, "unlock_session")

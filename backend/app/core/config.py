@@ -10,8 +10,8 @@ from functools import lru_cache
 from pydantic import Field
 from typing import Optional
 
-
 # --- Public API ---
+
 
 class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"

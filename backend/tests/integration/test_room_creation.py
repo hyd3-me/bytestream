@@ -18,6 +18,7 @@ settings = get_settings()
 
 # --- Fixtures ---
 
+
 @pytest.fixture(scope="session")
 def db_connection():
     dsn = settings.database_url
@@ -45,6 +46,7 @@ def db(db_connection):
 
 
 # --- Tests ---
+
 
 @pytest.mark.asyncio
 async def test_create_dm_room(async_db):

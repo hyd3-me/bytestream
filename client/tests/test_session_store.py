@@ -1,4 +1,12 @@
+"""Tests for client/keystore/session_store."""
+
+# path: client/tests/test_session_store.py
+
+# --- Imports ---
+
 from client.keystore import session_store
+
+# --- Tests ---
 
 
 def test_get_or_create_device_key_exists():
