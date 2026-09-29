@@ -17,3 +17,7 @@ def get_or_create_device_key() -> bytes:
     if _device_key is None:
         _device_key = secrets.token_bytes(32)
     return _device_key
+
+
+def encrypt_master_key(master_key: bytes, key: bytes) -> tuple[bytes, bytes]:
+    pass
