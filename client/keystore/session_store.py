@@ -25,3 +25,7 @@ def encrypt_master_key(master_key: bytes, key: bytes) -> tuple[bytes, bytes]:
     nonce = crypto.generate_nonce()
     ciphertext = crypto.encrypt_message(key, master_key, nonce)
     return ciphertext, nonce
+
+
+def decrypt_master_key(ciphertext: bytes, nonce: bytes, key: bytes) -> bytes:
+    pass
