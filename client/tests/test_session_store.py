@@ -30,3 +30,8 @@ def test_encrypt_master_key_returns_ciphertext_and_nonce():
     assert isinstance(nonce, bytes)
     assert len(nonce) == 12
     assert ciphertext != master_key
+
+
+def test_decrypt_master_key_exists():
+    assert hasattr(session_store, "decrypt_master_key")
+    assert callable(session_store.decrypt_master_key)
