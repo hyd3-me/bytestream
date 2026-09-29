@@ -13,3 +13,8 @@ def test_get_or_create_device_key_returns_stable_32_bytes():
     assert isinstance(key1, bytes)
     assert len(key1) == 32
     assert key1 == key2
+
+
+def test_encrypt_master_key_exists():
+    assert hasattr(session_store, "encrypt_master_key")
+    assert callable(session_store.encrypt_master_key)
