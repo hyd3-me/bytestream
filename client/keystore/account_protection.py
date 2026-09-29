@@ -81,8 +81,8 @@ def is_locked(eth_address: str) -> bool:
 
 
 def clear_protection(eth_address: str) -> None:
-    _account_protection.pop(eth_address, None)
     _attempts.pop(eth_address, None)
+    set_device_key_protection(eth_address)
 
 
 def set_device_key_protection(eth_address: str) -> None:
