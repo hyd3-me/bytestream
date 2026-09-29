@@ -35,3 +35,13 @@ def test_encrypt_master_key_returns_ciphertext_and_nonce():
 def test_decrypt_master_key_exists():
     assert hasattr(session_store, "decrypt_master_key")
     assert callable(session_store.decrypt_master_key)
+
+
+def test_encrypt_decrypt_master_key_roundtrip():
+    master_key = b"\x01" * 32
+    key = b"\x02" * 32
+
+    ciphertext, nonce = session_store.encrypt_master_key(master_key, key)
+    decrypted = session_store.decrypt_master_key(ciphertext, nonce, key)
+
+    assert decrypted == master_key
