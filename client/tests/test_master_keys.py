@@ -93,3 +93,14 @@ def test_store_and_load_master_key_for_tab_roundtrip():
 def test_delete_master_key_exists():
     assert hasattr(master_keys, "delete_master_key")
     assert callable(master_keys.delete_master_key)
+
+
+def test_delete_master_key_removes_both_stores():
+    master_key_id = "mkid_1"
+    master_keys.store_master_key_for_recovery(master_key_id, b"\xaa" * 48, b"\x01" * 12)
+    master_keys.store_master_key_for_tab(master_key_id, b"\xbb" * 48, b"\x02" * 12)
+
+    master_keys.delete_master_key(master_key_id)
+
+    assert master_keys.load_master_key_for_recovery(master_key_id) is None
+    assert master_keys.load_master_key_for_tab(master_key_id) is None
