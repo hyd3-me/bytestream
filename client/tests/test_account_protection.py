@@ -123,3 +123,12 @@ def test_set_device_key_protection_sets_type():
     result = account_protection.get_protection_type("0xabc")
 
     assert result == {"type": "device_key"}
+
+
+def test_set_pin_overrides_device_key_protection():
+    account_protection.set_device_key_protection("0xabc")
+
+    account_protection.set_pin("0xabc", "1234")
+
+    result = account_protection.get_protection_type("0xabc")
+    assert result["type"] == "pin"
