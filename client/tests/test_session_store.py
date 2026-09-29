@@ -50,3 +50,8 @@ def test_encrypt_decrypt_master_key_roundtrip():
 def test_set_tab_secret_exists():
     assert hasattr(session_store, "set_tab_secret")
     assert callable(session_store.set_tab_secret)
+
+
+def test_get_tab_secret_exists():
+    assert hasattr(session_store, "get_tab_secret")
+    assert callable(session_store.get_tab_secret)
