@@ -33,8 +33,9 @@ def decrypt_master_key(ciphertext: bytes, nonce: bytes, key: bytes) -> bytes:
 
 
 def set_tab_secret(secret: bytes) -> None:
-    pass
+    global _tab_secret
+    _tab_secret = secret
 
 
 def get_tab_secret() -> bytes | None:
-    pass
+    return _tab_secret
