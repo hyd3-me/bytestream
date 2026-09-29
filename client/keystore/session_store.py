@@ -5,12 +5,14 @@
 # --- Imports ---
 
 import secrets
+import client.crypto as crypto
 
 # --- Storage ---
 
 _device_key = None
 
 # --- Public API ---
+
 
 def get_or_create_device_key() -> bytes:
     global _device_key
@@ -20,4 +22,6 @@ def get_or_create_device_key() -> bytes:
 
 
 def encrypt_master_key(master_key: bytes, key: bytes) -> tuple[bytes, bytes]:
-    pass
+    nonce = crypto.generate_nonce()
+    ciphertext = crypto.encrypt_message(key, master_key, nonce)
+    return ciphertext, nonce
