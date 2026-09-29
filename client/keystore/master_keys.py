@@ -34,3 +34,9 @@ def get_current_master_key_id(eth_address: str) -> str | None:
 
 def store_master_key_for_recovery(master_key_id: str, ciphertext: bytes, nonce: bytes) -> None:
     pass
+
+
+def load_master_key_for_recovery(
+    master_key_id: str,
+) -> tuple[bytes, bytes] | None:
+    pass
