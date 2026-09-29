@@ -57,4 +57,5 @@ def load_master_key_for_tab(
 
 
 def delete_master_key(master_key_id: str) -> None:
-    pass
+    _master_keys_for_recovery.pop(master_key_id, None)
+    _master_keys_for_tab.pop(master_key_id, None)
