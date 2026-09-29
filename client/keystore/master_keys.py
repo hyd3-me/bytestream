@@ -42,3 +42,9 @@ def load_master_key_for_recovery(
     master_key_id: str,
 ) -> tuple[bytes, bytes] | None:
     return _master_keys_for_recovery.get(master_key_id)
+
+
+def store_master_key_for_tab(
+    master_key_id: str, ciphertext: bytes, nonce: bytes
+) -> None:
+    pass
