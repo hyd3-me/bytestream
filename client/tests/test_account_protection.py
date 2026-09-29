@@ -115,3 +115,11 @@ def test_clear_protection_removes_pin_record():
 def test_set_device_key_protection_exists():
     assert hasattr(account_protection, "set_device_key_protection")
     assert callable(account_protection.set_device_key_protection)
+
+
+def test_set_device_key_protection_sets_type():
+    account_protection.set_device_key_protection("0xabc")
+
+    result = account_protection.get_protection_type("0xabc")
+
+    assert result == {"type": "device_key"}
