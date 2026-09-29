@@ -67,3 +67,8 @@ def test_store_and_load_master_key_for_recovery_roundtrip():
     loaded = master_keys.load_master_key_for_recovery(master_key_id)
 
     assert loaded == (ciphertext, nonce)
+
+
+def test_store_master_key_for_tab_exists():
+    assert hasattr(master_keys, "store_master_key_for_tab")
+    assert callable(master_keys.store_master_key_for_tab)
