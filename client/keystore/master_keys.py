@@ -48,3 +48,9 @@ def store_master_key_for_tab(
     master_key_id: str, ciphertext: bytes, nonce: bytes
 ) -> None:
     pass
+
+
+def load_master_key_for_tab(
+    master_key_id: str,
+) -> tuple[bytes, bytes] | None:
+    pass
