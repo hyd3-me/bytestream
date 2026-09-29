@@ -45,3 +45,8 @@ def test_encrypt_decrypt_master_key_roundtrip():
     decrypted = session_store.decrypt_master_key(ciphertext, nonce, key)
 
     assert decrypted == master_key
+
+
+def test_set_tab_secret_exists():
+    assert hasattr(session_store, "set_tab_secret")
+    assert callable(session_store.set_tab_secret)
