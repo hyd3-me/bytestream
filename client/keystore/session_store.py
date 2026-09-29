@@ -34,3 +34,7 @@ def decrypt_master_key(ciphertext: bytes, nonce: bytes, key: bytes) -> bytes:
 
 def set_tab_secret(secret: bytes) -> None:
     pass
+
+
+def get_tab_secret() -> bytes | None:
+    pass
