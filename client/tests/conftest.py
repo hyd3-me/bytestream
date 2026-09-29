@@ -124,7 +124,6 @@ def _clear_crypto_state():
     keystore_account_protection._attempts.clear()
     keystore_session_store._device_key = None
     keystore_session_store._tab_secret = None
-    keystore_session_store._tab_secret = None
     yield
     keystore_packages._packages.clear()
     keystore_packages._current_package_ids.clear()
