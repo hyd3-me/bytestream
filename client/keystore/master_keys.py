@@ -5,6 +5,8 @@
 # --- Storage ---
 
 _master_keys = {}
+_master_keys_for_recovery = {}
+_master_keys_for_tab = {}
 _current_master_key_ids = {}
 
 # --- Public API ---
@@ -28,3 +30,7 @@ def set_current_master_key_id(eth_address: str, master_key_id: str) -> None:
 
 def get_current_master_key_id(eth_address: str) -> str | None:
     return _current_master_key_ids.get(eth_address)
+
+
+def store_master_key_for_recovery(master_key_id: str, ciphertext: bytes, nonce: bytes) -> None:
+    pass
