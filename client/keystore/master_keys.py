@@ -32,11 +32,13 @@ def get_current_master_key_id(eth_address: str) -> str | None:
     return _current_master_key_ids.get(eth_address)
 
 
-def store_master_key_for_recovery(master_key_id: str, ciphertext: bytes, nonce: bytes) -> None:
-    pass
+def store_master_key_for_recovery(
+    master_key_id: str, ciphertext: bytes, nonce: bytes
+) -> None:
+    _master_keys_for_recovery[master_key_id] = (ciphertext, nonce)
 
 
 def load_master_key_for_recovery(
     master_key_id: str,
 ) -> tuple[bytes, bytes] | None:
-    pass
+    return _master_keys_for_recovery.get(master_key_id)
