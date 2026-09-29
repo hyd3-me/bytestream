@@ -28,4 +28,4 @@ def encrypt_master_key(master_key: bytes, key: bytes) -> tuple[bytes, bytes]:
 
 
 def decrypt_master_key(ciphertext: bytes, nonce: bytes, key: bytes) -> bytes:
-    pass
+    return crypto.decrypt_message(key, ciphertext, nonce)
