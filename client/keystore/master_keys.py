@@ -6,7 +6,6 @@
 
 _master_keys = {}
 _master_keys_for_recovery = {}
-_master_keys_for_tab = {}
 _current_master_key_ids = {}
 
 # --- Public API ---
@@ -44,18 +43,5 @@ def load_master_key_for_recovery(
     return _master_keys_for_recovery.get(master_key_id)
 
 
-def store_master_key_for_tab(
-    master_key_id: str, ciphertext: bytes, nonce: bytes
-) -> None:
-    _master_keys_for_tab[master_key_id] = (ciphertext, nonce)
-
-
-def load_master_key_for_tab(
-    master_key_id: str,
-) -> tuple[bytes, bytes] | None:
-    return _master_keys_for_tab.get(master_key_id)
-
-
 def delete_master_key(master_key_id: str) -> None:
     _master_keys_for_recovery.pop(master_key_id, None)
-    _master_keys_for_tab.pop(master_key_id, None)
