@@ -51,3 +51,8 @@ def test_list_known_addresses_returns_empty_when_no_current_keys():
 def test_store_master_key_for_recovery_exists():
     assert hasattr(master_keys, "store_master_key_for_recovery")
     assert callable(master_keys.store_master_key_for_recovery)
+
+
+def test_load_master_key_for_recovery_exists():
+    assert hasattr(master_keys, "load_master_key_for_recovery")
+    assert callable(master_keys.load_master_key_for_recovery)
