@@ -55,3 +55,11 @@ def test_set_tab_secret_exists():
 def test_get_tab_secret_exists():
     assert hasattr(session_store, "get_tab_secret")
     assert callable(session_store.get_tab_secret)
+
+
+def test_set_and_get_tab_secret_roundtrip():
+    secret = b"\xab" * 32
+
+    session_store.set_tab_secret(secret)
+
+    assert session_store.get_tab_secret() == secret
