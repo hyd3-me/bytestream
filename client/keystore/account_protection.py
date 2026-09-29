@@ -86,4 +86,4 @@ def clear_protection(eth_address: str) -> None:
 
 
 def set_device_key_protection(eth_address: str) -> None:
-    pass
+    _account_protection[eth_address] = {"type": "device_key"}
