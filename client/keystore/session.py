@@ -32,3 +32,7 @@ def get_session_keys(eth_address: str, master_key_id: str | None = None) -> dict
     if keys is None:
         raise ValueError("Session keys not found")
     return keys
+
+
+def is_session_active(eth_address: str) -> bool:
+    pass
