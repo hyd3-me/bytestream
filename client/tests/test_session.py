@@ -28,3 +28,8 @@ def test_unlock_session_stores_derived_keys(master_key_a, x25519_keypair_a, ed25
     _, expected_e_pub = ed25519_keypair_a
     assert stored["x25519_public"].public_bytes_raw() == expected_x_pub.public_bytes_raw()
     assert stored["ed25519_public"].public_bytes_raw() == expected_e_pub.public_bytes_raw()
+
+
+def test_is_session_active_exists():
+    assert hasattr(session, "is_session_active")
+    assert callable(session.is_session_active)
