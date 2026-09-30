@@ -33,3 +33,7 @@ def test_unlock_session_stores_derived_keys(master_key_a, x25519_keypair_a, ed25
 def test_is_session_active_exists():
     assert hasattr(session, "is_session_active")
     assert callable(session.is_session_active)
+
+
+def test_is_session_active_returns_false_when_not_unlocked():
+    assert session.is_session_active("0xabc") is False
