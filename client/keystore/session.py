@@ -35,4 +35,4 @@ def get_session_keys(eth_address: str, master_key_id: str | None = None) -> dict
 
 
 def is_session_active(eth_address: str) -> bool:
-    pass
+    return eth_address in _sessions and bool(_sessions[eth_address])
