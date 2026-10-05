@@ -5,7 +5,7 @@
 # --- Imports ---
 
 import client.crypto as crypto
-from client.keystore import master_keys as keystore_master_keys
+from client.keystore.tab import tab_state as keystore_tab_state
 
 # --- Storage ---
 
@@ -27,7 +27,7 @@ def unlock_session(eth_address: str, master_key_id: str, master_key: bytes) -> N
 
 def get_session_keys(eth_address: str, master_key_id: str | None = None) -> dict:
     if master_key_id is None:
-        master_key_id = keystore_master_keys.get_current_master_key_id(eth_address)
+        master_key_id = keystore_tab_state.get_current_master_key_id(eth_address)
     keys = _sessions.get(eth_address, {}).get(master_key_id)
     if keys is None:
         raise ValueError("Session keys not found")

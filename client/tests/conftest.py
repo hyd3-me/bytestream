@@ -21,11 +21,12 @@ import pytest
 from client import crypto, crypto_constants
 from client.keystore import packages as keystore_packages
 from client.keystore import secrets as keystore_secrets
-from client.keystore import master_keys as keystore_master_keys
 from client.keystore.browser import protection as keystore_account_protection
 from client.keystore import session as keystore_session
 from client.keystore import session_store as keystore_session_store
 from client.keystore.browser import device as keystore_device
+from client.keystore.browser import recovery as keystore_recovery
+from client.keystore.tab import tab_state as keystore_tab_state
 
 env_path = project_root / ".env"
 
@@ -120,9 +121,8 @@ def _clear_crypto_state():
     keystore_packages._packages.clear()
     keystore_packages._current_package_ids.clear()
     keystore_secrets._secrets.clear()
-    keystore_master_keys._master_keys.clear()
-    keystore_master_keys._master_keys_for_recovery.clear()
-    keystore_master_keys._current_master_key_ids.clear()
+    keystore_recovery._master_keys_for_recovery.clear()
+    keystore_tab_state._current_master_key_ids.clear()
     keystore_account_protection._account_protection.clear()
     keystore_account_protection._attempts.clear()
     keystore_device._device_key = None
@@ -133,9 +133,8 @@ def _clear_crypto_state():
     keystore_packages._packages.clear()
     keystore_packages._current_package_ids.clear()
     keystore_secrets._secrets.clear()
-    keystore_master_keys._master_keys.clear()
-    keystore_master_keys._master_keys_for_recovery.clear()
-    keystore_master_keys._current_master_key_ids.clear()
+    keystore_recovery._master_keys_for_recovery.clear()
+    keystore_tab_state._current_master_key_ids.clear()
     keystore_account_protection._account_protection.clear()
     keystore_account_protection._attempts.clear()
     keystore_device._device_key = None
