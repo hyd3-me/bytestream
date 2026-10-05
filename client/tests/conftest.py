@@ -26,7 +26,7 @@ from client.keystore.tab import tab_state as keystore_tab_state
 from client.keystore.browser import secrets as keystore_secrets
 from client.keystore.browser import protection as keystore_account_protection
 from client.keystore import session as keystore_session
-from client.keystore import session_store as keystore_session_store
+from client.keystore.tab import tab_keys as keystore_tab_keys
 from client.keystore.browser import device as keystore_device
 from client.keystore.browser import recovery as keystore_recovery
 from client.keystore.tab import tab_state as keystore_tab_state
@@ -129,7 +129,7 @@ def _clear_crypto_state():
     keystore_account_protection._account_protection.clear()
     keystore_account_protection._attempts.clear()
     keystore_device._device_key = None
-    keystore_session_store._tab_secret = None
+    keystore_tab_keys._tab_secret = None
     keystore_session._sessions.clear()
     keystore_session._sessions.clear()
     yield
@@ -141,7 +141,7 @@ def _clear_crypto_state():
     keystore_account_protection._account_protection.clear()
     keystore_account_protection._attempts.clear()
     keystore_device._device_key = None
-    keystore_session_store._tab_secret = None
+    keystore_tab_keys._tab_secret = None
 
 
 @pytest.fixture
