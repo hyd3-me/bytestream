@@ -1,4 +1,4 @@
-"""Session store: device key, tab state, and encrypted master keys at rest."""
+"""Tab-scoped storage: tab secret and per-tab encrypted master keys."""
 
 # path: client/keystore/session_store.py
 
@@ -9,17 +9,9 @@ import client.crypto as crypto
 
 # --- Storage ---
 
-_device_key = None
 _tab_secret = None
 
 # --- Public API ---
-
-
-def get_or_create_device_key() -> bytes:
-    global _device_key
-    if _device_key is None:
-        _device_key = secrets.token_bytes(32)
-    return _device_key
 
 
 def encrypt_master_key(master_key: bytes, key: bytes) -> tuple[bytes, bytes]:

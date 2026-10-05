@@ -25,6 +25,7 @@ from client.keystore import master_keys as keystore_master_keys
 from client.keystore import account_protection as keystore_account_protection
 from client.keystore import session as keystore_session
 from client.keystore import session_store as keystore_session_store
+from client.keystore.browser import device as keystore_device
 
 env_path = project_root / ".env"
 
@@ -124,7 +125,7 @@ def _clear_crypto_state():
     keystore_master_keys._current_master_key_ids.clear()
     keystore_account_protection._account_protection.clear()
     keystore_account_protection._attempts.clear()
-    keystore_session_store._device_key = None
+    keystore_device._device_key = None
     keystore_session_store._tab_secret = None
     keystore_session._sessions.clear()
     keystore_session._sessions.clear()
@@ -137,7 +138,7 @@ def _clear_crypto_state():
     keystore_master_keys._current_master_key_ids.clear()
     keystore_account_protection._account_protection.clear()
     keystore_account_protection._attempts.clear()
-    keystore_session_store._device_key = None
+    keystore_device._device_key = None
     keystore_session_store._tab_secret = None
 
 
