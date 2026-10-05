@@ -21,7 +21,8 @@ import pytest
 from client import crypto, crypto_constants
 from client.keystore import package_ops
 from client.keystore.browser import packages as keystore_browser_packages
-from client.keystore import packages as keystore_packages
+from client.keystore.browser import packages as keystore_browser_packages
+from client.keystore.tab import tab_state as keystore_tab_state
 from client.keystore import secrets as keystore_secrets
 from client.keystore.browser import protection as keystore_account_protection
 from client.keystore import session as keystore_session
@@ -121,7 +122,7 @@ def signed_package(test_account, x25519_keypair_a, ed25519_keypair_a):
 @pytest.fixture(autouse=True)
 def _clear_crypto_state():
     keystore_browser_packages._packages.clear()
-    keystore_packages._current_package_ids.clear()
+    keystore_tab_state._current_package_ids.clear()
     keystore_secrets._secrets.clear()
     keystore_recovery._master_keys_for_recovery.clear()
     keystore_tab_state._current_master_key_ids.clear()
@@ -133,7 +134,7 @@ def _clear_crypto_state():
     keystore_session._sessions.clear()
     yield
     keystore_browser_packages._packages.clear()
-    keystore_packages._current_package_ids.clear()
+    keystore_tab_state._current_package_ids.clear()
     keystore_secrets._secrets.clear()
     keystore_recovery._master_keys_for_recovery.clear()
     keystore_tab_state._current_master_key_ids.clear()

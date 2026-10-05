@@ -13,7 +13,8 @@ from eth_account.messages import encode_defunct
 from client import crypto, crypto_constants
 from client.keystore import exchange as keystore_exchange
 from client.keystore import package_ops
-from client.keystore import packages as keystore_packages
+from client.keystore.browser import packages as browser_packages
+from client.keystore.tab import tab_state
 from client.keystore import secrets as keystore_secrets
 
 # --- Tests ---
@@ -432,52 +433,57 @@ def test_verify_key_package_rejects_tampered_address(
 
 
 def test_store_key_package_exists():
-    assert hasattr(keystore_packages, "store_key_package")
-    assert callable(keystore_packages.store_key_package)
+    assert hasattr(browser_packages, "store_key_package")
+    assert callable(browser_packages.store_key_package)
 
 
 def test_get_current_key_package_exists():
-    assert hasattr(keystore_packages, "get_current_key_package")
-    assert callable(keystore_packages.get_current_key_package)
+    assert hasattr(tab_state, "get_current_key_package")
+    assert callable(tab_state.get_current_key_package)
 
 
-def test_clear_key_package_exists():
-    assert hasattr(keystore_packages, "clear_key_package")
-    assert callable(keystore_packages.clear_key_package)
+def test_clear_packages_exists():
+    assert hasattr(browser_packages, "clear_packages")
+    assert callable(browser_packages.clear_packages)
 
 
-def test_clear_key_package_removes_all(test_account, signed_package):
-    keystore_packages.store_key_package(signed_package)
-    keystore_packages.set_current_key_package(
-        test_account.address, signed_package["package_id"]
-    )
+def test_clear_packages_removes_packages(test_account, signed_package):
+    browser_packages.store_key_package(signed_package)
 
-    keystore_packages.clear_key_package(test_account.address)
+    browser_packages.clear_packages(test_account.address)
 
-    with pytest.raises(ValueError):
-        keystore_packages.get_current_key_package(test_account.address)
     assert (
-        keystore_packages.get_key_package_by_id(
+        browser_packages.get_key_package_by_id(
             test_account.address, signed_package["package_id"]
         )
         is None
     )
 
 
-def test_store_key_package_stores_by_address_and_id(test_account, signed_package):
-    keystore_packages.store_key_package(signed_package)
+def test_clear_current_package_id_removes_pointer(test_account, signed_package):
+    tab_state.set_current_package_id(
+        test_account.address, signed_package["package_id"]
+    )
 
-    retrieved = keystore_packages.get_key_package_by_id(
+    tab_state.clear_current_package_id(test_account.address)
+
+    assert tab_state.get_current_package_id(test_account.address) is None
+
+
+def test_store_key_package_stores_by_address_and_id(test_account, signed_package):
+    browser_packages.store_key_package(signed_package)
+
+    retrieved = browser_packages.get_key_package_by_id(
         test_account.address, signed_package["package_id"]
     )
     assert retrieved == signed_package
 
 
 def test_store_key_package_does_not_set_current(test_account, signed_package):
-    keystore_packages.store_key_package(signed_package)
+    browser_packages.store_key_package(signed_package)
 
     with pytest.raises(ValueError):
-        keystore_packages.get_current_key_package(test_account.address)
+        tab_state.get_current_key_package(test_account.address)
 
 
 def test_load_x25519_public_key_exists():
@@ -519,8 +525,8 @@ def test_build_package_id_pair_returns_sorted_pair_with_colon():
 
 
 def test_get_peer_key_package_exists():
-    assert hasattr(keystore_packages, "get_peer_key_package")
-    assert callable(keystore_packages.get_peer_key_package)
+    assert hasattr(browser_packages, "get_peer_key_package")
+    assert callable(browser_packages.get_peer_key_package)
 
 
 def test_get_peer_key_package_returns_latest(
@@ -541,15 +547,15 @@ def test_get_peer_key_package_returns_latest(
     )
     new_pkg = package_ops.sign_key_package(test_account, new_base)
 
-    keystore_packages.store_key_package(old_pkg)
-    keystore_packages.store_key_package(new_pkg)
+    browser_packages.store_key_package(old_pkg)
+    browser_packages.store_key_package(new_pkg)
 
-    result = keystore_packages.get_peer_key_package(test_account.address)
+    result = browser_packages.get_peer_key_package(test_account.address)
     assert result == new_pkg
 
 
 def test_get_peer_key_package_returns_none_when_empty(test_account):
-    assert keystore_packages.get_peer_key_package(test_account.address) is None
+    assert browser_packages.get_peer_key_package(test_account.address) is None
 
 
 def test_ensure_peer_key_package_exists():
@@ -560,7 +566,7 @@ def test_ensure_peer_key_package_exists():
 def test_ensure_peer_key_package_returns_cached_package(
     test_account, test_account_b, signed_package_b
 ):
-    keystore_packages.store_key_package(signed_package_b)
+    browser_packages.store_key_package(signed_package_b)
 
     result = keystore_exchange.ensure_peer_key_package(
         test_account.address, test_account_b.address
@@ -578,8 +584,8 @@ def test_build_key_exchange_request_exists():
 def test_build_key_exchange_request_returns_message_with_own_package(
     test_account, test_account_b, signed_package
 ):
-    keystore_packages.store_key_package(signed_package)
-    keystore_packages.set_current_key_package(
+    browser_packages.store_key_package(signed_package)
+    tab_state.set_current_package_id(
         test_account.address, signed_package["package_id"]
     )
 
@@ -609,8 +615,8 @@ def test_handle_key_exchange_request_exists():
 def test_handle_key_exchange_request_stores_sender_package_and_returns_response(
     test_account, test_account_b, signed_package, signed_package_b
 ):
-    keystore_packages.store_key_package(signed_package)
-    keystore_packages.set_current_key_package(
+    browser_packages.store_key_package(signed_package)
+    tab_state.set_current_package_id(
         test_account.address, signed_package["package_id"]
     )
 
@@ -631,7 +637,7 @@ def test_handle_key_exchange_request_stores_sender_package_and_returns_response(
     assert response["sender_address"] == test_account.address
     assert response["package"] == signed_package
 
-    stored = keystore_packages.get_key_package_by_id(
+    stored = browser_packages.get_key_package_by_id(
         test_account_b.address, signed_package_b["package_id"]
     )
     assert stored == signed_package_b
@@ -658,7 +664,7 @@ def test_handle_key_exchange_response_stores_peer_package(
 
     assert result == signed_package
 
-    stored = keystore_packages.get_key_package_by_id(
+    stored = browser_packages.get_key_package_by_id(
         test_account.address, signed_package["package_id"]
     )
     assert stored == signed_package
