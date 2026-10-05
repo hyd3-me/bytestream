@@ -1,6 +1,6 @@
 """Derived shared secrets keyed by canonical package_id_pair."""
 
-# path: client/keystore/secrets.py
+# path: client/keystore/browser/secrets.py
 
 # --- Storage ---
 

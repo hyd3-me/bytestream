@@ -15,7 +15,7 @@ from client.keystore import exchange as keystore_exchange
 from client.keystore import package_ops
 from client.keystore.browser import packages as browser_packages
 from client.keystore.tab import tab_state
-from client.keystore import secrets as keystore_secrets
+from client.keystore.browser import secrets as keystore_secrets
 
 # --- Tests ---
 

@@ -23,7 +23,7 @@ from client.keystore import package_ops
 from client.keystore.browser import packages as keystore_browser_packages
 from client.keystore.browser import packages as keystore_browser_packages
 from client.keystore.tab import tab_state as keystore_tab_state
-from client.keystore import secrets as keystore_secrets
+from client.keystore.browser import secrets as keystore_secrets
 from client.keystore.browser import protection as keystore_account_protection
 from client.keystore import session as keystore_session
 from client.keystore import session_store as keystore_session_store
