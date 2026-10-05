@@ -7,6 +7,7 @@
 import base64
 
 import client.crypto as crypto
+from client.keystore import package_ops
 from client.keystore import packages as keystore_packages
 
 # --- Public API ---
@@ -43,7 +44,7 @@ def handle_key_exchange_request(message: dict, own_address: str) -> dict:
     sender_package = message.get("sender_package")
     if not sender_package:
         return {}
-    if not keystore_packages.verify_key_package(sender_package):
+    if not package_ops.verify_key_package(sender_package):
         return {}
     if sender_package["eth_address"] != message.get("sender_address"):
         return {}
@@ -65,7 +66,7 @@ def handle_key_exchange_response(response: dict, own_address: str) -> dict | Non
     package = response.get("package")
     if not package:
         return None
-    if not keystore_packages.verify_key_package(package):
+    if not package_ops.verify_key_package(package):
         return None
     if package["eth_address"] != response.get("sender_address"):
         return None

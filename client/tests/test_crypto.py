@@ -12,6 +12,7 @@ from eth_account.messages import encode_defunct
 
 from client import crypto, crypto_constants
 from client.keystore import exchange as keystore_exchange
+from client.keystore import package_ops
 from client.keystore import packages as keystore_packages
 from client.keystore import secrets as keystore_secrets
 
@@ -310,8 +311,8 @@ def test_full_encryption_cycle_with_derived_key():
 
 
 def test_build_key_package_exists():
-    assert hasattr(keystore_packages, "build_key_package")
-    assert callable(keystore_packages.build_key_package)
+    assert hasattr(package_ops, "build_key_package")
+    assert callable(package_ops.build_key_package)
 
 
 def test_build_key_package_returns_base_package_without_signature(
@@ -325,7 +326,7 @@ def test_build_key_package_returns_base_package_without_signature(
         crypto.generate_timestamp(), crypto.generate_nonce()
     )
 
-    package = keystore_packages.build_key_package(
+    package = package_ops.build_key_package(
         address,
         x_pub,
         e_pub,
@@ -350,8 +351,8 @@ def test_build_key_package_returns_base_package_without_signature(
 
 
 def test_sign_key_package_exists():
-    assert hasattr(keystore_packages, "sign_key_package")
-    assert callable(keystore_packages.sign_key_package)
+    assert hasattr(package_ops, "sign_key_package")
+    assert callable(package_ops.sign_key_package)
 
 
 def test_sign_key_package_adds_eth_signature(
@@ -363,14 +364,14 @@ def test_sign_key_package_adds_eth_signature(
     package_id_bytes = crypto.build_message_id(
         crypto.generate_timestamp(), crypto.generate_nonce()
     )
-    base_package = keystore_packages.build_key_package(
+    base_package = package_ops.build_key_package(
         test_account.address,
         x_pub,
         e_pub,
         package_id_bytes,
     )
 
-    signed_package = keystore_packages.sign_key_package(test_account, base_package)
+    signed_package = package_ops.sign_key_package(test_account, base_package)
 
     assert "eth_signature" in signed_package
     assert isinstance(signed_package["eth_signature"], str)
@@ -382,8 +383,8 @@ def test_sign_key_package_adds_eth_signature(
 
 
 def test_verify_key_package_exists():
-    assert hasattr(keystore_packages, "verify_key_package")
-    assert callable(keystore_packages.verify_key_package)
+    assert hasattr(package_ops, "verify_key_package")
+    assert callable(package_ops.verify_key_package)
 
 
 def test_verify_key_package_accepts_valid_package(
@@ -395,16 +396,16 @@ def test_verify_key_package_accepts_valid_package(
     package_id_bytes = crypto.build_message_id(
         crypto.generate_timestamp(), crypto.generate_nonce()
     )
-    base_package = keystore_packages.build_key_package(
+    base_package = package_ops.build_key_package(
         test_account.address,
         x_pub,
         e_pub,
         package_id_bytes,
     )
 
-    signed_package = keystore_packages.sign_key_package(test_account, base_package)
+    signed_package = package_ops.sign_key_package(test_account, base_package)
 
-    assert keystore_packages.verify_key_package(signed_package) is True
+    assert package_ops.verify_key_package(signed_package) is True
 
 
 def test_verify_key_package_rejects_tampered_address(
@@ -416,18 +417,18 @@ def test_verify_key_package_rejects_tampered_address(
     package_id_bytes = crypto.build_message_id(
         crypto.generate_timestamp(), crypto.generate_nonce()
     )
-    base_package = keystore_packages.build_key_package(
+    base_package = package_ops.build_key_package(
         test_account.address,
         x_pub,
         e_pub,
         package_id_bytes,
     )
-    signed_package = keystore_packages.sign_key_package(test_account, base_package)
+    signed_package = package_ops.sign_key_package(test_account, base_package)
 
     tampered = dict(signed_package)
     tampered["eth_address"] = "0xdeadbeef"
 
-    assert keystore_packages.verify_key_package(tampered) is False
+    assert package_ops.verify_key_package(tampered) is False
 
 
 def test_store_key_package_exists():
@@ -529,16 +530,16 @@ def test_get_peer_key_package_returns_latest(
     _, e_pub = ed25519_keypair_a
 
     old_pid = crypto.build_message_id(1000, b"\x01" * 12)
-    old_base = keystore_packages.build_key_package(
+    old_base = package_ops.build_key_package(
         test_account.address, x_pub, e_pub, old_pid
     )
-    old_pkg = keystore_packages.sign_key_package(test_account, old_base)
+    old_pkg = package_ops.sign_key_package(test_account, old_base)
 
     new_pid = crypto.build_message_id(2000, b"\x02" * 12)
-    new_base = keystore_packages.build_key_package(
+    new_base = package_ops.build_key_package(
         test_account.address, x_pub, e_pub, new_pid
     )
-    new_pkg = keystore_packages.sign_key_package(test_account, new_base)
+    new_pkg = package_ops.sign_key_package(test_account, new_base)
 
     keystore_packages.store_key_package(old_pkg)
     keystore_packages.store_key_package(new_pkg)
