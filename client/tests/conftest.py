@@ -22,7 +22,7 @@ from client import crypto, crypto_constants
 from client.keystore import packages as keystore_packages
 from client.keystore import secrets as keystore_secrets
 from client.keystore import master_keys as keystore_master_keys
-from client.keystore import account_protection as keystore_account_protection
+from client.keystore.browser import protection as keystore_account_protection
 from client.keystore import session as keystore_session
 from client.keystore import session_store as keystore_session_store
 from client.keystore.browser import device as keystore_device

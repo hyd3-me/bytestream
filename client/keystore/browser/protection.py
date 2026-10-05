@@ -1,6 +1,6 @@
 """Account protection: PIN storage and verification."""
 
-# path: client/keystore/account_protection.py
+# path: client/keystore/browser/protection.py
 
 # --- Imports ---
 

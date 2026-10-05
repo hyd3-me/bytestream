@@ -1,10 +1,10 @@
-"""Tests for client/keystore/account_protection."""
+"""Tests for client/keystore/browser/protection."""
 
-# path: client/tests/test_account_protection.py
+# path: client/tests/browser/test_protection.py
 
 # --- Imports ---
 
-from client.keystore import account_protection
+from client.keystore.browser import protection as account_protection
 
 # --- Tests ---
 
@@ -84,7 +84,7 @@ def test_verify_pin_resets_counter_on_success():
 
 
 def test_is_locked_expires_after_lockout_period(mocker):
-    mock_time = mocker.patch("client.keystore.account_protection.time.time")
+    mock_time = mocker.patch("client.keystore.browser.protection.time.time")
     mock_time.return_value = 1000.0
 
     account_protection.set_pin("0xabc", "1234")
