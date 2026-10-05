@@ -1,10 +1,10 @@
-"""Tests for client/keystore/session."""
+"""Tests for client/keystore/memory/session."""
 
-# path: client/tests/test_session.py
+# path: client/tests/memory/test_session.py
 
 # --- Imports ---
 
-from client.keystore import session
+from client.keystore.memory import session
 
 # --- Tests ---
 

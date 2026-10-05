@@ -1,6 +1,6 @@
 """Unlocked session keys in memory (per browser tab)."""
 
-# path: client/keystore/session.py
+# path: client/keystore/memory/session.py
 
 # --- Imports ---
 

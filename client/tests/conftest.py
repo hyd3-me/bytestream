@@ -25,7 +25,7 @@ from client.keystore.browser import packages as keystore_browser_packages
 from client.keystore.tab import tab_state as keystore_tab_state
 from client.keystore.browser import secrets as keystore_secrets
 from client.keystore.browser import protection as keystore_account_protection
-from client.keystore import session as keystore_session
+from client.keystore.memory import session as keystore_session
 from client.keystore.tab import tab_keys as keystore_tab_keys
 from client.keystore.browser import device as keystore_device
 from client.keystore.browser import recovery as keystore_recovery
