@@ -54,3 +54,7 @@ def get_key_package(eth_address: str, package_id: str = "current"):
         except ValueError:
             return None
     return browser_packages.get_key_package_by_id(eth_address, package_id)
+
+
+def set_active_address(eth_address: str) -> None:
+    pass
