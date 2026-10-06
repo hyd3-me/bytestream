@@ -135,3 +135,14 @@ def test_set_pin_overrides_device_key_protection():
 def test_derive_pin_key_exists():
     assert hasattr(account_protection, "derive_pin_key")
     assert callable(account_protection.derive_pin_key)
+
+
+def test_derive_pin_key_returns_32_bytes_deterministic():
+    account_protection.set_pin("0xabc", "1234")
+
+    key1 = account_protection.derive_pin_key("0xabc", "1234")
+    key2 = account_protection.derive_pin_key("0xabc", "1234")
+
+    assert isinstance(key1, bytes)
+    assert len(key1) == 32
+    assert key1 == key2
