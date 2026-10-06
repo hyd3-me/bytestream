@@ -92,4 +92,13 @@ def set_device_key_protection(eth_address: str) -> None:
 
 
 def derive_pin_key(eth_address: str, pin: str) -> bytes | None:
-    pass
+    record = _account_protection.get(eth_address)
+    if record is None or record.get("type") != "pin":
+        return None
+    return hashlib.pbkdf2_hmac(
+        "sha256",
+        pin.encode("utf-8"),
+        record["salt"],
+        PBKDF2_ITERATIONS,
+        dklen=32,
+    )
