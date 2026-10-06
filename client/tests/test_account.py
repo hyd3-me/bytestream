@@ -28,3 +28,25 @@ def test_restore_tab_session_returns_no_tab_secret_when_secret_missing():
     result = account.restore_tab_session()
 
     assert result == {"status": "no_tab_secret"}
+
+
+def test_restore_tab_session_unlocks_and_returns_ok(master_key):
+    import secrets
+    from client.keystore import at_rest
+    from client.keystore.tab import tab_keys, tab_state
+    from client.keystore.memory import session
+
+    address = "0xabc"
+    mkid = "mkid_1"
+    tab_secret = secrets.token_bytes(32)
+    ciphertext, nonce = at_rest.encrypt_master_key(master_key, tab_secret)
+
+    tab_state.set_active_address(address)
+    tab_state.set_current_master_key_id(address, mkid)
+    tab_keys.set_tab_secret(tab_secret)
+    tab_keys.store_master_key_for_tab(mkid, ciphertext, nonce)
+
+    result = account.restore_tab_session()
+
+    assert result == {"status": "ok", "master_key_id": mkid}
+    assert session.is_session_active(address) is True
