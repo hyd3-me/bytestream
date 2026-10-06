@@ -4,7 +4,12 @@
 
 # --- Imports ---
 
-from client.keystore import account
+import secrets
+
+from client.keystore import account, at_rest
+from client.keystore.browser import device, protection, recovery
+from client.keystore.memory import session
+from client.keystore.tab import tab_keys, tab_state
 
 
 # --- Tests ---
@@ -21,8 +26,6 @@ def test_restore_tab_session_returns_no_active_session_when_empty():
 
 
 def test_restore_tab_session_returns_no_tab_secret_when_secret_missing():
-    from client.keystore.tab import tab_state
-
     tab_state.set_active_address("0xabc")
 
     result = account.restore_tab_session()
@@ -31,11 +34,6 @@ def test_restore_tab_session_returns_no_tab_secret_when_secret_missing():
 
 
 def test_restore_tab_session_unlocks_and_returns_ok(master_key):
-    import secrets
-    from client.keystore import at_rest
-    from client.keystore.tab import tab_keys, tab_state
-    from client.keystore.memory import session
-
     address = "0xabc"
     mkid = "mkid_1"
     tab_secret = secrets.token_bytes(32)
@@ -64,11 +62,6 @@ def test_unlock_account_returns_no_master_key_for_unknown_address():
 
 
 def test_unlock_account_with_device_key_unlocks_and_returns_ok(master_key):
-    from client.keystore import at_rest
-    from client.keystore.browser import device, protection, recovery
-    from client.keystore.memory import session
-    from client.keystore.tab import tab_state
-
     address = "0xabc"
     mkid = "mkid_1"
 

@@ -4,6 +4,7 @@
 
 # --- Imports ---
 
+from client import crypto
 from client.keystore.memory import session
 
 # --- Tests ---
@@ -15,8 +16,6 @@ def test_unlock_session_exists():
 
 
 def test_unlock_session_stores_derived_keys(master_key_a, x25519_keypair_a, ed25519_keypair_a):
-    from client import crypto
-
     eth_address = "0xabc"
     master_key_id = "mkid_1"
 
