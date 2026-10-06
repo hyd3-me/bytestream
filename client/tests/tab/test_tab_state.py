@@ -46,3 +46,8 @@ def test_list_known_addresses_returns_empty_when_no_current_keys():
 def test_set_active_address_exists():
     assert hasattr(master_keys, "set_active_address")
     assert callable(master_keys.set_active_address)
+
+
+def test_get_active_address_exists():
+    assert hasattr(master_keys, "get_active_address")
+    assert callable(master_keys.get_active_address)
