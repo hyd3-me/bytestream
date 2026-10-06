@@ -75,3 +75,12 @@ def test_unlock_account_with_device_key_unlocks_and_returns_ok(master_key):
 
     assert result == {"status": "ok", "master_key_id": mkid}
     assert session.is_session_active(address) is True
+
+
+def test_unlock_account_returns_pin_required_when_pin_missing():
+    address = "0xabc"
+    protection.set_pin(address, "1234")
+
+    result = account.unlock_account(address)
+
+    assert result == {"status": "pin_required"}
