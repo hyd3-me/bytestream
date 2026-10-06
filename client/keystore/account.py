@@ -37,6 +37,10 @@ def unlock_account(eth_address: str, pin: str | None = None) -> dict:
         return {"status": "no_master_key"}
     if protection_record["type"] == "device_key":
         recovery_key = device.get_or_create_device_key()
+    elif protection_record["type"] == "pin":
+        if pin is None:
+            return {"status": "pin_required"}
+        recovery_key = protection.derive_pin_key(eth_address, pin)
     else:
         return {"status": "unknown_protection_type"}
     master_key_id = tab_state.get_current_master_key_id(eth_address)
