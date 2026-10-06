@@ -55,3 +55,9 @@ def test_restore_tab_session_unlocks_and_returns_ok(master_key):
 def test_unlock_account_exists():
     assert hasattr(account, "unlock_account")
     assert callable(account.unlock_account)
+
+
+def test_unlock_account_returns_no_master_key_for_unknown_address():
+    result = account.unlock_account("0xunknown")
+
+    assert result == {"status": "no_master_key"}
