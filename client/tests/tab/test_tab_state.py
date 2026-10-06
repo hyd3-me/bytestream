@@ -51,3 +51,9 @@ def test_set_active_address_exists():
 def test_get_active_address_exists():
     assert hasattr(master_keys, "get_active_address")
     assert callable(master_keys.get_active_address)
+
+
+def test_set_and_get_active_address_roundtrip():
+    master_keys.set_active_address("0xabc")
+
+    assert master_keys.get_active_address() == "0xabc"
