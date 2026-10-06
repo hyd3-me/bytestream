@@ -110,19 +110,13 @@ def ed25519_keypair(master_key):
 def signed_package(test_account, x25519_keypair_a, ed25519_keypair_a):
     _, x_pub = x25519_keypair_a
     _, e_pub = ed25519_keypair_a
-    package_id_bytes = crypto.build_message_id(
-        crypto.generate_timestamp(), crypto.generate_nonce()
-    )
-    base = package_ops.build_key_package(
-        test_account.address, x_pub, e_pub, package_id_bytes
-    )
+    base = package_ops.build_key_package(test_account.address, x_pub, e_pub)
     return package_ops.sign_key_package(test_account, base)
 
 
 @pytest.fixture(autouse=True)
 def _clear_crypto_state():
     keystore_browser_packages._packages.clear()
-    keystore_tab_state._current_package_ids.clear()
     keystore_secrets._secrets.clear()
     keystore_recovery._master_keys_for_recovery.clear()
     keystore_tab_state._current_master_key_ids.clear()
@@ -136,7 +130,6 @@ def _clear_crypto_state():
     keystore_session._sessions.clear()
     yield
     keystore_browser_packages._packages.clear()
-    keystore_tab_state._current_package_ids.clear()
     keystore_secrets._secrets.clear()
     keystore_recovery._master_keys_for_recovery.clear()
     keystore_tab_state._current_master_key_ids.clear()
@@ -152,10 +145,5 @@ def _clear_crypto_state():
 def signed_package_b(test_account_b, x25519_keypair_b, ed25519_keypair_b):
     _, x_pub = x25519_keypair_b
     _, e_pub = ed25519_keypair_b
-    package_id_bytes = crypto.build_message_id(
-        crypto.generate_timestamp(), crypto.generate_nonce()
-    )
-    base = package_ops.build_key_package(
-        test_account_b.address, x_pub, e_pub, package_id_bytes
-    )
+    base = package_ops.build_key_package(test_account_b.address, x_pub, e_pub)
     return package_ops.sign_key_package(test_account_b, base)

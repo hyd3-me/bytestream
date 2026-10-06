@@ -34,7 +34,7 @@ def build_key_exchange_request(own_address: str, peer_address: str) -> dict:
         "type": "key_exchange_request",
         "request_id": base64.b64encode(request_id).decode("ascii"),
         "sender_address": own_address,
-        "requested_package_id": "current",
+        "requested_master_key_id": "current",
         "sender_package": own_package,
     }
 

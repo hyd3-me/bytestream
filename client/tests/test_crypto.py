@@ -323,22 +323,13 @@ def test_build_key_package_returns_base_package_without_signature(
     _, e_pub = ed25519_keypair
     address = "0xabc"
 
-    package_id_bytes = crypto.build_message_id(
-        crypto.generate_timestamp(), crypto.generate_nonce()
-    )
-
-    package = package_ops.build_key_package(
-        address,
-        x_pub,
-        e_pub,
-        package_id_bytes,
-    )
+    package = package_ops.build_key_package(address, x_pub, e_pub)
 
     assert set(package.keys()) == {
         "eth_address",
         "x25519_public_key",
         "ed25519_public_key",
-        "package_id",
+        "master_key_id",
     }
     assert package["eth_address"] == address
     assert package["x25519_public_key"] == base64.b64encode(
@@ -347,7 +338,8 @@ def test_build_key_package_returns_base_package_without_signature(
     assert package["ed25519_public_key"] == base64.b64encode(
         e_pub.public_bytes_raw()
     ).decode("ascii")
-    assert package["package_id"] == base64.b64encode(package_id_bytes).decode("ascii")
+    expected_mkid = crypto.compute_master_key_id(x_pub, e_pub)
+    assert package["master_key_id"] == base64.b64encode(expected_mkid).decode("ascii")
     assert "eth_signature" not in package
 
 
@@ -362,14 +354,10 @@ def test_sign_key_package_adds_eth_signature(
     _, x_pub = x25519_keypair
     _, e_pub = ed25519_keypair
 
-    package_id_bytes = crypto.build_message_id(
-        crypto.generate_timestamp(), crypto.generate_nonce()
-    )
     base_package = package_ops.build_key_package(
         test_account.address,
         x_pub,
         e_pub,
-        package_id_bytes,
     )
 
     signed_package = package_ops.sign_key_package(test_account, base_package)
@@ -380,7 +368,7 @@ def test_sign_key_package_adds_eth_signature(
     assert signed_package["eth_address"] == base_package["eth_address"]
     assert signed_package["x25519_public_key"] == base_package["x25519_public_key"]
     assert signed_package["ed25519_public_key"] == base_package["ed25519_public_key"]
-    assert signed_package["package_id"] == base_package["package_id"]
+    assert signed_package["master_key_id"] == base_package["master_key_id"]
 
 
 def test_verify_key_package_exists():
@@ -394,14 +382,10 @@ def test_verify_key_package_accepts_valid_package(
     _, x_pub = x25519_keypair
     _, e_pub = ed25519_keypair
 
-    package_id_bytes = crypto.build_message_id(
-        crypto.generate_timestamp(), crypto.generate_nonce()
-    )
     base_package = package_ops.build_key_package(
         test_account.address,
         x_pub,
         e_pub,
-        package_id_bytes,
     )
 
     signed_package = package_ops.sign_key_package(test_account, base_package)
@@ -415,14 +399,10 @@ def test_verify_key_package_rejects_tampered_address(
     _, x_pub = x25519_keypair
     _, e_pub = ed25519_keypair
 
-    package_id_bytes = crypto.build_message_id(
-        crypto.generate_timestamp(), crypto.generate_nonce()
-    )
     base_package = package_ops.build_key_package(
         test_account.address,
         x_pub,
         e_pub,
-        package_id_bytes,
     )
     signed_package = package_ops.sign_key_package(test_account, base_package)
 
@@ -454,27 +434,17 @@ def test_clear_packages_removes_packages(test_account, signed_package):
 
     assert (
         browser_packages.get_key_package_by_id(
-            test_account.address, signed_package["package_id"]
+            test_account.address, signed_package["master_key_id"]
         )
         is None
     )
-
-
-def test_clear_current_package_id_removes_pointer(test_account, signed_package):
-    tab_state.set_current_package_id(
-        test_account.address, signed_package["package_id"]
-    )
-
-    tab_state.clear_current_package_id(test_account.address)
-
-    assert tab_state.get_current_package_id(test_account.address) is None
 
 
 def test_store_key_package_stores_by_address_and_id(test_account, signed_package):
     browser_packages.store_key_package(signed_package)
 
     retrieved = browser_packages.get_key_package_by_id(
-        test_account.address, signed_package["package_id"]
+        test_account.address, signed_package["master_key_id"]
     )
     assert retrieved == signed_package
 
@@ -529,29 +499,11 @@ def test_get_peer_key_package_exists():
     assert callable(browser_packages.get_peer_key_package)
 
 
-def test_get_peer_key_package_returns_latest(
-    test_account, x25519_keypair_a, ed25519_keypair_a
-):
-    _, x_pub = x25519_keypair_a
-    _, e_pub = ed25519_keypair_a
-
-    old_pid = crypto.build_message_id(1000, b"\x01" * 12)
-    old_base = package_ops.build_key_package(
-        test_account.address, x_pub, e_pub, old_pid
-    )
-    old_pkg = package_ops.sign_key_package(test_account, old_base)
-
-    new_pid = crypto.build_message_id(2000, b"\x02" * 12)
-    new_base = package_ops.build_key_package(
-        test_account.address, x_pub, e_pub, new_pid
-    )
-    new_pkg = package_ops.sign_key_package(test_account, new_base)
-
-    browser_packages.store_key_package(old_pkg)
-    browser_packages.store_key_package(new_pkg)
+def test_get_peer_key_package_returns_latest(test_account, signed_package):
+    browser_packages.store_key_package(signed_package)
 
     result = browser_packages.get_peer_key_package(test_account.address)
-    assert result == new_pkg
+    assert result == signed_package
 
 
 def test_get_peer_key_package_returns_none_when_empty(test_account):
@@ -585,8 +537,8 @@ def test_build_key_exchange_request_returns_message_with_own_package(
     test_account, test_account_b, signed_package
 ):
     browser_packages.store_key_package(signed_package)
-    tab_state.set_current_package_id(
-        test_account.address, signed_package["package_id"]
+    tab_state.set_current_master_key_id(
+        test_account.address, signed_package["master_key_id"]
     )
 
     message = keystore_exchange.build_key_exchange_request(
@@ -597,12 +549,12 @@ def test_build_key_exchange_request_returns_message_with_own_package(
         "type",
         "request_id",
         "sender_address",
-        "requested_package_id",
+        "requested_master_key_id",
         "sender_package",
     }
     assert message["type"] == "key_exchange_request"
     assert message["sender_address"] == test_account.address
-    assert message["requested_package_id"] == "current"
+    assert message["requested_master_key_id"] == "current"
     assert message["request_id"]
     assert message["sender_package"] == signed_package
 
@@ -616,15 +568,15 @@ def test_handle_key_exchange_request_stores_sender_package_and_returns_response(
     test_account, test_account_b, signed_package, signed_package_b
 ):
     browser_packages.store_key_package(signed_package)
-    tab_state.set_current_package_id(
-        test_account.address, signed_package["package_id"]
+    tab_state.set_current_master_key_id(
+        test_account.address, signed_package["master_key_id"]
     )
 
     message = {
         "type": "key_exchange_request",
         "request_id": "dGVzdF9yZXF1ZXN0X2lk",
         "sender_address": test_account_b.address,
-        "requested_package_id": "current",
+        "requested_master_key_id": "current",
         "sender_package": signed_package_b,
     }
 
@@ -638,7 +590,7 @@ def test_handle_key_exchange_request_stores_sender_package_and_returns_response(
     assert response["package"] == signed_package
 
     stored = browser_packages.get_key_package_by_id(
-        test_account_b.address, signed_package_b["package_id"]
+        test_account_b.address, signed_package_b["master_key_id"]
     )
     assert stored == signed_package_b
 
@@ -665,7 +617,7 @@ def test_handle_key_exchange_response_stores_peer_package(
     assert result == signed_package
 
     stored = browser_packages.get_key_package_by_id(
-        test_account.address, signed_package["package_id"]
+        test_account.address, signed_package["master_key_id"]
     )
     assert stored == signed_package
 
@@ -673,23 +625,6 @@ def test_handle_key_exchange_response_stores_peer_package(
 def test_derive_and_store_secret_exists():
     assert hasattr(keystore_secrets, "derive_and_store_secret")
     assert callable(keystore_secrets.derive_and_store_secret)
-
-
-def test_generate_package_id_exists():
-    assert hasattr(crypto, "generate_package_id")
-    assert callable(crypto.generate_package_id)
-
-
-def test_generate_package_id_uses_build_message_id(mocker):
-    mock_build = mocker.patch(
-        "client.crypto.build_message_id",
-        return_value=b"\x00" * 20,
-    )
-
-    result = crypto.generate_package_id()
-
-    assert result == b"\x00" * 20
-    mock_build.assert_called_once()
 
 
 def test_compute_master_key_id_exists():
