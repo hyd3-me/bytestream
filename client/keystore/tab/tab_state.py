@@ -8,6 +8,7 @@ from client.keystore.browser import packages as browser_packages
 
 # --- Storage ---
 
+_active_address = None
 _current_master_key_ids = {}
 _current_package_ids = {}
 
@@ -57,8 +58,9 @@ def get_key_package(eth_address: str, package_id: str = "current"):
 
 
 def set_active_address(eth_address: str) -> None:
-    pass
+    global _active_address
+    _active_address = eth_address
 
 
 def get_active_address() -> str | None:
-    pass
+    return _active_address
