@@ -35,3 +35,14 @@ def test_store_master_key_for_tab_exists():
 def test_load_master_key_for_tab_exists():
     assert hasattr(tab_keys, "load_master_key_for_tab")
     assert callable(tab_keys.load_master_key_for_tab)
+
+
+def test_store_and_load_master_key_for_tab_roundtrip():
+    master_key_id = "mkid_1"
+    ciphertext = b"\xab" * 48
+    nonce = b"\xcd" * 12
+
+    tab_keys.store_master_key_for_tab(master_key_id, ciphertext, nonce)
+    loaded = tab_keys.load_master_key_for_tab(master_key_id)
+
+    assert loaded == (ciphertext, nonce)
