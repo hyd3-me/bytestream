@@ -61,3 +61,24 @@ def test_unlock_account_returns_no_master_key_for_unknown_address():
     result = account.unlock_account("0xunknown")
 
     assert result == {"status": "no_master_key"}
+
+
+def test_unlock_account_with_device_key_unlocks_and_returns_ok(master_key):
+    from client.keystore import at_rest
+    from client.keystore.browser import device, protection, recovery
+    from client.keystore.memory import session
+    from client.keystore.tab import tab_state
+
+    address = "0xabc"
+    mkid = "mkid_1"
+
+    device_key = device.get_or_create_device_key()
+    ciphertext, nonce = at_rest.encrypt_master_key(master_key, device_key)
+    recovery.store_master_key_for_recovery(mkid, ciphertext, nonce)
+    protection.set_device_key_protection(address)
+    tab_state.set_current_master_key_id(address, mkid)
+
+    result = account.unlock_account(address)
+
+    assert result == {"status": "ok", "master_key_id": mkid}
+    assert session.is_session_active(address) is True
