@@ -38,6 +38,8 @@ def unlock_account(eth_address: str, pin: str | None = None) -> dict:
     if protection_record["type"] == "device_key":
         recovery_key = device.get_or_create_device_key()
     elif protection_record["type"] == "pin":
+        if protection.is_locked(eth_address):
+            return {"status": "locked"}
         if pin is None:
             return {"status": "pin_required"}
         if not protection.verify_pin(eth_address, pin):
