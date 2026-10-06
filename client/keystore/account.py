@@ -13,4 +13,6 @@ from client.keystore.tab import tab_keys, tab_state
 # --- Public API ---
 
 def restore_tab_session() -> dict:
-    pass
+    address = tab_state.get_active_address()
+    if address is None:
+        return {"status": "no_active_session"}
