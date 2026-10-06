@@ -29,3 +29,7 @@ def restore_tab_session() -> dict:
     master_key = at_rest.decrypt_master_key(ciphertext, nonce, tab_secret)
     session.unlock_session(address, master_key_id, master_key)
     return {"status": "ok", "master_key_id": master_key_id}
+
+
+def unlock_account(eth_address: str, pin: str | None = None) -> dict:
+    pass
