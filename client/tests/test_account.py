@@ -104,3 +104,18 @@ def test_unlock_account_returns_locked_when_locked():
     result = account.unlock_account(address, "1234")
 
     assert result == {"status": "locked"}
+
+
+def test_unlock_account_sets_active_address(master_key):
+    address = "0xabc"
+    mkid = "mkid_1"
+
+    device_key = device.get_or_create_device_key()
+    ciphertext, nonce = at_rest.encrypt_master_key(master_key, device_key)
+    recovery.store_master_key_for_recovery(mkid, ciphertext, nonce)
+    protection.set_device_key_protection(address)
+    tab_state.set_current_master_key_id(address, mkid)
+
+    account.unlock_account(address)
+
+    assert tab_state.get_active_address() == address
