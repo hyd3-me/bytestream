@@ -5,6 +5,7 @@
 # --- Storage ---
 
 _tab_secret = None
+_master_keys_for_tab = {}
 
 # --- Public API ---
 
@@ -20,10 +21,10 @@ def get_tab_secret() -> bytes | None:
 def store_master_key_for_tab(
     master_key_id: str, ciphertext: bytes, nonce: bytes
 ) -> None:
-    pass
+    _master_keys_for_tab[master_key_id] = (ciphertext, nonce)
 
 
 def load_master_key_for_tab(
     master_key_id: str,
 ) -> tuple[bytes, bytes] | None:
-    pass
+    return _master_keys_for_tab.get(master_key_id)
