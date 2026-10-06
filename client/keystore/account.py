@@ -5,7 +5,7 @@
 # --- Imports ---
 
 from client.keystore import at_rest
-from client.keystore.browser import recovery
+from client.keystore.browser import protection, recovery
 from client.keystore.memory import session
 from client.keystore.tab import tab_keys, tab_state
 
@@ -32,4 +32,6 @@ def restore_tab_session() -> dict:
 
 
 def unlock_account(eth_address: str, pin: str | None = None) -> dict:
-    pass
+    protection_record = protection.get_protection_type(eth_address)
+    if protection_record["type"] == "none":
+        return {"status": "no_master_key"}
