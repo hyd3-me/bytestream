@@ -130,6 +130,8 @@ def _clear_crypto_state():
     keystore_account_protection._attempts.clear()
     keystore_device._device_key = None
     keystore_tab_keys._tab_secret = None
+    keystore_tab_keys._master_keys_for_tab.clear()
+    keystore_tab_state._active_address = None
     keystore_session._sessions.clear()
     keystore_session._sessions.clear()
     yield
@@ -142,6 +144,8 @@ def _clear_crypto_state():
     keystore_account_protection._attempts.clear()
     keystore_device._device_key = None
     keystore_tab_keys._tab_secret = None
+    keystore_tab_keys._master_keys_for_tab.clear()
+    keystore_tab_state._active_address = None
 
 
 @pytest.fixture
