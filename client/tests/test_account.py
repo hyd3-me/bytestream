@@ -93,3 +93,14 @@ def test_unlock_account_returns_wrong_pin_for_incorrect_pin():
     result = account.unlock_account(address, "9999")
 
     assert result == {"status": "wrong_pin"}
+
+
+def test_unlock_account_returns_locked_when_locked():
+    address = "0xabc"
+    protection.set_pin(address, "1234")
+    for _ in range(protection.MAX_ATTEMPTS):
+        protection.verify_pin(address, "0000")
+
+    result = account.unlock_account(address, "1234")
+
+    assert result == {"status": "locked"}
