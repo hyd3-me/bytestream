@@ -130,3 +130,8 @@ def test_set_pin_overrides_device_key_protection():
 
     result = account_protection.get_protection_type("0xabc")
     assert result["type"] == "pin"
+
+
+def test_derive_pin_key_exists():
+    assert hasattr(account_protection, "derive_pin_key")
+    assert callable(account_protection.derive_pin_key)
