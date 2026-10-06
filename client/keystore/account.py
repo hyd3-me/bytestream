@@ -5,7 +5,7 @@
 # --- Imports ---
 
 from client.keystore import at_rest
-from client.keystore.browser import protection, recovery
+from client.keystore.browser import device, protection, recovery
 from client.keystore.memory import session
 from client.keystore.tab import tab_keys, tab_state
 
@@ -35,3 +35,17 @@ def unlock_account(eth_address: str, pin: str | None = None) -> dict:
     protection_record = protection.get_protection_type(eth_address)
     if protection_record["type"] == "none":
         return {"status": "no_master_key"}
+    if protection_record["type"] == "device_key":
+        recovery_key = device.get_or_create_device_key()
+    else:
+        return {"status": "unknown_protection_type"}
+    master_key_id = tab_state.get_current_master_key_id(eth_address)
+    if master_key_id is None:
+        return {"status": "no_current_key"}
+    blob = recovery.load_master_key_for_recovery(master_key_id)
+    if blob is None:
+        return {"status": "no_master_key"}
+    ciphertext, nonce = blob
+    master_key = at_rest.decrypt_master_key(ciphertext, nonce, recovery_key)
+    session.unlock_session(eth_address, master_key_id, master_key)
+    return {"status": "ok", "master_key_id": master_key_id}
