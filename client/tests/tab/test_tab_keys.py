@@ -30,3 +30,8 @@ def test_set_and_get_tab_secret_roundtrip():
 def test_store_master_key_for_tab_exists():
     assert hasattr(tab_keys, "store_master_key_for_tab")
     assert callable(tab_keys.store_master_key_for_tab)
+
+
+def test_load_master_key_for_tab_exists():
+    assert hasattr(tab_keys, "load_master_key_for_tab")
+    assert callable(tab_keys.load_master_key_for_tab)
