@@ -84,3 +84,12 @@ def test_unlock_account_returns_pin_required_when_pin_missing():
     result = account.unlock_account(address)
 
     assert result == {"status": "pin_required"}
+
+
+def test_unlock_account_returns_wrong_pin_for_incorrect_pin():
+    address = "0xabc"
+    protection.set_pin(address, "1234")
+
+    result = account.unlock_account(address, "9999")
+
+    assert result == {"status": "wrong_pin"}
