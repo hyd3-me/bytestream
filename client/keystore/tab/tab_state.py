@@ -58,3 +58,7 @@ def get_key_package(eth_address: str, package_id: str = "current"):
 
 def set_active_address(eth_address: str) -> None:
     pass
+
+
+def get_active_address() -> str | None:
+    pass
