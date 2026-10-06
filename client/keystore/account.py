@@ -40,6 +40,8 @@ def unlock_account(eth_address: str, pin: str | None = None) -> dict:
     elif protection_record["type"] == "pin":
         if pin is None:
             return {"status": "pin_required"}
+        if not protection.verify_pin(eth_address, pin):
+            return {"status": "wrong_pin"}
         recovery_key = protection.derive_pin_key(eth_address, pin)
     else:
         return {"status": "unknown_protection_type"}
