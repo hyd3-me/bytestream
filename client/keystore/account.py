@@ -19,3 +19,13 @@ def restore_tab_session() -> dict:
     tab_secret = tab_keys.get_tab_secret()
     if tab_secret is None:
         return {"status": "no_tab_secret"}
+    master_key_id = tab_state.get_current_master_key_id(address)
+    if master_key_id is None:
+        return {"status": "no_current_key"}
+    blob = tab_keys.load_master_key_for_tab(master_key_id)
+    if blob is None:
+        return {"status": "no_master_key"}
+    ciphertext, nonce = blob
+    master_key = at_rest.decrypt_master_key(ciphertext, nonce, tab_secret)
+    session.unlock_session(address, master_key_id, master_key)
+    return {"status": "ok", "master_key_id": master_key_id}
