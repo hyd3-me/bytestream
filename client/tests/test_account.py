@@ -50,3 +50,8 @@ def test_restore_tab_session_unlocks_and_returns_ok(master_key):
 
     assert result == {"status": "ok", "master_key_id": mkid}
     assert session.is_session_active(address) is True
+
+
+def test_unlock_account_exists():
+    assert hasattr(account, "unlock_account")
+    assert callable(account.unlock_account)
