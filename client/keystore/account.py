@@ -56,4 +56,5 @@ def unlock_account(eth_address: str, pin: str | None = None) -> dict:
     ciphertext, nonce = blob
     master_key = at_rest.decrypt_master_key(ciphertext, nonce, recovery_key)
     session.unlock_session(eth_address, master_key_id, master_key)
+    tab_state.set_active_address(eth_address)
     return {"status": "ok", "master_key_id": master_key_id}
