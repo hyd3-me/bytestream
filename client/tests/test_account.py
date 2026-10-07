@@ -7,7 +7,7 @@
 import secrets
 
 from client.keystore import account, at_rest
-from client.keystore.browser import device, protection, recovery
+from client.keystore.browser import device, packages as browser_packages, protection, recovery
 from client.keystore.memory import session
 from client.keystore.tab import tab_keys, tab_state
 
@@ -133,3 +133,20 @@ def test_setup_new_account_returns_ok_with_master_key_id(test_account):
     assert "master_key_id" in result
     assert isinstance(result["master_key_id"], str)
     assert result["master_key_id"]
+
+
+def test_setup_new_account_persists_all_state(test_account):
+    address = test_account.address
+
+    result = account.setup_new_account(address, test_account)
+    mkid = result["master_key_id"]
+
+    package = browser_packages.get_key_package_by_id(address, mkid)
+    assert package is not None
+    assert tab_state.get_current_master_key_id(address) == mkid
+    assert protection.get_protection_type(address) == {"type": "device_key"}
+    assert recovery.load_master_key_for_recovery(mkid) is not None
+    assert tab_keys.get_tab_secret() is not None
+    assert tab_keys.load_master_key_for_tab(mkid) is not None
+    assert session.is_session_active(address) is True
+    assert tab_state.get_active_address() == address
