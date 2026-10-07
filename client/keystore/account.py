@@ -58,3 +58,7 @@ def unlock_account(eth_address: str, pin: str | None = None) -> dict:
     session.unlock_session(eth_address, master_key_id, master_key)
     tab_state.set_active_address(eth_address)
     return {"status": "ok", "master_key_id": master_key_id}
+
+
+def setup_new_account(eth_address: str, signer) -> dict:
+    pass
