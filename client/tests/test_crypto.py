@@ -653,3 +653,37 @@ def test_derive_and_store_secret_stores_and_returns_secret(
     _, bob_pub = x25519_keypair_b
     expected = crypto.compute_shared_secret(alice_priv, bob_pub)
     assert result["shared_secret"] == expected
+
+
+def test_derive_and_store_secret_with_explicit_peer_mkid(
+    test_account,
+    test_account_b,
+    master_key_a,
+    signed_package,
+    signed_package_b,
+    x25519_keypair_a,
+    x25519_keypair_b,
+):
+    own = test_account.address
+    peer = test_account_b.address
+    own_mkid = signed_package["master_key_id"]
+    peer_mkid = signed_package_b["master_key_id"]
+
+    browser_packages.store_key_package(signed_package)
+    browser_packages.store_key_package(signed_package_b)
+    tab_state.set_current_master_key_id(own, own_mkid)
+    session.unlock_session(own, own_mkid, master_key_a)
+
+    result = keystore_secrets.derive_and_store_secret(
+        own, peer, peer_mkid=peer_mkid
+    )
+
+    assert result is not None
+
+    pair = keystore_secrets.build_master_key_id_pair(own_mkid, peer_mkid)
+    assert keystore_secrets.get_secret(pair) == result
+
+    alice_priv, _ = x25519_keypair_a
+    _, bob_pub = x25519_keypair_b
+    expected = crypto.compute_shared_secret(alice_priv, bob_pub)
+    assert result["shared_secret"] == expected
