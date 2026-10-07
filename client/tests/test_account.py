@@ -124,3 +124,12 @@ def test_unlock_account_sets_active_address(master_key):
 def test_setup_new_account_exists():
     assert hasattr(account, "setup_new_account")
     assert callable(account.setup_new_account)
+
+
+def test_setup_new_account_returns_ok_with_master_key_id(test_account):
+    result = account.setup_new_account(test_account.address, test_account)
+
+    assert result["status"] == "ok"
+    assert "master_key_id" in result
+    assert isinstance(result["master_key_id"], str)
+    assert result["master_key_id"]
