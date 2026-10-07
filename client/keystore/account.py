@@ -77,16 +77,19 @@ def setup_new_account(eth_address: str, signer) -> dict:
     signed_package = package_ops.sign_key_package(signer, base_package)
     master_key_id = signed_package["master_key_id"]
 
+    device_key = device.get_or_create_device_key()
+    tab_secret = secrets.token_bytes(32)
+    recovery_ciphertext, recovery_nonce = at_rest.encrypt_master_key(
+        master_key, device_key
+    )
+    tab_ciphertext, tab_nonce = at_rest.encrypt_master_key(master_key, tab_secret)
+
     browser_packages.store_key_package(signed_package)
     tab_state.set_current_master_key_id(eth_address, master_key_id)
     protection.set_device_key_protection(eth_address)
-
-    device_key = device.get_or_create_device_key()
-    ciphertext, nonce = at_rest.encrypt_master_key(master_key, device_key)
-    recovery.store_master_key_for_recovery(master_key_id, ciphertext, nonce)
-
-    tab_secret = secrets.token_bytes(32)
-    tab_ciphertext, tab_nonce = at_rest.encrypt_master_key(master_key, tab_secret)
+    recovery.store_master_key_for_recovery(
+        master_key_id, recovery_ciphertext, recovery_nonce
+    )
     tab_keys.set_tab_secret(tab_secret)
     tab_keys.store_master_key_for_tab(master_key_id, tab_ciphertext, tab_nonce)
 
