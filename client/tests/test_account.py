@@ -119,3 +119,8 @@ def test_unlock_account_sets_active_address(master_key):
     account.unlock_account(address)
 
     assert tab_state.get_active_address() == address
+
+
+def test_setup_new_account_exists():
+    assert hasattr(account, "setup_new_account")
+    assert callable(account.setup_new_account)
