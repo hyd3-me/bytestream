@@ -5,14 +5,8 @@
 # --- Storage ---
 
 _master_keys_for_recovery = {}
-_master_keys = {}
 
 # --- Public API ---
-
-
-def list_master_key_ids(eth_address: str) -> list[str]:
-    # TODO: implement with address -> [mkids] index
-    return []
 
 
 def store_master_key_for_recovery(

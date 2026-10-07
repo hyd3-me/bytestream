@@ -9,11 +9,6 @@ from client.keystore.browser import recovery as master_keys
 # --- Tests ---
 
 
-def test_list_master_key_ids_exists():
-    assert hasattr(master_keys, "list_master_key_ids")
-    assert callable(master_keys.list_master_key_ids)
-
-
 def test_store_master_key_for_recovery_exists():
     assert hasattr(master_keys, "store_master_key_for_recovery")
     assert callable(master_keys.store_master_key_for_recovery)
