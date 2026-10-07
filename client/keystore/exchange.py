@@ -14,10 +14,6 @@ from client.keystore.tab import tab_state
 # --- Public API ---
 
 
-def build_package_id_pair(pid_1: str, pid_2: str) -> str:
-    return ":".join(sorted([pid_1, pid_2]))
-
-
 def ensure_peer_key_package(own_address: str, peer_address: str) -> dict | None:
     package = browser_packages.get_peer_key_package(peer_address)
     if package:

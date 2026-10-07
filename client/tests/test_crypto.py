@@ -470,30 +470,6 @@ def test_load_x25519_public_key_roundtrip(x25519_keypair_a):
     assert loaded.public_bytes_raw() == x_pub.public_bytes_raw()
 
 
-def test_build_package_id_pair_exists():
-    assert hasattr(keystore_exchange, "build_package_id_pair")
-    assert callable(keystore_exchange.build_package_id_pair)
-
-
-def test_build_package_id_pair_is_symmetric():
-    pid_a = "AAAB"
-    pid_b = "AAAC"
-
-    pair_ab = keystore_exchange.build_package_id_pair(pid_a, pid_b)
-    pair_ba = keystore_exchange.build_package_id_pair(pid_b, pid_a)
-
-    assert pair_ab == pair_ba
-
-
-def test_build_package_id_pair_returns_sorted_pair_with_colon():
-    pid_a = "ZZZZ"
-    pid_b = "AAAA"
-
-    pair = keystore_exchange.build_package_id_pair(pid_a, pid_b)
-
-    assert pair == "AAAA:ZZZZ"
-
-
 def test_get_peer_key_package_exists():
     assert hasattr(browser_packages, "get_peer_key_package")
     assert callable(browser_packages.get_peer_key_package)
