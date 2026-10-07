@@ -4,7 +4,12 @@
 
 # --- Imports ---
 
-from client.keystore import at_rest
+import secrets
+
+import client.crypto as crypto
+import client.wallet as wallet
+from client.keystore import at_rest, package_ops
+from client.keystore.browser import packages as browser_packages
 from client.keystore.browser import device, protection, recovery
 from client.keystore.memory import session
 from client.keystore.tab import tab_keys, tab_state
@@ -61,4 +66,31 @@ def unlock_account(eth_address: str, pin: str | None = None) -> dict:
 
 
 def setup_new_account(eth_address: str, signer) -> dict:
-    pass
+    signature = wallet.sign_fixed_message(signer)
+    master_key = crypto.derive_master_key(signature)
+    _, x25519_public = crypto.derive_x25519_keypair(master_key)
+    _, ed25519_public = crypto.derive_ed25519_keypair(master_key)
+
+    base_package = package_ops.build_key_package(
+        eth_address, x25519_public, ed25519_public
+    )
+    signed_package = package_ops.sign_key_package(signer, base_package)
+    master_key_id = signed_package["master_key_id"]
+
+    browser_packages.store_key_package(signed_package)
+    tab_state.set_current_master_key_id(eth_address, master_key_id)
+    protection.set_device_key_protection(eth_address)
+
+    device_key = device.get_or_create_device_key()
+    ciphertext, nonce = at_rest.encrypt_master_key(master_key, device_key)
+    recovery.store_master_key_for_recovery(master_key_id, ciphertext, nonce)
+
+    tab_secret = secrets.token_bytes(32)
+    tab_ciphertext, tab_nonce = at_rest.encrypt_master_key(master_key, tab_secret)
+    tab_keys.set_tab_secret(tab_secret)
+    tab_keys.store_master_key_for_tab(master_key_id, tab_ciphertext, tab_nonce)
+
+    session.unlock_session(eth_address, master_key_id, master_key)
+    tab_state.set_active_address(eth_address)
+
+    return {"status": "ok", "master_key_id": master_key_id}
