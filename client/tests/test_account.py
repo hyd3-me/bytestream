@@ -6,8 +6,10 @@
 
 import secrets
 
-from client.keystore import account, at_rest
+from client import crypto
+from client.keystore import account, at_rest, exchange
 from client.keystore.browser import device, packages as browser_packages, protection, recovery
+from client.keystore.browser import secrets as browser_secrets
 from client.keystore.memory import session
 from client.keystore.tab import tab_keys, tab_state
 
@@ -150,3 +152,31 @@ def test_setup_new_account_persists_all_state(test_account):
     assert tab_keys.load_master_key_for_tab(mkid) is not None
     assert session.is_session_active(address) is True
     assert tab_state.get_active_address() == address
+
+
+
+def test_full_cycle_setup_exchange_encrypt_decrypt(test_account, test_account_b):
+    alice = test_account.address
+    bob = test_account_b.address
+
+    result_a = account.setup_new_account(alice, test_account)
+    result_b = account.setup_new_account(bob, test_account_b)
+    assert result_a["status"] == "ok"
+    assert result_b["status"] == "ok"
+
+    request = exchange.build_key_exchange_request(alice, bob)
+    response = exchange.handle_key_exchange_request(request, bob)
+    exchange.handle_key_exchange_response(response, alice)
+
+    secret_a = browser_secrets.derive_and_store_secret(alice, bob)
+    secret_b = browser_secrets.derive_and_store_secret(bob, alice)
+    assert secret_a is not None
+    assert secret_b is not None
+    assert secret_a["shared_secret"] == secret_b["shared_secret"]
+
+    aes_key = secret_a["aes_key"]
+    plaintext = b"Hello, Bob!"
+    nonce = crypto.generate_nonce()
+    ciphertext = crypto.encrypt_message(aes_key, plaintext, nonce)
+    decrypted = crypto.decrypt_message(secret_b["aes_key"], ciphertext, nonce)
+    assert decrypted == plaintext
