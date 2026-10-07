@@ -6,8 +6,8 @@
 
 from client.keystore.browser import secrets
 
-
 # --- Tests ---
+
 
 def test_build_master_key_id_pair_exists():
     assert hasattr(secrets, "build_master_key_id_pair")

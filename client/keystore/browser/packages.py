@@ -11,6 +11,7 @@ _latest_peer_ids = {}
 
 # --- Public API ---
 
+
 def store_key_package(package: dict) -> None:
     eth_address = package["eth_address"]
     master_key_id = package["master_key_id"]

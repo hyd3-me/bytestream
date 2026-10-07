@@ -6,8 +6,8 @@
 
 from client.keystore.browser import device
 
-
 # --- Tests ---
+
 
 def test_get_or_create_device_key_exists():
     assert hasattr(device, "get_or_create_device_key")

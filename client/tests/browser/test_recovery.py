@@ -6,8 +6,8 @@
 
 from client.keystore.browser import recovery as master_keys
 
-
 # --- Tests ---
+
 
 def test_list_master_key_ids_exists():
     assert hasattr(master_keys, "list_master_key_ids")

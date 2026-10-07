@@ -13,17 +13,15 @@ import app.auth.security as auth_security
 
 import client.crypto as crypto
 
-
 # --- Public API ---
+
 
 def build_key_package(
     eth_address: str,
     x25519_public_key,
     ed25519_public_key,
 ) -> dict:
-    master_key_id = crypto.compute_master_key_id(
-        x25519_public_key, ed25519_public_key
-    )
+    master_key_id = crypto.compute_master_key_id(x25519_public_key, ed25519_public_key)
     return {
         "eth_address": eth_address,
         "x25519_public_key": base64.b64encode(

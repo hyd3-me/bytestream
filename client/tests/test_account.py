@@ -8,13 +8,18 @@ import secrets
 
 from client import crypto
 from client.keystore import account, at_rest, exchange
-from client.keystore.browser import device, packages as browser_packages, protection, recovery
+from client.keystore.browser import (
+    device,
+    packages as browser_packages,
+    protection,
+    recovery,
+)
 from client.keystore.browser import secrets as browser_secrets
 from client.keystore.memory import session
 from client.keystore.tab import tab_keys, tab_state
 
-
 # --- Tests ---
+
 
 def test_restore_tab_session_exists():
     assert hasattr(account, "restore_tab_session")
@@ -152,7 +157,6 @@ def test_setup_new_account_persists_all_state(test_account):
     assert tab_keys.load_master_key_for_tab(mkid) is not None
     assert session.is_session_active(address) is True
     assert tab_state.get_active_address() == address
-
 
 
 def test_full_cycle_setup_exchange_encrypt_decrypt(test_account, test_account_b):

@@ -6,8 +6,8 @@
 
 from client import wallet
 
-
 # --- Tests ---
+
 
 def test_sign_fixed_message_exists():
     assert hasattr(wallet, "sign_fixed_message")

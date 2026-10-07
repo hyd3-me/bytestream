@@ -9,6 +9,7 @@ _master_keys_for_tab = {}
 
 # --- Public API ---
 
+
 def set_tab_secret(secret: bytes) -> None:
     global _tab_secret
     _tab_secret = secret

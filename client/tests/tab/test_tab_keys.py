@@ -6,8 +6,8 @@
 
 from client.keystore.tab import tab_keys
 
-
 # --- Tests ---
+
 
 def test_set_tab_secret_exists():
     assert hasattr(tab_keys, "set_tab_secret")

@@ -6,8 +6,8 @@
 
 from client.keystore import at_rest
 
-
 # --- Tests ---
+
 
 def test_encrypt_master_key_exists():
     assert hasattr(at_rest, "encrypt_master_key")

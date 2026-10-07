@@ -13,6 +13,7 @@ _current_master_key_ids = {}
 
 # --- Public API ---
 
+
 def list_known_addresses() -> list[str]:
     return list(_current_master_key_ids.keys())
 

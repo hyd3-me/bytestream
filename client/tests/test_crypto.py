@@ -674,9 +674,7 @@ def test_derive_and_store_secret_with_explicit_peer_mkid(
     tab_state.set_current_master_key_id(own, own_mkid)
     session.unlock_session(own, own_mkid, master_key_a)
 
-    result = keystore_secrets.derive_and_store_secret(
-        own, peer, peer_mkid=peer_mkid
-    )
+    result = keystore_secrets.derive_and_store_secret(own, peer, peer_mkid=peer_mkid)
 
     assert result is not None
 

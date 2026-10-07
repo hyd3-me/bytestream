@@ -6,8 +6,8 @@
 
 from client.keystore.tab import tab_state as master_keys
 
-
 # --- Tests ---
+
 
 def test_list_known_addresses_exists():
     assert hasattr(master_keys, "list_known_addresses")

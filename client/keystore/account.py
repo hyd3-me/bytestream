@@ -14,8 +14,8 @@ from client.keystore.browser import device, protection, recovery
 from client.keystore.memory import session
 from client.keystore.tab import tab_keys, tab_state
 
-
 # --- Public API ---
+
 
 def restore_tab_session() -> dict:
     address = tab_state.get_active_address()

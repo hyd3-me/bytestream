@@ -15,7 +15,9 @@ def test_unlock_session_exists():
     assert callable(session.unlock_session)
 
 
-def test_unlock_session_stores_derived_keys(master_key_a, x25519_keypair_a, ed25519_keypair_a):
+def test_unlock_session_stores_derived_keys(
+    master_key_a, x25519_keypair_a, ed25519_keypair_a
+):
     eth_address = "0xabc"
     master_key_id = "mkid_1"
 
@@ -25,8 +27,12 @@ def test_unlock_session_stores_derived_keys(master_key_a, x25519_keypair_a, ed25
 
     _, expected_x_pub = x25519_keypair_a
     _, expected_e_pub = ed25519_keypair_a
-    assert stored["x25519_public"].public_bytes_raw() == expected_x_pub.public_bytes_raw()
-    assert stored["ed25519_public"].public_bytes_raw() == expected_e_pub.public_bytes_raw()
+    assert (
+        stored["x25519_public"].public_bytes_raw() == expected_x_pub.public_bytes_raw()
+    )
+    assert (
+        stored["ed25519_public"].public_bytes_raw() == expected_e_pub.public_bytes_raw()
+    )
 
 
 def test_is_session_active_exists():
