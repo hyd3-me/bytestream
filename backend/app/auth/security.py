@@ -5,6 +5,7 @@
 # --- Imports ---
 
 import base64
+import json
 from datetime import datetime, timedelta, timezone
 
 from cryptography.exceptions import InvalidSignature
@@ -66,4 +67,16 @@ def verify_ed25519_signature(
 
 
 def verify_key_package(package: dict) -> bool:
-    pass
+    base_package = {
+        "eth_address": package["eth_address"],
+        "x25519_public_key": package["x25519_public_key"],
+        "ed25519_public_key": package["ed25519_public_key"],
+        "master_key_id": package["master_key_id"],
+    }
+    canonical = json.dumps(base_package, sort_keys=True, separators=(",", ":"))
+    signature_bytes = base64.b64decode(package["eth_signature"])
+    return verify_signature(
+        package["eth_address"],
+        canonical,
+        signature_bytes.hex(),
+    )
