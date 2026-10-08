@@ -4,10 +4,15 @@
 
 # --- Imports ---
 
+import base64
 from datetime import datetime, timedelta, timezone
+
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives.asymmetric import ed25519
 from jose import jwt
-from ..core.config import get_settings
+
 import app.core.web3 as web3
+from ..core.config import get_settings
 
 # --- Setup ---
 
@@ -50,4 +55,11 @@ def verify_signature(address: str, message: str, signature: str) -> bool:
 def verify_ed25519_signature(
     public_key_b64: str, message: bytes, signature_b64: str
 ) -> bool:
-    pass
+    public_key_bytes = base64.b64decode(public_key_b64)
+    signature_bytes = base64.b64decode(signature_b64)
+    public_key = ed25519.Ed25519PublicKey.from_public_bytes(public_key_bytes)
+    try:
+        public_key.verify(signature_bytes, message)
+        return True
+    except InvalidSignature:
+        return False
