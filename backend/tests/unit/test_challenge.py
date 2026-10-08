@@ -5,6 +5,11 @@
 # --- Imports ---
 
 from app.auth import challenge
+from app.core.config import get_settings
+
+# --- Setup ---
+
+settings = get_settings()
 
 
 # --- Tests ---
@@ -41,3 +46,10 @@ def test_delete_challenge_exists():
 def test_get_challenge_key_exists():
     assert hasattr(challenge, "get_challenge_key")
     assert callable(challenge.get_challenge_key)
+
+
+def test_get_challenge_key_returns_prefixed_key():
+    sid = "abc123"
+    key = challenge.get_challenge_key(sid)
+
+    assert key == f"{settings.redis_key_prefix}challenge:{sid}"
