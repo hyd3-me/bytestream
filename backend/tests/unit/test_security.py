@@ -4,14 +4,17 @@
 
 # --- Imports ---
 
-import pytest
+import base64
 from datetime import timedelta
+
+import pytest
+from cryptography.hazmat.primitives.asymmetric import ed25519
 from jose import jwt
 from jose.exceptions import ExpiredSignatureError, JWTError
-from app.core.config import get_settings
 
 from app.auth import security
 from app.auth.security import create_access_token, decode_token
+from app.core.config import get_settings
 
 # --- Setup ---
 
@@ -57,3 +60,19 @@ def test_decode_token_with_invalid_signature():
 def test_verify_ed25519_signature_exists():
     assert hasattr(security, "verify_ed25519_signature")
     assert callable(security.verify_ed25519_signature)
+
+
+
+def test_verify_ed25519_signature_accepts_valid_signature():
+    private_key = ed25519.Ed25519PrivateKey.generate()
+    public_key = private_key.public_key()
+    message = b"challenge_bytes"
+    signature = private_key.sign(message)
+
+    public_key_b64 = base64.b64encode(public_key.public_bytes_raw()).decode("ascii")
+    signature_b64 = base64.b64encode(signature).decode("ascii")
+
+    assert (
+        security.verify_ed25519_signature(public_key_b64, message, signature_b64)
+        is True
+    )
