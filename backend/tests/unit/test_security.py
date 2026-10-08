@@ -76,3 +76,8 @@ def test_verify_ed25519_signature_accepts_valid_signature():
         security.verify_ed25519_signature(public_key_b64, message, signature_b64)
         is True
     )
+
+
+def test_verify_key_package_exists():
+    assert hasattr(security, "verify_key_package")
+    assert callable(security.verify_key_package)
