@@ -63,3 +63,7 @@ def verify_ed25519_signature(
         return True
     except InvalidSignature:
         return False
+
+
+def verify_key_package(package: dict) -> bool:
+    pass
