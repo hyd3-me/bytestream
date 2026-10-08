@@ -45,3 +45,9 @@ def verify_signature(address: str, message: str, signature: str) -> bool:
         message_encoded, signature=signature
     )
     return recovered_address.lower() == address.lower()
+
+
+def verify_ed25519_signature(
+    public_key_b64: str, message: bytes, signature_b64: str
+) -> bool:
+    pass
