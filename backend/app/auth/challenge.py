@@ -4,8 +4,10 @@
 
 # --- Imports ---
 
+import secrets
+
 # --- Public API ---
 
 
 def generate_challenge() -> str:
-    pass
+    return secrets.token_urlsafe(32)
