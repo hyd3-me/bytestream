@@ -6,6 +6,12 @@
 
 import secrets
 
+from ..core.config import get_settings
+
+# --- Setup ---
+
+settings = get_settings()
+
 # --- Public API ---
 
 
@@ -22,4 +28,9 @@ async def get_challenge(redis, sid: str) -> str | None:
 
 
 async def delete_challenge(redis, sid: str) -> None:
+    pass
+
+
+
+def get_challenge_key(sid: str) -> str:
     pass
