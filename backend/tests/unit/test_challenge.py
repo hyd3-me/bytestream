@@ -36,3 +36,8 @@ def test_get_challenge_exists():
 def test_delete_challenge_exists():
     assert hasattr(challenge, "delete_challenge")
     assert callable(challenge.delete_challenge)
+
+
+def test_get_challenge_key_exists():
+    assert hasattr(challenge, "get_challenge_key")
+    assert callable(challenge.get_challenge_key)
