@@ -81,3 +81,23 @@ def test_verify_ed25519_signature_accepts_valid_signature():
 def test_verify_key_package_exists():
     assert hasattr(security, "verify_key_package")
     assert callable(security.verify_key_package)
+
+
+def test_verify_key_package_accepts_valid_package(test_account):
+    import json
+
+    base_package = {
+        "eth_address": test_account.address,
+        "x25519_public_key": "dGVzdF94MjU1MTk=",
+        "ed25519_public_key": "dGVzdF9lZDI1NTE5",
+        "master_key_id": "dGVzdF9ta2lk",
+    }
+    canonical = json.dumps(base_package, sort_keys=True, separators=(",", ":"))
+    message = encode_defunct(text=canonical)
+    signature = test_account.sign_message(message).signature
+    signed_package = {
+        **base_package,
+        "eth_signature": base64.b64encode(signature).decode("ascii"),
+    }
+
+    assert security.verify_key_package(signed_package) is True
