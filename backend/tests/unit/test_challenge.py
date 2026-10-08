@@ -21,3 +21,8 @@ def test_generate_challenge_returns_unique_string():
     assert isinstance(c1, str)
     assert len(c1) > 0
     assert c1 != c2
+
+
+def test_store_challenge_exists():
+    assert hasattr(challenge, "store_challenge")
+    assert callable(challenge.store_challenge)
