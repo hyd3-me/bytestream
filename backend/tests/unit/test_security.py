@@ -10,6 +10,7 @@ from jose import jwt
 from jose.exceptions import ExpiredSignatureError, JWTError
 from app.core.config import get_settings
 
+from app.auth import security
 from app.auth.security import create_access_token, decode_token
 
 # --- Setup ---
@@ -51,3 +52,8 @@ def test_decode_token_with_invalid_signature():
     )
     with pytest.raises(JWTError):
         decode_token(token)
+
+
+def test_verify_ed25519_signature_exists():
+    assert hasattr(security, "verify_ed25519_signature")
+    assert callable(security.verify_ed25519_signature)
