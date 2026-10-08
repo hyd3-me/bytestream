@@ -4,6 +4,8 @@
 
 # --- Imports ---
 
+import pytest
+
 from app.auth import challenge
 from app.core.config import get_settings
 
@@ -53,3 +55,15 @@ def test_get_challenge_key_returns_prefixed_key():
     key = challenge.get_challenge_key(sid)
 
     assert key == f"{settings.redis_key_prefix}challenge:{sid}"
+
+
+
+@pytest.mark.asyncio
+async def test_store_and_get_challenge_roundtrip(redis_client):
+    sid = "test_sid"
+    value = "challenge_value"
+
+    await challenge.store_challenge(redis_client, sid, value)
+    loaded = await challenge.get_challenge(redis_client, sid)
+
+    assert loaded == value
