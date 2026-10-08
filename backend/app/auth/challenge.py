@@ -20,15 +20,18 @@ def generate_challenge() -> str:
 
 
 async def store_challenge(redis, sid: str, challenge_value: str) -> None:
-    pass
+    key = get_challenge_key(sid)
+    await redis.setex(key, settings.challenge_ttl_seconds, challenge_value)
 
 
 async def get_challenge(redis, sid: str) -> str | None:
-    pass
+    key = get_challenge_key(sid)
+    return await redis.get(key)
 
 
 async def delete_challenge(redis, sid: str) -> None:
-    pass
+    key = get_challenge_key(sid)
+    await redis.delete(key)
 
 
 
