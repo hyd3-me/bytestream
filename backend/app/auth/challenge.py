@@ -33,4 +33,4 @@ async def delete_challenge(redis, sid: str) -> None:
 
 
 def get_challenge_key(sid: str) -> str:
-    pass
+    return f"{settings.redis_key_prefix}challenge:{sid}"
