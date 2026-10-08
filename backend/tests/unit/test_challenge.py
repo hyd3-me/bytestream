@@ -26,3 +26,8 @@ def test_generate_challenge_returns_unique_string():
 def test_store_challenge_exists():
     assert hasattr(challenge, "store_challenge")
     assert callable(challenge.store_challenge)
+
+
+def test_get_challenge_exists():
+    assert hasattr(challenge, "get_challenge")
+    assert callable(challenge.get_challenge)
