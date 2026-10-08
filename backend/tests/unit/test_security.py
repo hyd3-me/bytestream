@@ -9,6 +9,7 @@ from datetime import timedelta
 
 import pytest
 from cryptography.hazmat.primitives.asymmetric import ed25519
+from eth_account.messages import encode_defunct
 from jose import jwt
 from jose.exceptions import ExpiredSignatureError, JWTError
 
