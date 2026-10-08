@@ -19,3 +19,7 @@ async def store_challenge(redis, sid: str, challenge_value: str) -> None:
 
 async def get_challenge(redis, sid: str) -> str | None:
     pass
+
+
+async def delete_challenge(redis, sid: str) -> None:
+    pass
