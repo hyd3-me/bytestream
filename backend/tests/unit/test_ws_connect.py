@@ -34,3 +34,8 @@ async def test_handle_connect_stores_challenge_and_returns_true(
     assert stored is not None
     assert isinstance(stored, str)
     assert len(stored) > 0
+
+
+def test_disconnect_if_not_authenticated_exists():
+    assert hasattr(manager.ws_manager, "_disconnect_if_not_authenticated")
+    assert callable(manager.ws_manager._disconnect_if_not_authenticated)
