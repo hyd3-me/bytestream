@@ -9,7 +9,7 @@ import secrets
 from app.core.database import db_manager
 from app.core.redis import get_redis_pool
 from app.core.logging import get_logger
-from app.auth import security
+from app.auth import challenge, security
 from app.room import crud, utils, redis_utils
 
 # --- Setup ---
@@ -56,29 +56,14 @@ class SocketIOManager:
             await self.handle_join_room(sid, data)
 
     async def handle_connect(self, sid, environ):
-        """Public method for testing and internal use."""
-        auth_header = environ.get("HTTP_AUTHORIZATION")
-        if not auth_header:
-            logger.warning(f"Connection attempt without auth header from sid {sid}")
-            return False
-
-        parts = auth_header.split()
-        if len(parts) != 2 or parts[0].lower() != "bearer":
-            logger.warning(f"Invalid auth header format from sid {sid}")
-            return False
-
-        token = parts[1]
-        try:
-            payload = security.decode_token(token)
-            address = payload.get("sub")
-            if not address:
-                return False
-            await self.sio.save_session(sid, {"address": address})
-            logger.info(f"Client {address} connected with sid {sid}")
-            return True
-        except Exception as e:
-            logger.warning(f"Invalid token from sid {sid}: {e}")
-            return False
+        redis = get_redis_pool()
+        challenge_value = challenge.generate_challenge()
+        await challenge.store_challenge(redis, sid, challenge_value)
+        await self.sio.emit(
+            "auth_challenge", {"challenge": challenge_value}, room=sid
+        )
+        logger.info(f"Sent auth_challenge to sid {sid}")
+        return True
 
     async def _handle_disconnect(self, sid):
         session = await self.sio.get_session(sid)
