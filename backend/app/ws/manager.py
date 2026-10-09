@@ -4,8 +4,9 @@
 
 # --- Imports ---
 
-import socketio
+import asyncio
 import secrets
+import socketio
 from app.core.database import db_manager
 from app.core.redis import get_redis_pool
 from app.core.logging import get_logger
@@ -64,7 +65,11 @@ class SocketIOManager:
         return True
 
     async def _disconnect_if_not_authenticated(self, sid, timeout: int) -> None:
-        pass
+        await asyncio.sleep(timeout)
+        session = await self.sio.get_session(sid)
+        if not session or "address" not in session:
+            logger.warning(f"Disconnecting unauthenticated sid {sid}")
+            await self.sio.disconnect(sid)
 
     async def _handle_disconnect(self, sid):
         session = await self.sio.get_session(sid)
