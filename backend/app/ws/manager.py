@@ -9,6 +9,7 @@ import secrets
 import socketio
 from app.core.database import db_manager
 from app.core.redis import get_redis_pool
+from app.core.config import get_settings
 from app.core.logging import get_logger
 from app.auth import challenge, security
 from app.room import crud, utils, redis_utils
@@ -16,6 +17,7 @@ from app.room import crud, utils, redis_utils
 # --- Setup ---
 
 logger = get_logger(__name__)
+settings = get_settings()
 
 
 # --- Public API ---
@@ -61,6 +63,9 @@ class SocketIOManager:
         challenge_value = challenge.generate_challenge()
         await challenge.store_challenge(redis, sid, challenge_value)
         await self.sio.emit("auth_challenge", {"challenge": challenge_value}, room=sid)
+        asyncio.create_task(
+            self._disconnect_if_not_authenticated(sid, settings.challenge_ttl_seconds)
+        )
         logger.info(f"Sent auth_challenge to sid {sid}")
         return True
 

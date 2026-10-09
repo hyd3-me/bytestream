@@ -25,7 +25,13 @@ async def test_handle_connect_stores_challenge_and_returns_true(
 ):
     sid = "test_sid_123"
 
-    mock_emit = mocker.patch.object(manager.ws_manager.sio, "emit")
+    mocker.patch.object(manager.ws_manager.sio, "emit")
+
+    def consume_coroutine(coro, *args, **kwargs):
+        coro.close()
+        return mocker.Mock()
+
+    mocker.patch("asyncio.create_task", side_effect=consume_coroutine)
 
     result = await manager.ws_manager.handle_connect(sid, {})
 
@@ -71,3 +77,28 @@ async def test_disconnect_if_not_authenticated_keeps_authenticated(mocker):
     await manager.ws_manager._disconnect_if_not_authenticated(sid, timeout)
 
     mock_disconnect.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_handle_connect_schedules_timeout_task(mocker):
+    sid = "test_sid_123"
+
+    mocker.patch.object(manager.ws_manager.sio, "emit")
+    mocker.patch(
+        "app.auth.challenge.generate_challenge", return_value="test_challenge"
+    )
+    mocker.patch(
+        "app.auth.challenge.store_challenge", new_callable=mocker.AsyncMock
+    )
+
+    def consume_coroutine(coro, *args, **kwargs):
+        coro.close()
+        return mocker.Mock()
+
+    mock_create_task = mocker.patch(
+        "asyncio.create_task", side_effect=consume_coroutine
+    )
+
+    await manager.ws_manager.handle_connect(sid, {})
+
+    mock_create_task.assert_called_once()
