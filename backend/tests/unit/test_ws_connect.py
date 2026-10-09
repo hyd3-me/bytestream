@@ -39,3 +39,17 @@ async def test_handle_connect_stores_challenge_and_returns_true(
 def test_disconnect_if_not_authenticated_exists():
     assert hasattr(manager.ws_manager, "_disconnect_if_not_authenticated")
     assert callable(manager.ws_manager._disconnect_if_not_authenticated)
+
+
+@pytest.mark.asyncio
+async def test_disconnect_if_not_authenticated_disconnects_when_no_address(mocker):
+    sid = "test_sid"
+    timeout = 60
+
+    mocker.patch("asyncio.sleep", new_callable=mocker.AsyncMock)
+    mocker.patch.object(manager.ws_manager.sio, "get_session", return_value={})
+    mock_disconnect = mocker.patch.object(manager.ws_manager.sio, "disconnect")
+
+    await manager.ws_manager._disconnect_if_not_authenticated(sid, timeout)
+
+    mock_disconnect.assert_awaited_once_with(sid)
