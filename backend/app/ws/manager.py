@@ -59,11 +59,12 @@ class SocketIOManager:
         redis = get_redis_pool()
         challenge_value = challenge.generate_challenge()
         await challenge.store_challenge(redis, sid, challenge_value)
-        await self.sio.emit(
-            "auth_challenge", {"challenge": challenge_value}, room=sid
-        )
+        await self.sio.emit("auth_challenge", {"challenge": challenge_value}, room=sid)
         logger.info(f"Sent auth_challenge to sid {sid}")
         return True
+
+    async def _disconnect_if_not_authenticated(self, sid, timeout: int) -> None:
+        pass
 
     async def _handle_disconnect(self, sid):
         session = await self.sio.get_session(sid)
