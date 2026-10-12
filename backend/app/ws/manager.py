@@ -74,7 +74,44 @@ class SocketIOManager:
         return True
 
     async def handle_auth_response(self, sid, data):
-        pass
+        redis = get_redis_pool()
+        challenge_value = await challenge.get_challenge(redis, sid)
+        if challenge_value is None:
+            logger.warning(f"No challenge for sid {sid}, disconnecting")
+            await self.sio.disconnect(sid)
+            return
+
+        address = data.get("address")
+        signature_b64 = data.get("signature")
+        package = data.get("package")
+        if not address or not signature_b64 or not package:
+            logger.warning(f"Incomplete auth_response from sid {sid}")
+            await self.sio.disconnect(sid)
+            return
+
+        if not security.verify_key_package(package):
+            logger.warning(f"Invalid package signature from sid {sid}")
+            await self.sio.disconnect(sid)
+            return
+
+        if package.get("eth_address") != address:
+            logger.warning(f"Address mismatch in auth_response from sid {sid}")
+            await self.sio.disconnect(sid)
+            return
+
+        if not security.verify_ed25519_signature(
+            package["ed25519_public_key"],
+            challenge_value.encode(),
+            signature_b64,
+        ):
+            logger.warning(f"Invalid ed25519 signature from sid {sid}")
+            await self.sio.disconnect(sid)
+            return
+
+        await challenge.delete_challenge(redis, sid)
+        await self.sio.save_session(sid, {"address": address})
+        await self.sio.emit("auth_ok", room=sid)
+        logger.info(f"Client {address} authenticated with sid {sid}")
 
     async def _disconnect_if_not_authenticated(self, sid, timeout: int) -> None:
         await asyncio.sleep(timeout)

@@ -138,6 +138,12 @@ async def redis_client():
     await client.aclose()  # properly close connection
 
 
+@pytest.fixture(autouse=True)
+def reset_redis_pool_cache():
+    reset_redis_pool()
+    yield
+
+
 @pytest_asyncio.fixture(autouse=True)
 async def override_redis_dependency(redis_client):
     """Override the app's get_redis dependency to use the test client."""

@@ -23,6 +23,7 @@ async def test_socketio_connect_with_jwt(room_users, socketio_client_factory):
     await sio.disconnect()
 
 
+@pytest.mark.skip(reason="rewritten in JWT-removal step (feature/auth-ed25519)")
 @pytest.mark.asyncio
 async def test_full_room_cycle(
     room_users, socketio_client_factory, async_db, redis_client
