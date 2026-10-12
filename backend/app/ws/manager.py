@@ -58,6 +58,10 @@ class SocketIOManager:
         async def join_room(sid, data):
             await self.handle_join_room(sid, data)
 
+        @self.sio.event
+        async def auth_response(sid, data):
+            await self.handle_auth_response(sid, data)
+
     async def handle_connect(self, sid, environ):
         redis = get_redis_pool()
         challenge_value = challenge.generate_challenge()
@@ -68,6 +72,9 @@ class SocketIOManager:
         )
         logger.info(f"Sent auth_challenge to sid {sid}")
         return True
+
+    async def handle_auth_response(self, sid, data):
+        pass
 
     async def _disconnect_if_not_authenticated(self, sid, timeout: int) -> None:
         await asyncio.sleep(timeout)
