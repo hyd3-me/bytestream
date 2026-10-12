@@ -102,3 +102,8 @@ async def test_handle_connect_schedules_timeout_task(mocker):
     await manager.ws_manager.handle_connect(sid, {})
 
     mock_create_task.assert_called_once()
+
+
+def test_handle_auth_response_exists():
+    assert hasattr(manager.ws_manager, "handle_auth_response")
+    assert callable(manager.ws_manager.handle_auth_response)
