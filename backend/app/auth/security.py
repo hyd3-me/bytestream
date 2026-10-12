@@ -1,4 +1,4 @@
-"""JWT creation, decoding, and Ethereum signature verification."""
+"""Signature verification for packages and auth challenges."""
 
 # path: backend/app/auth/security.py
 
@@ -6,42 +6,13 @@
 
 import base64
 import json
-from datetime import datetime, timedelta, timezone
 
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric import ed25519
-from jose import jwt
 
 import app.core.web3 as web3
-from ..core.config import get_settings
-
-# --- Setup ---
-
-settings = get_settings()
-
 
 # --- Public API ---
-
-
-def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(
-            minutes=settings.jwt_expire_minutes
-        )
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(
-        to_encode, settings.jwt_secret_key, algorithm=settings.jwt_algorithm
-    )
-    return encoded_jwt
-
-
-def decode_token(token: str) -> dict:
-    return jwt.decode(
-        token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm]
-    )
 
 
 def verify_signature(address: str, message: str, signature: str) -> bool:

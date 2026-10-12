@@ -11,7 +11,6 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends
-from app.auth.router import router as auth_router
 from app.core.redis import get_redis_pool
 from app.core.config import get_settings
 from app.core.logging import setup_logging, get_logger
@@ -56,7 +55,6 @@ async def lifespan(app: FastAPI):
 
 
 fastapi_app = FastAPI(title="Bytestream Messenger API", lifespan=lifespan)
-fastapi_app.include_router(auth_router)
 
 
 @fastapi_app.get("/health")

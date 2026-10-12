@@ -16,12 +16,7 @@ from typing import Optional
 class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"
     redis_key_prefix: str = "bytestream:"
-    nonce_ttl_seconds: int = 300
     challenge_ttl_seconds: int = 60
-
-    jwt_secret_key: str = Field(...)
-    jwt_algorithm: str = "HS256"
-    jwt_expire_minutes: int = 30
 
     database_url: Optional[str] = Field(None)
 
