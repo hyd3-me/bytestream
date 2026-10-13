@@ -205,6 +205,7 @@ async def setup_db():
 @pytest_asyncio.fixture
 async def async_db(setup_db):
     conn = await asyncpg.connect(settings.database_url)
+    await conn.execute("TRUNCATE TABLE rooms;")
     await conn.execute("BEGIN")
     yield conn
     await conn.execute("ROLLBACK")
