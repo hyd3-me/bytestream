@@ -4,40 +4,43 @@
 
 # --- Imports ---
 
+import asyncio
+import base64
 import os
+import socket
 import sys
 from pathlib import Path
-from dotenv import load_dotenv, dotenv_values
-from web3 import Web3
+
 import asyncpg
-from eth_account.messages import encode_defunct
-import socket
-import uvicorn
+import pytest
+import pytest_asyncio
+import redis.asyncio as redis
 import socketio
-import asyncio
+import uvicorn
+from asgi_lifespan import LifespanManager
+from dotenv import load_dotenv, dotenv_values
+from eth_account.messages import encode_defunct
+from httpx import ASGITransport, AsyncClient
+from web3 import Web3
 
 # Load environment variables from .env file located in the project root
 project_root = Path(__file__).parent.parent.parent  # source directory
 env_path = project_root / ".env"
 load_dotenv(dotenv_path=env_path)
 
-# Add backend directory to Python path
+# Add source and backend to Python path
 backend_dir = project_root / "backend"
+sys.path.insert(0, str(project_root))
 sys.path.insert(0, str(backend_dir))
 
-# Use the REDIS_URL from environment (already includes password and DB)
-# For tests, we expect the DB to be set appropriately (e.g., /1)
 TEST_REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/1")
 os.environ["REDIS_URL"] = TEST_REDIS_URL
-os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key-for-pytest-only")
 
-import pytest, pytest_asyncio
-from httpx import AsyncClient, ASGITransport
-from asgi_lifespan import LifespanManager
-from main import fastapi_app, app
-import redis.asyncio as redis
-from app.core.redis import get_redis
+from client import crypto, wallet
+from client.keystore import package_ops
+from main import app, fastapi_app
 from app.core.config import get_settings
+from app.core.redis import get_redis
 
 settings = get_settings()
 
@@ -85,17 +88,51 @@ async def live_server():
 
 
 @pytest_asyncio.fixture
-async def socketio_client_factory(live_server):
-    async def _create(token):
+async def auth_client_factory(live_server):
+    async def _create(signer):
+        signature = wallet.sign_fixed_message(signer)
+        master_key = crypto.derive_master_key(signature)
+        _, x_pub = crypto.derive_x25519_keypair(master_key)
+        ed_priv, ed_pub = crypto.derive_ed25519_keypair(master_key)
+
+        base_package = package_ops.build_key_package(signer.address, x_pub, ed_pub)
+        signed_package = package_ops.sign_key_package(signer, base_package)
+
         sio = socketio.AsyncClient()
+
+        challenge_event = asyncio.Event()
+        challenge_holder = {}
+
+        @sio.on("auth_challenge")
+        async def _on_challenge(data):
+            challenge_holder["challenge"] = data["challenge"]
+            challenge_event.set()
+
+        auth_ok_event = asyncio.Event()
+
+        @sio.on("auth_ok")
+        async def _on_auth_ok():
+            auth_ok_event.set()
+
         await asyncio.wait_for(
-            sio.connect(
-                live_server,
-                transports=["websocket"],
-                headers={"Authorization": f"Bearer {token}"},
-            ),
+            sio.connect(live_server, transports=["websocket"]),
             timeout=5,
         )
+        await asyncio.wait_for(challenge_event.wait(), timeout=5)
+
+        challenge_value = challenge_holder["challenge"]
+        ed_sig = ed_priv.sign(challenge_value.encode())
+        ed_sig_b64 = base64.b64encode(ed_sig).decode("ascii")
+
+        await sio.emit(
+            "auth_response",
+            {
+                "address": signer.address,
+                "signature": ed_sig_b64,
+                "package": signed_package,
+            },
+        )
+        await asyncio.wait_for(auth_ok_event.wait(), timeout=5)
         return sio
 
     yield _create
@@ -115,8 +152,8 @@ async def redis_client():
     """Direct Redis client for test assertions. Cleans up after each test."""
     client = redis.from_url(TEST_REDIS_URL, decode_responses=True)
     yield client
-    await client.flushdb()  # clear test database
-    await client.aclose()  # properly close connection
+    await client.flushdb()
+    await client.aclose()
 
 
 @pytest.fixture(autouse=True)
