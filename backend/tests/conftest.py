@@ -181,6 +181,17 @@ def test_account():
     return account
 
 
+@pytest.fixture(scope="session")
+def test_account_b():
+    env_vars = dotenv_values(env_path)
+    private_key = env_vars.get("TEST_ACCOUNT_PRIVATE_KEY_2")
+    if not private_key:
+        pytest.fail("TEST_ACCOUNT_PRIVATE_KEY_2 not set in .env")
+    w3 = Web3()
+    account = w3.eth.account.from_key(private_key)
+    return account
+
+
 @pytest_asyncio.fixture(scope="session")
 async def setup_db():
     conn = await asyncpg.connect(settings.database_url)
